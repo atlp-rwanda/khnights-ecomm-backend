@@ -1,0 +1,13 @@
+//    // .eslintrc
+//    {
+//     "extends": ["eslint:recommended", "plugin:prettier/recommended"]
+//   }
+{
+  "devDependencies": {
+    "eslint": "^9.1.1",
+    "@eslint/js": "^2.1.0",
+    "typescript-eslint": "^7.7.1"
+  }
+}
+
+  
