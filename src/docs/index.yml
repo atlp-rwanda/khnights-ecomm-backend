@@ -1,0 +1,23 @@
+/:
+  get:
+    tags:
+      - index
+    summary: "initial endpoint"
+    description: "This is initial endpoint"
+    responses:
+      "200":
+        description: "success response"
+      "500":
+        description: "server error"
+
+/status:
+  get:
+    tags:
+      - testing
+    summary: "status endpoint"
+    description: "This is status endpoint"
+    responses:
+      "200":
+        description: "success response"
+      "500":
+        description: "server error"
