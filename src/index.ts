@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import router from "./routes";
 dotenv.config();
 
-const app = express();
+export const app = express();
 const port = process.env.PORT as string
 app.use(express.json());
 
@@ -14,6 +14,6 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Knights Ecommerce API');
 });
 app.use(router)
-app.listen(port, () => {
+export const server = app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
 })
