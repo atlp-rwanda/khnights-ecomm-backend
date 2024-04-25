@@ -39,7 +39,7 @@ List of endpoints exposed by the service
 ### Run The Service
 - Run the application
   ```
-  nmp run dev
+  npm run dev
   ```
 
 ## Testing
@@ -52,7 +52,7 @@ List of endpoints exposed by the service
 ## Authors
 - [Maxime Mizero](https://github.com/maxCastro1)
 - [Elie Kuradusenge](https://github.com/elijahladdie)
-- [Byishimo Teto Jose](https://github.com/MC-Knight)
+- [Byishimo Teto Joseph](https://github.com/MC-Knight)
 - [Iragena Aime Divin](https://github.com/aimedivin)
 - [Gloria Niyonkuru Sinseswa](https://github.com/GSinseswa721)
 - [Grace Uwicyeza](https://github.com/UwicyezaG)
