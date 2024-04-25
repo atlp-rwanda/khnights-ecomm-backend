@@ -1,8 +1,10 @@
 import express, { Request, Response } from "express";
+import "reflect-metadata";
 import cors from "cors";
 import dotenv from "dotenv";
 import router from "./routes";
 import { addDocumentation } from "./startups/docs";
+import { dbConnection } from "./startups/dbConnection";
 
 dotenv.config();
 
@@ -18,6 +20,9 @@ app.get("/api/v1", (req: Request, res: Response) => {
 });
 
 app.use(router);
+
+// Start database server
+dbConnection();
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}/api/v1`);
