@@ -1,10 +1,10 @@
-import { Response } from 'express'
-import jsend from 'jsend'
+import { Response } from 'express';
+import jsend from 'jsend';
 
 interface ApiResponse {
-  code: number
-  resp_msg: string
-  data?: any
+  code: number;
+  resp_msg: string;
+  data?: any;
 }
 
 export const responseSuccess = (
@@ -17,10 +17,10 @@ export const responseSuccess = (
     jsend.success({
       code: status_code,
       message,
-      data
+      data,
     })
-  )
-}
+  );
+};
 
 export const responseError = (
   res: Response,
@@ -32,19 +32,16 @@ export const responseError = (
     jsend.error({
       code: status_code,
       message,
-      data
+      data,
     })
-  )
-}
+  );
+};
 
-export const responseServerError = (
-  res: Response,
-  error: string
-): Response<ApiResponse> => {
+export const responseServerError = (res: Response, error: string): Response<ApiResponse> => {
   return res.status(500).json(
     jsend.error({
       code: 999,
-      message: `There is a problem with the server!: ${error}`
+      message: `There is a problem with the server!: ${error}`,
     })
-  )
-}
+  );
+};
