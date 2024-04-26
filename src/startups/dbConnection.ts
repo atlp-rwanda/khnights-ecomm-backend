@@ -1,14 +1,11 @@
-import { OrmConfig } from "../configs/db_config";
+import { createConnection } from "typeorm";
 
 const dbConnection = async () => {
-  await OrmConfig.initialize()
-    .then(() => {
-      console.log("[db]: Database connected successfully");
-    })
-    .catch((error) => {
-      console.log("[db]: Database connection failed");
-      console.log(error);
-    });
+  try {
+    const connection = await createConnection();
+    console.log('Connected to the database');
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+  }
 };
-
 export { dbConnection };
