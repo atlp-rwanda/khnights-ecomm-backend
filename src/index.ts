@@ -6,7 +6,7 @@ import { addDocumentation } from "./startups/docs";
 
 dotenv.config();
 
-const app = express();
+export const app = express();
 const port = process.env.PORT as string;
 app.use(express.json());
 
@@ -16,9 +16,7 @@ addDocumentation(app);
 app.get("/api/v1", (req: Request, res: Response) => {
   res.send("Knights Ecommerce API");
 });
-
-app.use(router);
-
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}/api/v1`);
-});
+app.use(router)
+export const server = app.listen(port, () => {
+    console.log(`[server]: Server is running at http://localhost:${port}`);
+})
