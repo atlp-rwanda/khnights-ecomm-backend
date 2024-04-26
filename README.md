@@ -1,12 +1,26 @@
 # E-commerse Backend API
+
 ## Description
-This repository contains an E-commerce APIs, serving as backend for an E-commerce frontend application, It powers the functionalities for the frontend, such as storing, retrieving, deleting data and much more.
+
+This repository contains an E-commerce APIs, serving as backend for an E-commerce frontend application, It powers the
+functionalities for the frontend, such as storing, retrieving, deleting data and much more.
+
 ## Documentation
 
 List of endpoints exposed by the service
 
 ## Setup
+- to use loggers in program use below functions
+```bash
+logger.error('This is an error message');
+logger.warn('This is a warning message');
+logger.info('This is an informational message');
+logger.debug('This is a debug message');
+
+```
+
 ### Technologies used
+
 - Languages:
   - TypeScript
 - Package manager:
@@ -28,15 +42,16 @@ List of endpoints exposed by the service
   git clone https://github.com/atlp-rwanda/knights-ecomm-be.git
   ```
 - Navigate to project directory
-   ```
-   cd knights-ecomm-be
-   ```
-- Install dependencies 
+  ```
+  cd knights-ecomm-be
+  ```
+- Install dependencies
   ```
   npm install
   ```
 
 ### Run The Service
+
 - Run the application
   ```
   npm run dev
@@ -50,6 +65,7 @@ List of endpoints exposed by the service
   ```
 
 ## Authors
+
 - [Maxime Mizero](https://github.com/maxCastro1)
 - [Elie Kuradusenge](https://github.com/elijahladdie)
 - [Byishimo Teto Joseph](https://github.com/MC-Knight)

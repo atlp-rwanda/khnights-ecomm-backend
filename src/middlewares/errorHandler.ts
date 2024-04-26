@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 class CustomError extends Error {
     statusCode: number;
     status: string;
 
-    constructor(message: string, statusCode: number) {
+    constructor (message: string, statusCode: number) {
         super(message);
         this.statusCode = statusCode;
         this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
@@ -16,7 +16,7 @@ const errorHandler = (
     err: CustomError,
     req: Request,
     res: Response,
-    next: NextFunction
+
 ) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
