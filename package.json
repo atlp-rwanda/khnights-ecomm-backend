@@ -46,6 +46,7 @@
     "@types/jest": "^29.5.12",
     "@types/jsend": "^1.0.32",
     "@types/morgan": "^1.9.9",
+    "@types/supertest": "^6.0.2",
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
@@ -60,24 +61,5 @@
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.7.1"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true,
-      "es6": true
-    },
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended"
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2021,
-      "sourceType": "module"
-    },
-    "rules": {
-      "@typescript-eslint/no-unused-vars": "error",
-      "@typescript-eslint/explicit-module-boundary-types": "off"
-    }
   }
 }

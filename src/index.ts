@@ -13,18 +13,13 @@ const port = process.env.PORT as string;
 app.use(express.json());
 
 app.use(cors({ origin: "*" }));
-
+app.use(router);
+addDocumentation(app);
 app.all('*', (req: Request,res: Response,next) =>{
     const error = new CustomError(`Can't find ${req.originalUrl} on the server!`,404);
     error.status = 'fail';
     next(error);
 });
-
-addDocumentation(app);
-app.get("/api/v1", (req: Request, res: Response) => {
-  res.send("Knights Ecommerce API");
-});
-app.use(router);
 app.use(errorHandler);
 
 //morgan
@@ -33,6 +28,6 @@ app.use(morgan(morganFormat));
 
 
 
-app.listen(port, () => {
+export const server = app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
 });
