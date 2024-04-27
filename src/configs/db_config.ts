@@ -29,11 +29,11 @@ const OrmConfig = new DataSource({
   // migrations: [
   //     "src/migration/**/*.ts"
   // ],
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
+  // extra: {
+  //   ssl: {
+  //     rejectUnauthorized: false,
+  //   },
+  // },
 });
 
 export { OrmConfig };
