@@ -13,7 +13,6 @@ export default {
     ],
     coveragePathIgnorePatterns: [
       "/node_modules/", // Exclude the node_modules directory
-      "/__tests__/",     // Exclude the tests directory
+      "/__tests__/", // Exclude the tests directory
     ],
   };
-  
