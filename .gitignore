@@ -2,7 +2,4 @@ node_modules
 .vscode
 .env
 package-lock.json
-
-// Ignore dist/
-dist
-
+coverage/
