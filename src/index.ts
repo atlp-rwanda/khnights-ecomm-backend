@@ -28,6 +28,10 @@ addDocumentation(app);
 app.get("/api/v1", (req: Request, res: Response) => {
   res.send("Knights Ecommerce API");
 });
+
+// Start database server
+dbConnection();
+
 app.use(router);
 app.use(errorHandler);
 export const server = app.listen(port, () => {
