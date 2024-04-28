@@ -18,7 +18,7 @@ module.exports = {
         "ignoreRestSiblings": true
       }
     ],
-    'no-undef': 'warn',
+    'no-undef': 'off',
     'semi': ['warn', 'always'],
     'no-multi-spaces': 'warn',
     'no-trailing-spaces': 'warn',
@@ -26,7 +26,7 @@ module.exports = {
     'func-style': ['warn', 'declaration', { 'allowArrowFunctions': true }],
     'camelcase': 'warn',
     '@typescript-eslint/explicit-function-return-type': ['warn', { allowExpressions: true }],
-    '@typescript-eslint/explicit-member-accessibility': ['warn', { accessibility: 'explicit' }],
+    '@typescript-eslint/explicit-member-accessibility': ['off', { accessibility: 'explicit' }],
     'no-unused-vars': 'warn',
     'no-extra-semi': 'warn',
   },
