@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-exports.default = {
+export default {
     preset: "ts-jest",
     testEnvironment: "node",
     testMatch: ["**/**/*.test.ts"],
@@ -11,10 +9,10 @@ exports.default = {
     resetMocks: true,
     restoreMocks: true,
     collectCoverageFrom: [
-        "src/**/*.{ts,tsx}", // Include all JavaScript/JSX files in the src directory
+      "src/**/*.{ts,tsx}", // Include all JavaScript/JSX files in the src directory
     ],
     coveragePathIgnorePatterns: [
-        "/node_modules/", // Exclude the node_modules directory
-        "/__tests__/", // Exclude the tests directory
+      "/node_modules/", // Exclude the node_modules directory
+      "/__tests__/", // Exclude the tests directory
     ],
-};
+  };
