@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import router from './routes';
 import { addDocumentation } from './startups/docs';
+import 'reflect-metadata';
+
 
 import { CustomError, errorHandler } from './middlewares/errorHandler';
 import morgan from 'morgan';
