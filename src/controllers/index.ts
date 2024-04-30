@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {OrmConfig} from '../configs/db_config';
 import { User } from '../entity/User';
+import bcrypt from 'bcrypt';
 // export all controllers
 function myFunction (): void {
   console.log('Hello');
@@ -26,14 +27,15 @@ const registerUser = async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Email already in use' });
   }
 
-  // TODO: Hash password
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   // Create user
   const user = new User();
   user.firstName = firstName;
   user.lastName = lastName;
   user.email = email;
-  user.password = password; // Replace with hashed password
+  user.password = hashedPassword; // Replace with hashed password
   user.userType = userType;
 
   // Save user
