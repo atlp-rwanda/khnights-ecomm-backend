@@ -11,7 +11,9 @@ functionalities for the frontend, such as storing, retrieving, deleting data and
 List of endpoints exposed by the service
 
 ## Setup
+
 - to use loggers in program use below functions
+
 ```bash
 logger.error('This is an error message');
 logger.warn('This is a warning message');

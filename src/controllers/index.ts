@@ -1,5 +1,5 @@
 // export all controllers
-function myFunction () {
+function myFunction (): void {
   console.log('Hello');
 }
 myFunction();
