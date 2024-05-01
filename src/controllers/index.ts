@@ -1,5 +1,3 @@
-// export all controllers
-function myFunction (): void {
-  console.log('Hello');
-}
-myFunction();
+import { userRegistration,userVerification } from './authController';
+
+export { userRegistration,userVerification };
