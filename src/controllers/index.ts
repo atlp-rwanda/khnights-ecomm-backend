@@ -1,8 +1,6 @@
 import { UserController } from './authController';
 
-export{
-  UserController
-};
+export{UserController};
 
 
 

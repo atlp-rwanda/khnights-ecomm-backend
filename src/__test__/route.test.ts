@@ -32,7 +32,7 @@ describe('GET /', () => {
         status: 'success',
         data: {
           code: 202,
-          message: 'This is a testing route that returns: 201'
+          message: 'This is a testing route that returns: 202'
         }
       }, done);
   });
