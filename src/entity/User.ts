@@ -23,7 +23,7 @@ import {
     @Column()
     password!: string;
   
-    @Column({ default: "User"} )
+    @Column({ default: "Buyer"} )
     userType!: string;
   }
   
