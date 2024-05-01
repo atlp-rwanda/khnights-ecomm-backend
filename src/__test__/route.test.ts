@@ -1,13 +1,8 @@
 import request from 'supertest';
 import { app, server } from '../index'; // update this with the path to your app file
-
-
 import { createConnection, getConnection, getConnectionOptions } from 'typeorm';
 import { User } from '../entities/User';
 import { getRepository, Repository } from 'typeorm';
-import { mock, MockProxy } from 'jest-mock-extended';
-
-
 
 beforeAll(async () => {
   // Connect to the test database
