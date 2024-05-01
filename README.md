@@ -1,5 +1,18 @@
 # E-commerse Backend API
-[![knights-ecomm-be CI](https://github.com/atlp-rwanda/knights-ecomm-be/actions/workflows/ci.yml/badge.svg)](https://github.com/atlp-rwanda/knights-ecomm-be/actions/workflows/ci.yml) &nbsp;&nbsp; [![Coverage Status](https://coveralls.io/repos/github/atlp-rwanda/knights-ecomm-be/badge.svg?branch=ch-ci-setup)](https://coveralls.io/github/atlp-rwanda/knights-ecomm-be?branch=ch-ci-setup) &nbsp;&nbsp; [![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/your-username/your-repo-name/releases/tag/v1.0.0)
+
+<<<<<<< HEAD
+<<<<<<< HEAD
+[![knights-ecomm-be CI](https://github.com/atlp-rwanda/knights-ecomm-be/actions/workflows/ci.yml/badge.svg)](https://github.com/atlp-rwanda/knights-ecomm-be/actions/workflows/ci.yml)
+=======
+[![Coverage Status](https://coveralls.io/repos/github/atlp-rwanda/knights-ecomm-be/badge.svg?branch=develop)](https://coveralls.io/github/atlp-rwanda/knights-ecomm-be?branch=develop)
+>>>>>>> 2b118c3 (Implemented user registration feature with input validation, password hashing, and database integration)
+=======
+[![knights-ecomm-be CI](https://github.com/atlp-rwanda/knights-ecomm-be/actions/workflows/ci.yml/badge.svg)](https://github.com/atlp-rwanda/knights-ecomm-be/actions/workflows/ci.yml)
+>>>>>>> c7b1dc4 (fix(user registration): resolve registration bug)
+&nbsp;&nbsp;
+[![Coverage Status](https://coveralls.io/repos/github/atlp-rwanda/knights-ecomm-be/badge.svg?branch=develop)](https://coveralls.io/github/atlp-rwanda/knights-ecomm-be?branch=develop)
+&nbsp;&nbsp;
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/your-username/your-repo-name/releases/tag/v1.0.0)
 
 ## Description
 

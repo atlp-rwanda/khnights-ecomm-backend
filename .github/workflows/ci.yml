@@ -3,11 +3,20 @@ name: knights-ecomm-be CI
 on: [push, pull_request]
 
 env:
-  DEV_DB_HOST: ${{secrets.DEV_DB_HOST}}
-  DEV_DB_PORT: ${{secrets.DEV_DB_PORT}}
-  DEV_DB_USER: ${{secrets.DEV_DB_USER}}
-  DEV_DB_PASS: ${{secrets.DEV_DB_PASS}}
-  DEV_DB_NAME: ${{secrets.DEV_DB_NAME}}
+  TEST_DB_HOST: ${{secrets.TEST_DB_HOST}}
+  TEST_DB_PORT: ${{secrets.TEST_DB_PORT}}
+  TEST_DB_USER: ${{secrets.TEST_DB_USER}}
+  TEST_DB_PASS: ${{secrets.TEST_DB_PASS}}
+  TEST_DB_NAME: ${{secrets.TEST_DB_NAME}}
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+  HOST: ${{secrets.HOST}}
+  AUTH_EMAIL: ${{secrets.AUTH_EMAIL}}
+  AUTH_PASSWORD: ${{secrets.AUTH_PASSWORD}}
+>>>>>>> 2b118c3 (Implemented user registration feature with input validation, password hashing, and database integration)
+=======
+>>>>>>> c7b1dc4 (fix(user registration): resolve registration bug)
 
 jobs:
   build-lint-test-coverage:
