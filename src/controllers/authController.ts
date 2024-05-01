@@ -8,8 +8,6 @@ class UserController {
     static registerUser = async (req: Request, res: Response) => {
         const { firstName, lastName, email, password, gender, phoneNumber, userType, status, verified, photoUrl } = req.body;
 
-
-
         // Validate user input
         if (!(firstName && lastName && email && password && gender && phoneNumber && verified && photoUrl)) {
             return res.status(400).json({ error: 'Please fill all the fields' });
