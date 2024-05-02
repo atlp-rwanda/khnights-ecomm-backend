@@ -48,6 +48,13 @@ export const userLoginService = async (req: Request, res: Response) => {
       process.env.JWT_SECRET as string,
       { expiresIn: '24h' }
     );
+
+    if (process.env.APP_ENV === 'production') {
+      res.cookie('token', token, { httpOnly: true, sameSite: false, secure: true });
+    } else {
+      res.cookie('token', token, { httpOnly: true, sameSite: 'lax', secure: false });
+    }
+
     return res.status(200).json({
       status: 'success',
       data: {

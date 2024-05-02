@@ -21,7 +21,6 @@ export const sendOTPEmail = async (subject: string, email: string, content: any)
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Message sent: %s', info.messageId);
   } catch (error) {
     console.log('Error occurred while sending email', error);
   }

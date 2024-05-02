@@ -7,7 +7,13 @@ import {
   userDisableTwoFactorAuth,
   userValidateOTP,
   userResendOtpService,
+  logoutService,
 } from '../services';
+import { userPasswordResetService } from '../services/userServices/userPasswordResetService';
+import { sendPasswordResetLinkService } from '../services/userServices/sendResetPasswordLinkService';
+import { activateUserService } from '../services/updateUserStatus/activateUserService';
+import { deactivateUserService } from '../services/updateUserStatus/deactivateUserService';
+
 
 export const userRegistration = async (req: Request, res: Response) => {
   await userRegistrationService(req, res);
@@ -35,4 +41,26 @@ export const verifyOTP = async (req: Request, res: Response) => {
 
 export const resendOTP = async (req: Request, res: Response) => {
   await userResendOtpService(req, res);
+};
+
+export const sampleAPI = async (req: Request, res: Response) => {
+  res.status(200).json({ message: 'Token is valid' });
+};
+export const userPasswordReset = async (req: Request, res: Response) => {
+  await userPasswordResetService(req, res);
+};
+export const sendPasswordResetLink = async (req: Request, res: Response) => {
+  await sendPasswordResetLinkService(req, res);
+};
+
+export async function activateUser(req: Request, res: Response) {
+  await activateUserService(req, res);
+}
+
+export async function disactivateUser(req: Request, res: Response) {
+  await deactivateUserService(req, res);
+}
+
+export const logout = async (req: Request, res: Response) => {
+  await logoutService(req, res);
 };
