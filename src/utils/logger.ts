@@ -1,7 +1,4 @@
 import { createLogger, format, transports } from 'winston';
-// import winston, { createLogger, transports, format } from 'winston';
-
-// Define custom logging levels and colors
 const logLevels = {
   levels: {
     error: 0,
@@ -32,7 +29,7 @@ const logger = createLogger({
   transports: [
     new transports.Console({
       format: format.combine(
-        format.colorize(), // Enable colorization
+        format.colorize(), 
         format.printf(({ level, message, timestamp }) => {
           const color = logLevels.colors[level as keyof typeof logLevels.colors] || 'white';
           return `\x1b[${color}m${timestamp} [${level}]: ${message}\x1b[0m`; // Apply color to log message
@@ -51,7 +48,7 @@ logger.add(
       timestamp(),
       printf(({ level, message, timestamp }) => {
         const color = logLevels.colors[level as keyof typeof logLevels.colors] || 'white';
-        return `\x1b[${color}m${timestamp} [${level}]: ${message}\x1b[0m`; // Apply color to log message
+        return `\x1b[${color}m${timestamp} [${level}]: ${message}\x1b[0m`; 
       })
     ),
   })

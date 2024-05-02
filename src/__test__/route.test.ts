@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { app, server } from '../index'; // update this with the path to your app file
+import { app} from '../index'; // update this with the path to your app file
 import { createConnection, getConnection, getConnectionOptions } from 'typeorm';
 import { User } from '../entities/User';
 import { getRepository, Repository } from 'typeorm';
@@ -12,7 +12,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await getConnection('testConnection').close();
-  server.close();
+  // server.close();
 });
 
 
