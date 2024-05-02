@@ -109,3 +109,99 @@ describe('POST /user/verify/:id', () => {
     }
   });
 });
+
+describe('Send password reset link', () => {
+
+  it('Attempt to send email with rate limiting', async () => {
+    const email = "elijahladdiedv@gmail.com";
+
+    const requests = Array.from({ length: 5 }, async () => {
+      return await request(app).post(`/user/password/reset/link?email=${email}`);
+    });
+
+    const responses = await Promise.all(requests);
+    const lastResponse = responses[responses.length - 1];
+    expect(lastResponse.status).toBe(500);
+    expect(lastResponse.body.message).toEqual('User not found');
+  });
+
+  it('Attempt to send email with invalid email template', async () => {
+    const email = "elijahladdiedv@gmail.com";
+
+    const res = await request(app).post(`/user/password/reset/link?email=${email}`);
+
+    expect(res.status).toBe(500); 
+    expect(res.body.message).toEqual('User not found');
+  });
+
+  it('Send email to a user with special characters in email address', async () => {
+    const email = "user+test@example.com";
+
+    const res = await request(app).post(`/user/password/reset/link?email=${encodeURIComponent(email)}`);
+
+    expect(res.status).toBe(500);
+    expect(res.body.message).toEqual('User not found');
+  });
+
+});
+describe('Password Reset Service', () => {
+  it('Should reset password successfully', async () => {
+    const data = {
+      "newPassword": "user",
+      "confirmPassword": "user",
+    };
+    const email = "elijahladdiedv@gmail.com";
+    const userRepository = getRepository(User);
+    const user = await userRepository.findOne({ where: { email: email } });
+    if (user) {
+      const res: any = await request(app).post(`/user/password/reset?userid=${user.id}&email=${email}`).send(data);
+      // Assert
+      expect(res.status).toBe(200);
+      expect(res.data.message).toEqual('Password updated successful');
+    }
+  });
+
+  it('Should return 404 if user not found', async () => {
+    const data = {
+      "newPassword": "user",
+      "confirmPassword": "user",
+    };
+    const email = "nonexistentemail@example.com";
+    const userId = "nonexistentuserid";
+    const res: any = await request(app).post(`/user/password/reset?userid=${userId}&email=${email}`).send(data);
+    // Assert
+    expect(res.status).toBe(404);
+  });
+
+  it('Should return 204 if required fields are missing', async () => {
+    const data = {
+      //
+    };
+    const email = "elijahladdiedv@gmail.com";
+
+    const userRepository = getRepository(User);
+    const user = await userRepository.findOne({ where: { email: email } });
+    if (user) {
+      const res: any = await request(app).post(`/user/password/reset?userid=${user.id}&email=${email}`).send(data);
+      expect(res.status).toBe(204);
+      expect(res.data.error).toEqual('Please provide all required fields');
+    }
+  });
+
+  it('Should return 204 if newPassword and confirmPassword do not match', async () => {
+    const data = {
+      "newPassword": "user123",
+      "confirmPassword": "user456",
+    };
+    const email = "elijahladdiedv@gmail.com";
+
+    const userRepository = getRepository(User);
+    const user = await userRepository.findOne({ where: { email: email } });
+    if (user) {
+      const res: any = await request(app).post(`/user/password/reset?userid=${user.id}&email=${email}`).send(data);
+      expect(res.status).toBe(204);
+      expect(res.data.error).toEqual('New password must match confirm password');
+    }
+  });
+});
+
