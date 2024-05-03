@@ -1,21 +1,27 @@
 import request from 'supertest';
-import { app, server } from '../index'; // update this with the path to your app file
+import { app, server } from '../index';
 import { createConnection, getConnection, getConnectionOptions } from 'typeorm';
 import { User } from '../entities/User';
-import { getRepository, Repository } from 'typeorm';
 
 beforeAll(async () => {
   // Connect to the test database
   const connectionOptions = await getConnectionOptions();
+
   await createConnection({ ...connectionOptions, name: 'testConnection' });
 });
 
 afterAll(async () => {
-  await getConnection('testConnection').close();
+  const connection = getConnection('testConnection');
+  const userRepository = connection.getRepository(User);
+
+  // Delete all records from the User
+  await userRepository.clear();
+
+  // Close the connection to the test database
+  await connection.close();
+
   server.close();
 });
-
-
 
 describe('GET /', () => {
   it('This is a testing route that returns', done => {
@@ -23,17 +29,20 @@ describe('GET /', () => {
       .get('/api/v1/status')
       .expect(200)
       .expect('Content-Type', /json/)
-      .expect({
-        status: 'success',
-        data: {
-          code: 202,
-          message: 'This is a testing route that returns: 202'
-        }
-      }, done);
+      .expect(
+        {
+          status: 'success',
+          data: {
+            code: 200,
+            message: 'This is a testing route.',
+          },
+        },
+        done
+      );
   });
 });
 describe('POST /user/register', () => {
-  it('should register a new user and then delete it', async () => {
+  it('should register a new user', async () => {
     // Arrange
     const newUser = {
       firstName: 'John',
@@ -43,25 +52,20 @@ describe('POST /user/register', () => {
       gender: 'Male',
       phoneNumber: '1234567890',
       userType: 'Buyer',
-      status: 'active',
-      verified: true,
       photoUrl: 'https://example.com/photo.jpg',
     };
 
     // Act
-    const res = await request(app)
-      .post('/user/register')
-      .send(newUser);
+    const res = await request(app).post('/user/register').send(newUser);
 
     // Assert
     expect(res.status).toBe(201);
-    expect(res.body).toEqual({ message: 'User registered successfully' });
-
-    // Clean up: delete the test user
-    const userRepository = getRepository(User);
-    const user = await userRepository.findOne({ where: { email: newUser.email } });
-    if (user) {
-      await userRepository.remove(user);
-    }
+    expect(res.body).toEqual({
+      status: 'success',
+      data: {
+        code: 201,
+        message: 'User registered successfully',
+      },
+    });
   });
 });
