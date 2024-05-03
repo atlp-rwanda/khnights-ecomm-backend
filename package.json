@@ -12,6 +12,9 @@
     "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
     "typeorm": "typeorm-ts-node-commonjs",
+    "migration": " npm run typeorm migration:run -- -d ./ormconfig.js",
+    "format": "prettier --write .",
+    "typeorm": "typeorm-ts-node-commonjs",
     "migration": " npm run typeorm migration:run -- -d ./ormconfig.js"
   },
   "keywords": [],
