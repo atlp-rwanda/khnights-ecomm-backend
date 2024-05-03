@@ -5,7 +5,6 @@ import router from './routes';
 import { addDocumentation } from './startups/docs';
 import 'reflect-metadata';
 
-
 import { CustomError, errorHandler } from './middlewares/errorHandler';
 import morgan from 'morgan';
 import { dbConnection } from './startups/dbConnection';
@@ -26,6 +25,7 @@ app.all('*', (req: Request, res: Response, next) => {
 app.use(errorHandler);
 
 // Start database connection
+
 dbConnection();
 
 //morgan
