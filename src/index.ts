@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import router from './routes';
 import { addDocumentation } from './startups/docs';
+import 'reflect-metadata';
+
 
 import { CustomError, errorHandler } from './middlewares/errorHandler';
 import morgan from 'morgan';
@@ -10,7 +12,7 @@ import { dbConnection } from './startups/dbConnection';
 dotenv.config();
 
 export const app = express();
-const port = process.env.PORT as string;
+const port = process.env.PORT || 8000;
 app.use(express.json());
 
 app.use(cors({ origin: '*' }));
