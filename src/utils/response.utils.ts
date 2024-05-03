@@ -13,7 +13,7 @@ export const responseSuccess = (
   message: string,
   data?: any
 ): Response<ApiResponse> => {
-  return res.status(200).json(
+  return res.status(statusCode).json(
     jsend.success({
       code: statusCode,
       message,
@@ -28,7 +28,7 @@ export const responseError = (
   message: string,
   data?: any
 ): Response<ApiResponse> => {
-  return res.status(400).json(
+  return res.status(statusCode).json(
     jsend.error({
       code: statusCode,
       message,

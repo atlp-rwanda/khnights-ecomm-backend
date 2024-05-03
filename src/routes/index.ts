@@ -5,7 +5,7 @@ import { responseSuccess } from '../utils/response.utils';
 const router = Router();
 
 router.get('/api/v1/status', (req: Request, res: Response) => {
-  return responseSuccess(res, 202, 'This is a testing route that returns: 202');
+  return responseSuccess(res, 200, 'This is a testing route.');
 });
 
 router.use('/user', userRoutes);
