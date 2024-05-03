@@ -1,4 +1,5 @@
 # E-commerse Backend API
+[![knights-ecomm-be CI](https://github.com/atlp-rwanda/knights-ecomm-be/actions/workflows/ci.yml/badge.svg)](https://github.com/atlp-rwanda/knights-ecomm-be/actions/workflows/ci.yml) &nbsp;&nbsp; [![Coverage Status](https://coveralls.io/repos/github/atlp-rwanda/knights-ecomm-be/badge.svg?branch=ch-ci-setup)](https://coveralls.io/github/atlp-rwanda/knights-ecomm-be?branch=ch-ci-setup) &nbsp;&nbsp; [![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/your-username/your-repo-name/releases/tag/v1.0.0)
 
 ## Description
 
@@ -10,7 +11,9 @@ functionalities for the frontend, such as storing, retrieving, deleting data and
 List of endpoints exposed by the service
 
 ## Setup
+
 - to use loggers in program use below functions
+
 ```bash
 logger.error('This is an error message');
 logger.warn('This is a warning message');

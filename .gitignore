@@ -5,3 +5,4 @@ package-lock.json
 coverage/
 dist
 /src/logs
+.DS_Store

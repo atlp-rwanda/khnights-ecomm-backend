@@ -9,13 +9,13 @@ interface ApiResponse {
 
 export const responseSuccess = (
   res: Response,
-  status_code: number,
+  statusCode: number,
   message: string,
   data?: any
 ): Response<ApiResponse> => {
   return res.status(200).json(
     jsend.success({
-      code: status_code,
+      code: statusCode,
       message,
       data,
     })
@@ -24,13 +24,13 @@ export const responseSuccess = (
 
 export const responseError = (
   res: Response,
-  status_code: number,
+  statusCode: number,
   message: string,
   data?: any
 ): Response<ApiResponse> => {
   return res.status(400).json(
     jsend.error({
-      code: status_code,
+      code: statusCode,
       message,
       data,
     })

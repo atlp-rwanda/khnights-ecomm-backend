@@ -1,5 +1,3 @@
-// export all controllers
-function myFunction () {
-  console.log('Hello');
-}
-myFunction();
+import { UserController } from './authController';
+
+export{UserController};
