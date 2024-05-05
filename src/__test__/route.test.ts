@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app, server } from '../index';
-import { createConnection, getConnection, getConnectionOptions } from 'typeorm';
+import { createConnection, getConnection, getConnectionOptions, getRepository } from 'typeorm';
 import { User } from '../entities/User';
 
 beforeAll(async () => {
@@ -47,17 +47,16 @@ describe('POST /user/register', () => {
     const newUser = {
       firstName: 'John',
       lastName: 'Doe',
-      email: 'john.doe@example.com',
+      email: 'johndoe06@example.com',
       password: 'password',
       gender: 'Male',
-      phoneNumber: '1234567890',
+      phoneNumber: '123678116',
       userType: 'Buyer',
       photoUrl: 'https://example.com/photo.jpg',
     };
 
     // Act
     const res = await request(app).post('/user/register').send(newUser);
-
     // Assert
     expect(res.status).toBe(201);
     expect(res.body).toEqual({
@@ -67,5 +66,52 @@ describe('POST /user/register', () => {
         message: 'User registered successfully',
       },
     });
+
+    // Clean up: delete the test user
+    const userRepository = getRepository(User);
+    const user = await userRepository.findOne({ where: { email: newUser.email } });
+    if (user) {
+      await userRepository.remove(user);
+    }
+  });
+});
+describe('POST /user/verify/:id', () => {
+  it('should verify a user', async () => {
+    // Arrange
+    const newUser = {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe1@example.com',
+      password: 'password',
+      gender: 'Male',
+      phoneNumber: '123456789',
+      userType: 'Buyer',
+      photoUrl: 'https://example.com/photo.jpg',
+    };
+
+    // Create a new user
+    const res = await request(app).post('/user/register').send(newUser);
+
+    const userRepository = getRepository(User);
+    const user = await userRepository.findOne({ where: { email: newUser.email } });
+
+    if(user){
+      const verifyRes = await request(app).get(`/user/verify/${user.id}`);
+
+      // Assert
+      expect(verifyRes.status).toBe(200);
+      expect(verifyRes.text).toEqual('<p>User verified successfully</p>');
+  
+      // Check that the user's verified field is now true
+      const verifiedUser = await userRepository.findOne({ where: { email: newUser.email } });
+      if (verifiedUser){
+        expect(verifiedUser.verified).toBe(true);
+      }
+
+    }
+   
+    if (user) {
+      await userRepository.remove(user);
+    }
   });
 });
