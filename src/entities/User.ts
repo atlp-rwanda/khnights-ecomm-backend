@@ -54,6 +54,16 @@ export class User {
   @IsIn(['Admin', 'Buyer', 'Vendor'])
   userType!: 'Admin' | 'Buyer' | 'Vendor';
 
+  @Column({ default: false })
+  @IsBoolean()
+  twoFactorEnabled!: boolean;
+
+  @Column({ nullable: true })
+  twoFactorCode?: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  twoFactorCodeExpiresAt?: Date;
+
   @CreateDateColumn()
   createdAt!: Date;
 

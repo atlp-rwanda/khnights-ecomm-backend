@@ -1,15 +1,24 @@
 import { Request, Response } from 'express';
-import { User } from '../entities/User';
-import bcrypt from 'bcrypt';
-import { getRepository } from 'typeorm';
-import { responseError, responseServerError, responseSuccess } from '../utils/response.utils';
-import { validate } from 'class-validator';
-import { userVerificationService, userRegistrationService } from '../services';
+import { otpTemplate } from '../helper/emailTemplates';
+import {
+  userVerificationService,
+  userRegistrationService,
+  userEnableTwoFactorAuth,
+  userDisableTwoFactorAuth,
+} from '../services';
 
 export const userRegistration = async (req: Request, res: Response) => {
-    await userRegistrationService(req, res);
-}
-export const userVerification = async (req: Request, res: Response) => {
-    await userVerificationService(req, res);
-}
+  await userRegistrationService(req, res);
+};
 
+export const userVerification = async (req: Request, res: Response) => {
+  await userVerificationService(req, res);
+};
+
+export const enable2FA = async (req: Request, res: Response) => {
+  await userEnableTwoFactorAuth(req, res);
+};
+
+export const disable2FA = async (req: Request, res: Response) => {
+  await userDisableTwoFactorAuth(req, res);
+};

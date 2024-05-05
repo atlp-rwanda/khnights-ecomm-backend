@@ -52,7 +52,6 @@ describe('POST /user/register', () => {
       gender: 'Male',
       phoneNumber: '123678116',
       userType: 'Buyer',
-      photoUrl: 'https://example.com/photo.jpg',
     };
 
     // Act
@@ -73,6 +72,38 @@ describe('POST /user/register', () => {
     if (user) {
       await userRepository.remove(user);
     }
+  });
+
+  it('should enable two-factor authentication', async () => {
+    const data = {
+      email: 'john.doe@example.com',
+    };
+
+    const res = await request(app).post('/user/enable-2fa').send(data);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      status: 'success',
+      data: {
+        message: 'Two Factor Authentication enabled successfully',
+      },
+    });
+  });
+
+  it('should disable two-factor authentication', async () => {
+    const data = {
+      email: 'john.doe@example.com',
+    };
+
+    const res = await request(app).post('/user/disable-2fa').send(data);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      status: 'success',
+      data: {
+        message: 'Two Factor Authentication disabled successfully',
+      },
+    });
   });
 });
 describe('POST /user/verify/:id', () => {
@@ -95,21 +126,20 @@ describe('POST /user/verify/:id', () => {
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { email: newUser.email } });
 
-    if(user){
+    if (user) {
       const verifyRes = await request(app).get(`/user/verify/${user.id}`);
 
       // Assert
       expect(verifyRes.status).toBe(200);
       expect(verifyRes.text).toEqual('<p>User verified successfully</p>');
-  
+
       // Check that the user's verified field is now true
       const verifiedUser = await userRepository.findOne({ where: { email: newUser.email } });
-      if (verifiedUser){
+      if (verifiedUser) {
         expect(verifiedUser.verified).toBe(true);
       }
-
     }
-   
+
     if (user) {
       await userRepository.remove(user);
     }
