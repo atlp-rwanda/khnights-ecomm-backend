@@ -7,23 +7,22 @@ export const sendOTPEmail = async (subject: string, email: string, content: any)
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: process.env.APP_EMAIL,
-      pass: process.env.APP_PASSWORD,
+      user: process.env.AUTH_EMAIL,
+      pass: process.env.AUTH_PASSWORD,
     },
   });
 
   const mailOptions = {
-    from: process.env.APP_EMAIL,
+    from: `Knights E-commerce <${process.env.AUTH_EMAIL}>`,
     to: email,
     subject: subject,
     html: content,
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email sent: ' + info.response);
-    }
-  });
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Message sent: %s', info.messageId);
+  } catch (error) {
+    console.log('Error occurred while sending email', error);
+  }
 };

@@ -33,5 +33,5 @@ const morganFormat = ':method :url :status :response-time ms - :res[content-leng
 app.use(morgan(morganFormat));
 
 export const server = app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}/api/v1`);
+  console.log(`[server]: Server is running at http://localhost:${port}`);
 });

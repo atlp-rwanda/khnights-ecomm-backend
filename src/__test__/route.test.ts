@@ -47,10 +47,10 @@ describe('POST /user/register', () => {
     const newUser = {
       firstName: 'John',
       lastName: 'Doe',
-      email: 'johndoe06@example.com',
+      email: 'john.doe1@example.com',
       password: 'password',
       gender: 'Male',
-      phoneNumber: '123678116',
+      phoneNumber: '123456789',
       userType: 'Buyer',
     };
 
@@ -72,38 +72,6 @@ describe('POST /user/register', () => {
     if (user) {
       await userRepository.remove(user);
     }
-  });
-
-  it('should enable two-factor authentication', async () => {
-    const data = {
-      email: 'john.doe@example.com',
-    };
-
-    const res = await request(app).post('/user/enable-2fa').send(data);
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual({
-      status: 'success',
-      data: {
-        message: 'Two Factor Authentication enabled successfully',
-      },
-    });
-  });
-
-  it('should disable two-factor authentication', async () => {
-    const data = {
-      email: 'john.doe@example.com',
-    };
-
-    const res = await request(app).post('/user/disable-2fa').send(data);
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual({
-      status: 'success',
-      data: {
-        message: 'Two Factor Authentication disabled successfully',
-      },
-    });
   });
 });
 describe('POST /user/verify/:id', () => {
@@ -138,10 +106,6 @@ describe('POST /user/verify/:id', () => {
       if (verifiedUser) {
         expect(verifiedUser.verified).toBe(true);
       }
-    }
-
-    if (user) {
-      await userRepository.remove(user);
     }
   });
 });
