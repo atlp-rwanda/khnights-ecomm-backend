@@ -1,6 +1,6 @@
 # E-commerse Backend API
 
-[![Coverage Status](https://coveralls.io/repos/github/atlp-rwanda/knights-ecomm-be/badge.svg?branch=develop)](https://coveralls.io/github/atlp-rwanda/knights-ecomm-be?branch=develop)
+[![knights-ecomm-be CI](https://github.com/atlp-rwanda/knights-ecomm-be/actions/workflows/ci.yml/badge.svg)](https://github.com/atlp-rwanda/knights-ecomm-be/actions/workflows/ci.yml)
 &nbsp;&nbsp;
 [![Coverage Status](https://coveralls.io/repos/github/atlp-rwanda/knights-ecomm-be/badge.svg?branch=ch-ci-setup)](https://coveralls.io/github/atlp-rwanda/knights-ecomm-be?branch=ch-ci-setup)
 &nbsp;&nbsp;
