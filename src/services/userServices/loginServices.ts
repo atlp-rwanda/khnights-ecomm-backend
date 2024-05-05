@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { User } from '../entities/User';
-import { responseSuccess } from '../utils/response.utils';
+import { User } from '../../entities/User';
+import { responseSuccess } from '../../utils/response.utils';
 import { getRepository } from 'typeorm';
-import { tokenize, check } from '../helpers/TokenizeAndVerifyPass';
+import { tokenize, check } from '../../helpers/TokenizeAndVerifyPass';
 
 // Method to login admin
 export const loginServices = async (req: Request, res: Response): Promise<void> => {
@@ -10,7 +10,6 @@ export const loginServices = async (req: Request, res: Response): Promise<void> 
     const { email, password } = req.body;
 
     if (!email || !password) {
-      console.log('Email and password are required');
       res.status(400).json({ Message: 'Email and password are required' });
       return;
     }
@@ -19,26 +18,22 @@ export const loginServices = async (req: Request, res: Response): Promise<void> 
     const user = await getrepository.findOneBy({ email: email });
 
     if (!user) {
-      console.log('Invalid email');
       res.status(400).json({ Message: 'Invalid email or password' });
       return;
     }
 
-    if (!user.verified) {
-      console.log('Email not verified. verified it first');
-      res.status(400).json({ Message: 'Email not verified. verified it first' });
+    if (user.status !== 'active') {
+      res.status(400).json({ Message: 'You have been suspended, reach customer service for more details' });
       return;
     }
 
-    if (user.status !== 'active') {
-      console.log('You have been suspended, reach customer service for more details');
-      res.status(400).json({ Message: 'You have been suspended, reach customer service for more details' });
+    if (!user.verified) {
+      res.status(400).json({ Message: 'Email not verified. verified it first' });
       return;
     }
 
     const isPasswordValid = await check(user.password, password);
     if (!isPasswordValid) {
-      console.log('Invalid password');
       res.status(400).json({ Message: 'Invalid email or password' });
       return;
     }

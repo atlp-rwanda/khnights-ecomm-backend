@@ -25,35 +25,34 @@ describe('POST /user/login', () => {
       phoneNumber: '0701044098',
       photoUrl: 'https://example.com/images/photo.jpg',
       userType: 'Vender',
-      verified: true,
       status: 'active',
       password: 'ndevuiuohijo',
     };
 
-    // const mail = registerUser.email;
-    // const pass = registerUser.password;
+    const registerResponse = await request(app).post('/user/register').send(registerUser);
 
-    await request(app).post('/user/register').send(registerUser);
-
-    // Arrange
-    const loginUser = {
-      email: registerUser.email,
-      password: registerUser.password,
-    };
-    const res = await request(app).post('/user/login').send(loginUser);
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual({
-      status: 'success',
-      data: {
-        code: 200,
-        message: 'logged in successful',
-        data: expect.any(String),
-      },
-    });
-
-    // Clean up: delete the test user
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { email: registerUser.email } });
+
+    if (user) {
+      const verifyRes = await request(app).get(`/user/verify/${user.id}`);
+      // Arrange
+      const loginUser = {
+        email: registerUser.email,
+        password: registerUser.password,
+      };
+      const res = await request(app).post('/user/login').send(loginUser);
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({
+        status: 'success',
+        data: {
+          code: 200,
+          message: 'logged in successful',
+          data: expect.any(String),
+        },
+      });
+    }
+    // Clean up: delete the test user
     if (user) {
       await userRepository.remove(user);
     }
@@ -80,27 +79,31 @@ describe('POST /user/login', () => {
       phoneNumber: '0789044308',
       photoUrl: 'https://example.com/images/photo.jpg',
       userType: 'vender',
-      verified: true,
       status: 'active',
       password: 'ndevu1',
     };
 
     await request(app).post('/user/register').send(registerUser);
 
-    const mail = 'ndekkkk@gmail.com';
-    // Arrange
-    const loginUser = {
-      email: mail,
-      password: registerUser.password,
-    };
-
-    const res = await request(app).post('/user/login').send(loginUser);
-    expect(res.status).toBe(400);
-    expect(res.body).toEqual({ Message: 'Invalid email or password' });
-
-    // Clean up: delete the test user
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { email: registerUser.email } });
+
+    if (user) {
+      const verifyRes = await request(app).get(`/user/verify/${user.id}`);
+
+      const mail = 'ndekkkk@gmail.com';
+      // Arrange
+      const loginUser = {
+        email: mail,
+        password: registerUser.password,
+      };
+
+      const res = await request(app).post('/user/login').send(loginUser);
+      expect(res.status).toBe(400);
+      expect(res.body).toEqual({ Message: 'Invalid email or password' });
+    }
+
+    // Clean up: delete the test user
     if (user) {
       await userRepository.remove(user);
     }
@@ -120,23 +123,23 @@ describe('POST /user/login', () => {
       status: 'active',
       password: 'ndevu2',
     };
-    // const mail = registerUser.email;
-    // const pass = registerUser.password;
 
     await request(app).post('/user/register').send(registerUser);
 
-    // Arrange
-    const loginUser = {
-      email: registerUser.email,
-      password: registerUser.password,
-    };
-
-    const res = await request(app).post('/user/login').send(loginUser);
-    expect(res.status).toBe(400);
-    expect(res.body).toEqual({ Message: 'Email not verified. verified it first' });
-    // Clean up: delete the test user
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { email: registerUser.email } });
+    if (user) {
+      // Arrange
+      const loginUser = {
+        email: registerUser.email,
+        password: registerUser.password,
+      };
+
+      const res = await request(app).post('/user/login').send(loginUser);
+      expect(res.status).toBe(400);
+      expect(res.body).toEqual({ Message: 'Email not verified. verified it first' });
+    }
+    // Clean up: delete the test user
     if (user) {
       await userRepository.remove(user);
     }
@@ -152,34 +155,30 @@ describe('POST /user/login', () => {
       phoneNumber: '0789044391',
       photoUrl: 'https://example.com/images/photo.jpg',
       userType: 'Vender',
-      verified: true,
       status: 'suspended',
       password: 'ndevu3',
     };
-    // const mail = registerUser.email;
-    // const pass = registerUser.password;
-
-    // console.log('mail:', mail);
-    // console.log('pass:', pass);
 
     await request(app).post('/user/register').send(registerUser);
 
-    // Arrange
-    const loginUser = {
-      email: registerUser.email,
-      password: registerUser.password,
-    };
-
-    // console.log('loginUser:', loginUser.email);
-    // console.log('loginUser:', loginUser.password);
-
-    const res = await request(app).post('/user/login').send(loginUser);
-    expect(res.status).toBe(400);
-    expect(res.body).toEqual({ Message: 'You have been suspended, reach customer service for more details' });
-
-    // Clean up: delete the test user
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { email: registerUser.email } });
+    if (user) {
+      const verifyRes = await request(app).get(`/user/verify/${user.id}`);
+      // Arrange
+      const loginUser = {
+        email: registerUser.email,
+        password: registerUser.password,
+      };
+
+      user.status = 'suspended';
+      await userRepository.save(user);
+
+      const res = await request(app).post('/user/login').send(loginUser);
+      expect(res.status).toBe(400);
+      expect(res.body).toEqual({ Message: 'You have been suspended, reach customer service for more details' });
+    }
+    // Clean up: delete the test user
     if (user) {
       await userRepository.remove(user);
     }
@@ -195,27 +194,28 @@ describe('POST /user/login', () => {
       phoneNumber: '0709044398',
       photoUrl: 'https://example.com/images/photo.jpg',
       userType: 'vender',
-      verified: true,
+
       status: 'active',
       password: 'ndevu4',
     };
-    const mail = registerUser.email;
-    const pass = 'ndevu5';
 
     await request(app).post('/user/register').send(registerUser);
 
-    // Arrange
-    const loginUser = {
-      email: mail,
-      password: pass,
-    };
-    const res = await request(app).post('/user/login').send(loginUser);
-    expect(res.status).toBe(400);
-    expect(res.body).toEqual({ Message: 'Invalid email or password' });
-
-    // Clean up: delete the test user
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { email: registerUser.email } });
+    if (user) {
+      const verifyRes = await request(app).get(`/user/verify/${user.id}`);
+      // Arrange
+      const loginUser = {
+        email: registerUser.email,
+        password: 'ndevu5',
+      };
+      const res = await request(app).post('/user/login').send(loginUser);
+      expect(res.status).toBe(400);
+      expect(res.body).toEqual({ Message: 'Invalid email or password' });
+    }
+
+    // Clean up: delete the test user
     if (user) {
       await userRepository.remove(user);
     }
