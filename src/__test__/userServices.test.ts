@@ -2,8 +2,6 @@ import request from 'supertest';
 import { app, server } from '../index';
 import { createConnection, getConnection, getConnectionOptions, getRepository } from 'typeorm';
 import { User } from '../entities/User';
-import { start2FAProcess } from '../services/userServices/userStartTwoFactorAuthProcess';
-import { is2FAValid } from '../services/userServices/userIsOTPValid';
 
 beforeAll(async () => {
   // Connect to the test database

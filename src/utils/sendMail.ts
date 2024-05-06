@@ -1,33 +1,35 @@
 import nodemailer from 'nodemailer';
 
-const sendMail = async (userAuth: string,
-     passAuth: string,
-      message: {from: string,to:string, subject: string, text: string, firstName: string , lastName: string},
-      link: string = '') => {
-    const transporter = nodemailer.createTransport({
-        host: process.env.HOST,
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            user: userAuth,
-            pass: passAuth
-        },
-    });
+const sendMail = async (
+  userAuth: string,
+  passAuth: string,
+  message: { from: string; to: string; subject: string; text: string; firstName: string; lastName: string },
+  link: string = ''
+) => {
+  const transporter = nodemailer.createTransport({
+    host: process.env.HOST,
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: userAuth,
+      pass: passAuth,
+    },
+  });
 
-    const { from, to, subject, text, firstName, lastName } = message;
+  const { from, to, subject, text, firstName, lastName } = message;
 
-    const mailOptions = {
-        from: from,
-        to: to,
-        subject: subject,
-        text: text,
-        firstName: firstName,
-        lastName: lastName,
-        html: `
+  const mailOptions = {
+    from: from,
+    to: to,
+    subject: subject,
+    text: text,
+    firstName: firstName,
+    lastName: lastName,
+    html: `
         <!DOCTYPE html>
         <html lang="en">
         <head>
-           <style>
+          <style>
                 /* Reset styles */
                 body, html {
                     margin: 0;
@@ -75,16 +77,15 @@ const sendMail = async (userAuth: string,
             </div>
         </body>
         </html>
-    `
+    `,
+  };
 
-    };
-
-    try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Message sent: %s', info.messageId);
-    } catch (error) {
-        console.log('Error occurred while sending email', error);
-    }
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Message sent: %s', info.messageId);
+  } catch (error) {
+    console.log('Error occurred while sending email', error);
+  }
 };
 
 export default sendMail;

@@ -1,3 +1,3 @@
-import { userRegistration,userVerification } from './authController';
+import { userRegistration, userVerification } from './authController';
 
-export { userRegistration,userVerification };
+export { userRegistration, userVerification };
