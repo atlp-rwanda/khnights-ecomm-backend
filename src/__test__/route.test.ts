@@ -47,12 +47,11 @@ describe('POST /user/register', () => {
     const newUser = {
       firstName: 'John',
       lastName: 'Doe',
-      email: 'johndoe06@example.com',
+      email: 'john.doe1@example.com',
       password: 'password',
       gender: 'Male',
-      phoneNumber: '123678116',
+      phoneNumber: '123456789',
       userType: 'Buyer',
-      photoUrl: 'https://example.com/photo.jpg',
     };
 
     // Act
@@ -95,23 +94,18 @@ describe('POST /user/verify/:id', () => {
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { email: newUser.email } });
 
-    if(user){
+    if (user) {
       const verifyRes = await request(app).get(`/user/verify/${user.id}`);
 
       // Assert
       expect(verifyRes.status).toBe(200);
       expect(verifyRes.text).toEqual('<p>User verified successfully</p>');
-  
+
       // Check that the user's verified field is now true
       const verifiedUser = await userRepository.findOne({ where: { email: newUser.email } });
-      if (verifiedUser){
+      if (verifiedUser) {
         expect(verifiedUser.verified).toBe(true);
       }
-
-    }
-   
-    if (user) {
-      await userRepository.remove(user);
     }
   });
 });
