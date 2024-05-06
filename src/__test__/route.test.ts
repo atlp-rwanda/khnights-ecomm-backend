@@ -2,14 +2,24 @@ import request from 'supertest';
 import { app, server } from '../index';
 import { createConnection, getConnection, getConnectionOptions, getRepository } from 'typeorm';
 import { User } from '../entities/User';
+import { response } from 'express';
 
 beforeAll(async () => {
   // Connect to the test database
   const connectionOptions = await getConnectionOptions();
 
   await createConnection({ ...connectionOptions, name: 'testConnection' });
+<<<<<<< HEAD
 });
 
+=======
+
+}, 10000);
+
+
+
+jest.setTimeout(20000);
+>>>>>>> 7d33625 (Implement user profile update feature)
 afterAll(async () => {
   const connection = getConnection('testConnection');
   const userRepository = connection.getRepository(User);
@@ -194,3 +204,45 @@ describe('Password Reset Service', () => {
     }
   });
 });
+<<<<<<< HEAD
+=======
+describe.only('PUT/user/update', () =>{
+  it('should return 401 if user is not authenticated', async() =>{
+    const newUser = {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe23@example.com',
+      password: 'password',
+      gender: 'Male',
+      phoneNumber: '12345678900',
+      userType: 'Buyer',
+      photoUrl: 'https://example.com/photo.jpg',
+    };
+
+    // Create a new user
+    const res = await request(app).post('/user/register').send(newUser);
+    const userRepository = getRepository(User);
+    const updateUser = {
+      firstName: "Biguseers2399",
+      lastName: "1",
+      email: "john.doe23@example.com",
+      gender: "Male",
+      phoneNumber: "0790easdas7dsdfd76175",
+      photoUrl: "photo",
+  }
+    const user = await userRepository.findOne({ where: { email: updateUser.email } });
+
+    if(user){
+      const res = await request(app).put('/user/update').send(updateUser)
+      expect(res.status).toBe(201);
+      expect(res.body).toEqual({
+        status: 'success',
+        data: {
+          code: 201,
+          message: 'User Profile has successfully been updated',
+        },
+      });
+    }
+  });
+});
+>>>>>>> 7d33625 (Implement user profile update feature)

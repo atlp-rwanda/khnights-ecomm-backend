@@ -27,6 +27,23 @@ export interface UserInterface {
   updatedAt: Date;
 }
 
+export interface UserInterface {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  gender: string;
+  phoneNumber: string;
+  photoUrl?: string;
+  verified: boolean;
+  status: 'active' | 'suspended';
+  userType: 'Admin' | 'Buyer' | 'Vendor';
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 @Entity()
 @Unique(['email'])
 export class User {

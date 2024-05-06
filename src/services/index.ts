@@ -9,3 +9,5 @@ export * from './userServices/userValidateOTP';
 export * from './userServices/userLoginService';
 export * from './userServices/userResendOTP';
 export * from './userServices/logoutServices';
+
+export * from './userServices/userProfileUpdateServices';
