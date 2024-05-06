@@ -8,7 +8,10 @@ beforeAll(async () => {
   const connectionOptions = await getConnectionOptions();
 
   await createConnection({ ...connectionOptions, name: 'testConnection' });
+
 });
+
+
 
 afterAll(async () => {
   const connection = getConnection('testConnection');

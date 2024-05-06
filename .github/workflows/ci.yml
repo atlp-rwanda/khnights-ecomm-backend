@@ -11,6 +11,7 @@ env:
   HOST: ${{secrets.HOST}}
   AUTH_EMAIL: ${{secrets.AUTH_EMAIL}}
   AUTH_PASSWORD: ${{secrets.AUTH_PASSWORD}}
+  JWT_SECRET: ${{secrets.JWT_SECRET}}
 
 jobs:
   build-lint-test-coverage:
