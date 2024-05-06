@@ -1,0 +1,108 @@
+paths:
+  /product/orders:
+    post:
+      tags:
+        - Order
+      summary: Make an order
+      description: Create a new order for the authenticated user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: object
+                  properties:
+                    country:
+                      type: string
+                      description: The country of the shipping address
+                    city:
+                      type: string
+                      description: The city of the shipping address
+                    street:
+                      type: string
+                      description: The street address
+              required:
+                - address
+      responses:
+        '201':
+          description: Order created successfully
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
+  /product/client/orders:
+    get:
+      tags:
+        - Order
+      summary: Get all orders
+      description: Retrieve all orders for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Orders retrieved successfully
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
+  /product/orders/history:
+    get:
+      tags:
+        - Order
+      summary: Get transaction history
+      description: Retrieve transaction history for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Transaction history retrieved successfully
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
+  /product/client/orders/:orderId:
+    put:
+      tags:
+        - Order
+      summary: Update order status
+      description: Update the status of a specific order for the authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          schema:
+            type: string
+          required: true
+          description: The ID of the order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderStatus:
+                  type: string
+                  description: The new status of the order
+      responses:
+        '200':
+          description: Order updated successfully
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Order not found
+        '500':
+          description: Internal Server Error

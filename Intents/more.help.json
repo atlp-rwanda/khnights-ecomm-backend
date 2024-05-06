@@ -1,0 +1,19 @@
+{
+    "intent": "more_help",
+    "utterances": [
+      "can I talk to an agent",
+      "can I call customer service",
+      "customer support number",
+      "how to contact customer service",
+      "customer service number",
+      "contact number for help",
+      "helpline number",
+      "How to become a seller",
+      "How to contact a seller"
+    ],
+    "responses": [
+      "Contact us for further information here: Phone: +250 780 000 000. Timings are from 09:00 AM to 05:00 PM from Monday to Saturday.",
+      "For immediate assistance, you can contact our customer service team at +250 780 000 000. Our hours are from 09:00 AM to 05:00 PM, Monday to Saturday."
+    ]
+  }
+  

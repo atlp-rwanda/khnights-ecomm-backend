@@ -2,15 +2,16 @@ import request from 'supertest';
 import { app, server } from '../index';
 import { createConnection, getConnection, getConnectionOptions, getRepository } from 'typeorm';
 import { User } from '../entities/User';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 beforeAll(async () => {
   // Connect to the test database
-  const connectionOptions = await getConnectionOptions();
-  await createConnection({ ...connectionOptions, name: 'testConnection' });
+  await createConnection();
 });
 
 afterAll(async () => {
-  await getConnection('testConnection').close();
+  await cleanDatabase();
+
   server.close();
 });
 

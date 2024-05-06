@@ -17,7 +17,7 @@ export const responseSuccess = (
     jsend.success({
       code: statusCode,
       message,
-      data,
+      ...data,
     })
   );
 };
@@ -44,4 +44,12 @@ export const responseServerError = (res: Response, error: string): Response<ApiR
       message: `There is a problem with the server!: ${error}`,
     })
   );
+};
+
+export const sendSuccessResponse = (res: Response, statusCode: number, message: string, data?: any) => {
+  return res.status(statusCode).json({ status: 'success', message, data });
+};
+
+export const sendErrorResponse = (res: Response, statusCode: number, message: string) => {
+  return res.status(statusCode).json({ status: 'error', message });
 };

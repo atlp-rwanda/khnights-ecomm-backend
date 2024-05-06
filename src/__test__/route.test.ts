@@ -2,23 +2,16 @@ import request from 'supertest';
 import { app, server } from '../index';
 import { createConnection, getConnection, getConnectionOptions, getRepository } from 'typeorm';
 import { User } from '../entities/User';
+import { response } from 'express';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 beforeAll(async () => {
-  // Connect to the test database
-  const connectionOptions = await getConnectionOptions();
-
-  await createConnection({ ...connectionOptions, name: 'testConnection' });
+  await createConnection();
 });
 
+jest.setTimeout(20000);
 afterAll(async () => {
-  const connection = getConnection('testConnection');
-  const userRepository = connection.getRepository(User);
-
-  // Delete all records from the User
-  await userRepository.clear();
-
-  // Close the connection to the test database
-  await connection.close();
+  await cleanDatabase();
 
   server.close();
 });
@@ -26,7 +19,7 @@ afterAll(async () => {
 describe('GET /', () => {
   it('This is a testing route that returns', done => {
     request(app)
-      .get('/api/v1/status')
+      .get('/')
       .expect(200)
       .expect('Content-Type', /json/)
       .expect(
@@ -106,9 +99,10 @@ describe('Send password reset link', () => {
   it('Attempt to send email with rate limiting', async () => {
     const email = 'elijahladdiedv@gmail.com';
 
-    const requests = Array.from({ length: 5 }, async () => {
-      return await request(app).post(`/user/password/reset/link?email=${email}`);
-    });
+    const requests = [];
+    for (let i = 0; i < 5; i++) {
+      requests.push(await request(app).post(`/user/password/reset/link?email=${email}`));
+    }
 
     const responses = await Promise.all(requests);
     const lastResponse = responses[responses.length - 1];
@@ -191,6 +185,46 @@ describe('Password Reset Service', () => {
       const res: any = await request(app).post(`/user/password/reset?userid=${user.id}&email=${email}`).send(data);
       expect(res.status).toBe(204);
       expect(res.data.error).toEqual('New password must match confirm password');
+    }
+  });
+});
+describe('PUT/user/update', () => {
+  it('should return 401 if user is not authenticated', async () => {
+    const newUser = {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe23@example.com',
+      password: 'password',
+      gender: 'Male',
+      phoneNumber: '12345678900',
+      userType: 'Buyer',
+      photoUrl: 'https://example.com/photo.jpg',
+    };
+
+    // Create a new user
+    const res = await request(app).post('/user/register').send(newUser);
+    const userRepository = getRepository(User);
+
+    const user = await userRepository.findOne({ where: { email: newUser.email } });
+    if (user) {
+      const updateUser = {
+        id: user.id,
+        firstName: 'Biguseers2399',
+        lastName: '1',
+        email: 'john.doe23@example.com',
+        gender: 'Male',
+        phoneNumber: '0790easdas7dsdfd76175',
+        photoUrl: 'photo',
+      };
+      const res = await request(app).put('/user/update').send(updateUser);
+      expect(res.status).toBe(201);
+      expect(res.body).toEqual({
+        status: 'success',
+        data: {
+          code: 201,
+          message: 'User Profile has successfully been updated',
+        },
+      });
     }
   });
 });

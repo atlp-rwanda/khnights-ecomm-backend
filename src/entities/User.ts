@@ -1,3 +1,4 @@
+
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,12 +7,16 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
+  OneToMany,
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, IsString, IsBoolean, IsIn } from 'class-validator';
 import { roles } from '../utils/roles';
+import { Order } from './Order';
+import { Transaction } from './transaction';
+import { Feedback } from './Feedback';
 
 export interface UserInterface {
-  id: string;
+  id?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -19,12 +24,12 @@ export interface UserInterface {
   gender: string;
   phoneNumber: string;
   photoUrl?: string;
-  verified: boolean;
-  status: 'active' | 'suspended';
+  verified?: boolean;
+  status?: 'active' | 'suspended';
   userType: 'Admin' | 'Buyer' | 'Vendor';
-  role: string;
-  createdAt: Date;
-  updatedAt: Date;
+  role?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 @Entity()
@@ -93,11 +98,22 @@ export class User {
   @Column()
   role!: string;
 
+  @OneToMany(() => Order, (order: any) => order.buyer)
+  orders!: Order[];
+
+  @OneToMany(() => Transaction, transaction => transaction.user)
+  transactions!: Transaction[];
+
   @CreateDateColumn()
   createdAt!: Date;
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @Column({ type: 'numeric', precision: 24, scale: 2, default: 0 })
+  accountBalance!: number;
+  @OneToMany(() => Feedback, feedback => feedback.product)
+  feedbacks!: Feedback[];
 
   @BeforeInsert()
   setRole (): void {

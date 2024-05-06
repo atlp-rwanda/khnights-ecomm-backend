@@ -13,6 +13,7 @@ import { userPasswordResetService } from '../services/userServices/userPasswordR
 import { sendPasswordResetLinkService } from '../services/userServices/sendResetPasswordLinkService';
 import { activateUserService } from '../services/updateUserStatus/activateUserService';
 import { deactivateUserService } from '../services/updateUserStatus/deactivateUserService';
+import { userProfileUpdateServices } from '../services/userServices/userProfileUpdateServices';
 
 export const userRegistration = async (req: Request, res: Response) => {
   await userRegistrationService(req, res);
@@ -52,14 +53,17 @@ export const sendPasswordResetLink = async (req: Request, res: Response) => {
   await sendPasswordResetLinkService(req, res);
 };
 
-export async function activateUser(req: Request, res: Response) {
+export async function activateUser (req: Request, res: Response) {
   await activateUserService(req, res);
 }
 
-export async function disactivateUser(req: Request, res: Response) {
+export async function disactivateUser (req: Request, res: Response) {
   await deactivateUserService(req, res);
 }
 
 export const logout = async (req: Request, res: Response) => {
   await logoutService(req, res);
+};
+export const userProfileUpdate = async (req: Request, res: Response) => {
+  await userProfileUpdateServices(req, res);
 };
