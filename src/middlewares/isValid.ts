@@ -9,11 +9,7 @@ export interface DecodedUser {
   email: string;
 }
 
-export const isTokenValide: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const isTokenValide: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const token = req.cookies.token;
     const userPaylod = verifiedToken(token);
@@ -22,9 +18,9 @@ export const isTokenValide: RequestHandler = async (
       return;
     }
     const userRepository = getRepository(User);
-    const user = await userRepository.findOne({where: {id: userPaylod.id}})
-    if(!user){
-      res.status(404).json({Message: 'User not found'});
+    const user = await userRepository.findOne({ where: { id: userPaylod.id } });
+    if (!user) {
+      res.status(404).json({ Message: 'User not found' });
       return;
     }
     req.user = user;

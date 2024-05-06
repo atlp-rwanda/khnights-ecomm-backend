@@ -14,7 +14,6 @@ dotenv.config();
 export const app = express();
 const port = process.env.PORT || 8000;
 app.use(express.json());
-
 app.use(cookieParser());
 app.use(cors({ origin: '*' }));
 app.use(router);

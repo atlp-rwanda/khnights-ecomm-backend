@@ -152,7 +152,8 @@ describe('start2FAProcess', () => {
 
   it('should return 403 if OTP is expired', async () => {
     const email = 'john.doe1@example.com';
-    const user = await getRepository(User).findOneBy({ email });
+    const userRepository = getRepository(User);
+    const user = await userRepository.findOneBy({ email });
     if (user) {
       user.twoFactorEnabled = true;
       user.twoFactorCode = '123456';
@@ -168,6 +169,9 @@ describe('start2FAProcess', () => {
     const res = await request(app).post('/user/verify-otp').send(data);
     expect(res.status).toBe(403);
     expect(res.body).toEqual({ status: 'error', message: 'Authentication code expired' });
+    if (user) {
+      await userRepository.remove(user);
+    }
   });
 
   it('should return 400 if not sent email in body on resending OTP', async () => {
@@ -190,14 +194,29 @@ describe('start2FAProcess', () => {
   });
 
   it('should resend OTP', async () => {
+    const newUser = {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe187@example.com',
+      password: 'password',
+      gender: 'Male',
+      phoneNumber: '0785044398',
+      userType: 'Buyer',
+    };
+
+    // Act
+    const resp = await request(app).post('/user/register').send(newUser);
+    if (!resp) {
+      console.log('Error creating user in resend otp test case');
+    }
     const data = {
-      email: 'john.doe1@example.com',
+      email: 'john.doe187@example.com',
     };
 
     const res = await request(app).post('/user/resend-otp').send(data);
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ status: 'success', data: { message: 'OTP sent successfully' } });
-  });
+  }, 20000);
 
   it('should return 400 if not sent email in body on login', async () => {
     const data = {};
