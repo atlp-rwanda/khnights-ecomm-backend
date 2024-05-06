@@ -18,12 +18,12 @@ export const sendPasswordResetLinkService = async (req: Request, res: Response) 
         const email = req.query.email as string;
 
         if (!email) {
-            return responseError(res, 500, 'Missing required field');
+            return responseError(res, 404, 'Missing required field');
         }
         const userRepository = getRepository(User);
         const existingUser = await userRepository.findOneBy({ email });
         if (!existingUser) {
-            return responseError(res, 500, 'User not found', existingUser);
+            return responseError(res, 404, 'User not found', existingUser);
         }
         const mailOptions: nodemailer.SendMailOptions = {
             to: email,

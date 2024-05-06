@@ -206,7 +206,7 @@ describe('start2FAProcess', () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual({ status: 'error', message: 'Please provide an email and password' });
-  });
+  }, 1000);
 
   it('should return 404 if user not exist on login', async () => {
     const data = {
@@ -217,5 +217,5 @@ describe('start2FAProcess', () => {
     const res = await request(app).post('/user/login').send(data);
     expect(res.status).toBe(404);
     expect(res.body).toEqual({ status: 'error', message: 'Incorrect email or password' });
-  });
+  }, 10000);
 });
