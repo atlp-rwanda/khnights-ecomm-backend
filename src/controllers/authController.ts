@@ -38,9 +38,13 @@ export const verifyOTP = async (req: Request, res: Response) => {
 export const resendOTP = async (req: Request, res: Response) => {
   await userResendOtpService(req, res);
 };
+
+export const sampleAPI = async (req: Request, res: Response) => {
+  res.status(200).json({ message: 'Token is valid' });
+};
 export const userPasswordReset = async (req: Request, res: Response) => {
-    await userPasswordResetService(req, res);
-}
+  await userPasswordResetService(req, res);
+};
 export const sendPasswordResetLink = async (req: Request, res: Response) => {
-    await sendPasswordResetLinkService(req, res);
-}
+  await sendPasswordResetLinkService(req, res);
+};

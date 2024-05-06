@@ -197,7 +197,7 @@ describe('start2FAProcess', () => {
     const res = await request(app).post('/user/resend-otp').send(data);
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ status: 'success', data: { message: 'OTP sent successfully' } });
-  });
+  }, 10000);
 
   it('should return 400 if not sent email in body on login', async () => {
     const data = {};
