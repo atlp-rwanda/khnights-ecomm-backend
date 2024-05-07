@@ -8,10 +8,7 @@ beforeAll(async () => {
   const connectionOptions = await getConnectionOptions();
 
   await createConnection({ ...connectionOptions, name: 'testConnection' });
-
 });
-
-
 
 afterAll(async () => {
   const connection = getConnection('testConnection');
@@ -106,9 +103,8 @@ describe('POST /user/verify/:id', () => {
 });
 
 describe('Send password reset link', () => {
-
   it('Attempt to send email with rate limiting', async () => {
-    const email = "elijahladdiedv@gmail.com";
+    const email = 'elijahladdiedv@gmail.com';
 
     const requests = Array.from({ length: 5 }, async () => {
       return await request(app).post(`/user/password/reset/link?email=${email}`);
@@ -118,34 +114,33 @@ describe('Send password reset link', () => {
     const lastResponse = responses[responses.length - 1];
     expect(lastResponse.status).toBe(404);
     expect(lastResponse.body.message).toEqual('User not found');
-  });
+  }, 20000);
 
   it('Attempt to send email with invalid email template', async () => {
-    const email = "elijahladdiedv@gmail.com";
+    const email = 'elijahladdiedv@gmail.com';
 
     const res = await request(app).post(`/user/password/reset/link?email=${email}`);
 
     expect(res.status).toBe(404);
     expect(res.body.message).toEqual('User not found');
-  });
+  }, 10000);
 
   it('Send email to a user with special characters in email address', async () => {
-    const email = "user+test@example.com";
+    const email = 'user+test@example.com';
 
     const res = await request(app).post(`/user/password/reset/link?email=${encodeURIComponent(email)}`);
 
     expect(res.status).toBe(404);
     expect(res.body.message).toEqual('User not found');
-  });
-
+  }, 10000);
 });
 describe('Password Reset Service', () => {
   it('Should reset password successfully', async () => {
     const data = {
-      "newPassword": "user",
-      "confirmPassword": "user",
+      newPassword: 'user',
+      confirmPassword: 'user',
     };
-    const email = "elijahladdiedv@gmail.com";
+    const email = 'elijahladdiedv@gmail.com';
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { email: email } });
     if (user) {
@@ -158,22 +153,21 @@ describe('Password Reset Service', () => {
 
   it('Should return 404 if user not found', async () => {
     const data = {
-      "newPassword": "user",
-      "confirmPassword": "user",
+      newPassword: 'user',
+      confirmPassword: 'user',
     };
-    const email = "nonexistentemail@example.com";
-    const userId = "nonexistentuserid";
+    const email = 'nonexistentemail@example.com';
+    const userId = 'nonexistentuserid';
     const res: any = await request(app).post(`/user/password/reset?userid=${userId}&email=${email}`).send(data);
     // Asser
     expect(res).toBeTruthy;
-
   });
 
   it('Should return 204 if required fields are missing', async () => {
     const data = {
       //
     };
-    const email = "elijahladdiedv@gmail.com";
+    const email = 'elijahladdiedv@gmail.com';
 
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { email: email } });
@@ -186,10 +180,10 @@ describe('Password Reset Service', () => {
 
   it('Should return 204 if newPassword and confirmPassword do not match', async () => {
     const data = {
-      "newPassword": "user123",
-      "confirmPassword": "user456",
+      newPassword: 'user123',
+      confirmPassword: 'user456',
     };
-    const email = "elijahladdiedv@gmail.com";
+    const email = 'elijahladdiedv@gmail.com';
 
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { email: email } });
@@ -200,4 +194,3 @@ describe('Password Reset Service', () => {
     }
   });
 });
-

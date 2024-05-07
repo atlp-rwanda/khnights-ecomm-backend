@@ -29,7 +29,7 @@ const sendMail = async (
         <!DOCTYPE html>
         <html lang="en">
         <head>
-          <style>
+           <style>
                 /* Reset styles */
                 body, html {
                     margin: 0;
@@ -82,7 +82,6 @@ const sendMail = async (
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Message sent: %s', info.messageId);
   } catch (error) {
     console.log('Error occurred while sending email', error);
   }

@@ -8,3 +8,4 @@ export * from './userServices/userDisableTwoFactorAuth';
 export * from './userServices/userValidateOTP';
 export * from './userServices/userLoginService';
 export * from './userServices/userResendOTP';
+export * from './userServices/logoutServices';
