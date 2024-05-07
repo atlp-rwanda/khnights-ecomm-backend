@@ -15,7 +15,7 @@ afterAll(async () => {
   const userRepository = connection.getRepository(User);
 
   // Delete all records from the User
-  await userRepository.clear();
+  await userRepository.delete({});
 
   // Close the connection to the test database
   await connection.close();

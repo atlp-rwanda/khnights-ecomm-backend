@@ -10,7 +10,15 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await getConnection('testConnection').close();
+  const connection = getConnection('testConnection');
+  const userRepository = connection.getRepository(User);
+
+  // Delete all records from the User
+  await userRepository.delete({});
+
+  // Close the connection to the test database
+  await connection.close();
+
   server.close();
 });
 

@@ -9,23 +9,18 @@ beforeAll(async () => {
   const connectionOptions = await getConnectionOptions();
 
   await createConnection({ ...connectionOptions, name: 'testConnection' });
-<<<<<<< HEAD
+
 });
-
-=======
-
-}, 10000);
 
 
 
 jest.setTimeout(20000);
->>>>>>> 7d33625 (Implement user profile update feature)
 afterAll(async () => {
   const connection = getConnection('testConnection');
   const userRepository = connection.getRepository(User);
 
   // Delete all records from the User
-  await userRepository.clear();
+  await userRepository.delete({});
 
   // Close the connection to the test database
   await connection.close();
@@ -204,9 +199,7 @@ describe('Password Reset Service', () => {
     }
   });
 });
-<<<<<<< HEAD
-=======
-describe.only('PUT/user/update', () =>{
+describe('PUT/user/update', () =>{
   it('should return 401 if user is not authenticated', async() =>{
     const newUser = {
       firstName: 'John',
@@ -222,17 +215,18 @@ describe.only('PUT/user/update', () =>{
     // Create a new user
     const res = await request(app).post('/user/register').send(newUser);
     const userRepository = getRepository(User);
-    const updateUser = {
-      firstName: "Biguseers2399",
-      lastName: "1",
-      email: "john.doe23@example.com",
-      gender: "Male",
-      phoneNumber: "0790easdas7dsdfd76175",
-      photoUrl: "photo",
-  }
-    const user = await userRepository.findOne({ where: { email: updateUser.email } });
 
+    const user = await userRepository.findOne({ where: { email: newUser.email } });
     if(user){
+      const updateUser = {
+        id: user.id,
+        firstName: "Biguseers2399",
+        lastName: "1",
+        email: "john.doe23@example.com",
+        gender: "Male",
+        phoneNumber: "0790easdas7dsdfd76175",
+        photoUrl: "photo",
+    }
       const res = await request(app).put('/user/update').send(updateUser)
       expect(res.status).toBe(201);
       expect(res.body).toEqual({
@@ -245,4 +239,3 @@ describe.only('PUT/user/update', () =>{
     }
   });
 });
->>>>>>> 7d33625 (Implement user profile update feature)

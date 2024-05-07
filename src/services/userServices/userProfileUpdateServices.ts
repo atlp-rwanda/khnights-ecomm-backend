@@ -13,15 +13,14 @@ declare module "express"{
 
 export const userProfileUpdateServices = async (req: Request, res: Response) =>{
 try {
-      console.log(req.body)
         if(!req.body){
             return responseError(res, 401, "body required")
         }
         
-        const { firstName, lastName, gender, phoneNumber, photoUrl, email } = req.body;
+        const { firstName, lastName, gender, phoneNumber, photoUrl, email, id} = req.body;
     
         // Validate user input
-        if (!firstName.trim() && !lastName.trim()  && !gender.trim() && !phoneNumber.trim() && !photoUrl.trim() && !email.trim()) {
+        if (!firstName.trim() && !lastName.trim()  && !gender.trim() && !phoneNumber.trim() && !photoUrl.trim() && !email.trim() && !id.trim())  {
             return responseError(res, 400, 'Fill all the field');
         }
     
@@ -34,6 +33,9 @@ try {
         if (!existingUser){
             return responseError(res, 401, "User not found")
         }
+        if (existingUser.id !== id) {
+            return responseError(res, 403, "You are not authorized to edit this profile.");
+          }
             
         existingUser.firstName = firstName
         existingUser.lastName = lastName
