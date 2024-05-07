@@ -1,3 +1,2 @@
-// export all middlewares
-
+export * from "./errorHandler"
 export * from './roleCheck';
