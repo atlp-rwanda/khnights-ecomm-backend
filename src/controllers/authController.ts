@@ -8,11 +8,13 @@ import {
   userValidateOTP,
   userResendOtpService,
   logoutService,
+  
 } from '../services';
 import { userPasswordResetService } from '../services/userServices/userPasswordResetService';
 import { sendPasswordResetLinkService } from '../services/userServices/sendResetPasswordLinkService';
 import { activateUserService } from '../services/updateUserStatus/activateUserService';
 import { deactivateUserService } from '../services/updateUserStatus/deactivateUserService';
+import {userProfileUpdateServices} from '../services/userServices/userProfileUpdateServices';
 
 export const userRegistration = async (req: Request, res: Response) => {
   await userRegistrationService(req, res);
@@ -63,3 +65,6 @@ export async function disactivateUser(req: Request, res: Response) {
 export const logout = async (req: Request, res: Response) => {
   await logoutService(req, res);
 };
+export const userProfileUpdate =  async(req: Request, res: Response) =>{
+    await userProfileUpdateServices(req,res);
+}

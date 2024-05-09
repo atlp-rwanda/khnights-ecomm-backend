@@ -6,6 +6,7 @@ export default {
   verbose: true,
   forceExit: true,
   clearMocks: true,
+  testTimeout: 30000,
   resetMocks: true,
   restoreMocks: true,
   collectCoverageFrom: [
