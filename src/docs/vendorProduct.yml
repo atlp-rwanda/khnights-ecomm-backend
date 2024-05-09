@@ -233,3 +233,45 @@
         description: Products not found
       '500':
         description: Internal server error
+
+/vendor/product/availability/{id}:
+  put:
+    tags:
+      - Vendor product management
+    summary: Update product availability
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The id of product
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              isAvailable:
+                type: boolean
+            required:
+              - isAvailable
+    responses:
+      '200':
+        description: Product status updated successfully
+      '201':
+        description: Product status is set to false because it is expired
+      '202':
+       description: Product status is set to false because it is out of stock
+      '400':
+        description: Product status is already up to date
+      '401':
+        description: Please fill all the required fields
+      '404':
+        description: Product not found or User not found or Product not found in your stock
+      '500':
+        description: Internal server error
+        

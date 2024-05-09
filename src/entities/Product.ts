@@ -10,7 +10,7 @@ import {
   OneToMany,
   JoinTable,
 } from 'typeorm';
-import { IsNotEmpty, IsString, IsBoolean, ArrayNotEmpty, IsArray, MaxLength  } from 'class-validator';
+import { IsNotEmpty, IsString, IsBoolean, ArrayNotEmpty, IsArray, MaxLength } from 'class-validator';
 import { User } from './User';
 import { Category } from './Category';
 import { Order } from './Order';

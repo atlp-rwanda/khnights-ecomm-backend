@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Product } from '../../entities/Product';
 import { getRepository } from 'typeorm';
 import { User } from '../../entities/User';
+import { responseError } from '../../utils/response.utils';
 
 declare module 'express' {
   interface Request {
@@ -21,7 +22,7 @@ export const removeProductImageService = async (req: Request, res: Response) => 
   const product = await productRepository.findOne({
     where: {
       id,
-      vendor: { id: req.user?.id }
+      vendor: { id: req.user?.id },
     },
     relations: ['vendor'],
   });
