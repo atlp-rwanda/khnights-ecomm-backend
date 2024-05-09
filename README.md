@@ -13,7 +13,7 @@ functionalities for the frontend, such as storing, retrieving, deleting data and
 
 ## Documentation
 
-List of endpoints exposed by the service
+[List of endpoints exposed by the service](https://knights-ecomm-be-lcdh.onrender.com/api/v1/docs/)
 
 ## Setup
 

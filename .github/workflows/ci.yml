@@ -12,6 +12,9 @@ env:
   AUTH_EMAIL: ${{secrets.AUTH_EMAIL}}
   AUTH_PASSWORD: ${{secrets.AUTH_PASSWORD}}
   JWT_SECRET: ${{secrets.JWT_SECRET}}
+  CLOUDNARY_API_KEY: ${{secrets.CLOUDNARY_API_KEY}}
+  CLOUDINARY_CLOUD_NAME: ${{secrets.CLOUDINARY_CLOUD_NAME}}
+  CLOUDINARY_API_SECRET: ${{secrets.CLOUDINARY_API_SECRET}}
 
 jobs:
   build-lint-test-coverage:
