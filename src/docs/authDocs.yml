@@ -130,7 +130,7 @@
       '500':
         description: Internal server error
 
-/user//resend-otp:
+/user/resend-otp:
   post:
     tags:
       - Auth

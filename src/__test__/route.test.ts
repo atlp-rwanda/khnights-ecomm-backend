@@ -9,10 +9,7 @@ beforeAll(async () => {
   const connectionOptions = await getConnectionOptions();
 
   await createConnection({ ...connectionOptions, name: 'testConnection' });
-
 });
-
-
 
 jest.setTimeout(20000);
 afterAll(async () => {
@@ -31,7 +28,7 @@ afterAll(async () => {
 describe('GET /', () => {
   it('This is a testing route that returns', done => {
     request(app)
-      .get('/api/v1/status')
+      .get('/')
       .expect(200)
       .expect('Content-Type', /json/)
       .expect(
@@ -111,9 +108,10 @@ describe('Send password reset link', () => {
   it('Attempt to send email with rate limiting', async () => {
     const email = 'elijahladdiedv@gmail.com';
 
-    const requests = Array.from({ length: 5 }, async () => {
-      return await request(app).post(`/user/password/reset/link?email=${email}`);
-    });
+    const requests = [];
+    for (let i = 0; i < 5; i++) {
+      requests.push(await request(app).post(`/user/password/reset/link?email=${email}`));
+    }
 
     const responses = await Promise.all(requests);
     const lastResponse = responses[responses.length - 1];
@@ -199,8 +197,8 @@ describe('Password Reset Service', () => {
     }
   });
 });
-describe('PUT/user/update', () =>{
-  it('should return 401 if user is not authenticated', async() =>{
+describe('PUT/user/update', () => {
+  it('should return 401 if user is not authenticated', async () => {
     const newUser = {
       firstName: 'John',
       lastName: 'Doe',
@@ -217,17 +215,17 @@ describe('PUT/user/update', () =>{
     const userRepository = getRepository(User);
 
     const user = await userRepository.findOne({ where: { email: newUser.email } });
-    if(user){
+    if (user) {
       const updateUser = {
         id: user.id,
-        firstName: "Biguseers2399",
-        lastName: "1",
-        email: "john.doe23@example.com",
-        gender: "Male",
-        phoneNumber: "0790easdas7dsdfd76175",
-        photoUrl: "photo",
-    }
-      const res = await request(app).put('/user/update').send(updateUser)
+        firstName: 'Biguseers2399',
+        lastName: '1',
+        email: 'john.doe23@example.com',
+        gender: 'Male',
+        phoneNumber: '0790easdas7dsdfd76175',
+        photoUrl: 'photo',
+      };
+      const res = await request(app).put('/user/update').send(updateUser);
       expect(res.status).toBe(201);
       expect(res.body).toEqual({
         status: 'success',
