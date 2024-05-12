@@ -11,7 +11,7 @@ import { IsEmail, IsNotEmpty, IsString, IsBoolean, IsIn } from 'class-validator'
 import { roles } from '../utils/roles';
 
 export interface UserInterface {
-  id: string;
+  id?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -19,29 +19,12 @@ export interface UserInterface {
   gender: string;
   phoneNumber: string;
   photoUrl?: string;
-  verified: boolean;
-  status: 'active' | 'suspended';
+  verified?: boolean;
+  status?: 'active' | 'suspended';
   userType: 'Admin' | 'Buyer' | 'Vendor';
-  role: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface UserInterface {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  gender: string;
-  phoneNumber: string;
-  photoUrl?: string;
-  verified: boolean;
-  status: 'active' | 'suspended';
-  userType: 'Admin' | 'Buyer' | 'Vendor';
-  role: string;
-  createdAt: Date;
-  updatedAt: Date;
+  role?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 @Entity()

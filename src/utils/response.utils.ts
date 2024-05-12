@@ -17,7 +17,7 @@ export const responseSuccess = (
     jsend.success({
       code: statusCode,
       message,
-      data,
+      ...data,
     })
   );
 };

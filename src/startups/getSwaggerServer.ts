@@ -7,7 +7,7 @@ function getSwaggerServer (): string {
     return process.env.SWAGGER_SERVER;
   }
 
-  return 'http://localhost:7000/api/v1';
+  return `http://localhost:${process.env.PORT}/api/v1`;
 }
 
 export { getSwaggerServer };

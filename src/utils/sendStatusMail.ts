@@ -13,7 +13,7 @@ const EMAIL = process.env.AUTH_EMAIL;
 const PASSWORD = process.env.AUTH_PASSWORD;
 
 export const sendEmail = async (type: string, data: IData) => {
-  if(EMAIL && PASSWORD){
+  if (EMAIL && PASSWORD) {
     try {
       const mailGenerator = new Mailgen({
         theme: 'default',
@@ -22,7 +22,7 @@ export const sendEmail = async (type: string, data: IData) => {
           link: 'https://mailgen.js/',
         },
       });
-  
+
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -30,7 +30,7 @@ export const sendEmail = async (type: string, data: IData) => {
           pass: PASSWORD,
         },
       });
-  
+
       let email;
       let subject;
       switch (type) {
@@ -73,23 +73,22 @@ export const sendEmail = async (type: string, data: IData) => {
         default:
           throw new Error('Invalid email type');
       }
-  
+
       const html = mailGenerator.generate(email);
-  
+
       const mailOptions = {
         from: EMAIL,
         to: data.email,
         subject: subject,
         html: html,
       };
-  
+
       const info = await transporter.sendMail(mailOptions);
     } catch (error) {
       console.error('Error sending email:', error);
     }
-  }
-  else {
+  } else {
     console.error('Email or password for mail server not configured');
-    return
-}
+    return;
+  }
 };
