@@ -17,6 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: '*' }));
 app.use(router);
+
 addDocumentation(app);
 app.all('*', (req: Request, res: Response, next) => {
   const error = new CustomError(`Can't find ${req.originalUrl} on the server!`, 404);
