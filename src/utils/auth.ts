@@ -38,7 +38,7 @@ passport.use(
                     const hashedPassword = await bcrypt.hash("password", saltRounds);
                     const newUser = new User();
                     newUser.firstName = givenName;
-                    newUser.lastName = family_name ?? "undefined";
+                    newUser.lastName = family_name ?? familyName ?? "undefined";
                     newUser.email = email;
                     newUser.userType = 'Buyer';
                     newUser.photoUrl = picture;
