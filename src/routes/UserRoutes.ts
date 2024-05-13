@@ -51,7 +51,7 @@ router.get("/login/failed", async (req, res) => {
   res.status(401).json({
     status: false,
     message: "Login failed"
-  })
+  });
 });
 
 export default router;
