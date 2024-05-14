@@ -6,6 +6,7 @@ import {
   readProductService,
   readProductsService,
   deleteProductService,
+  viewSingleProduct
 } from '../services';
 
 export const readProduct = async (req: Request, res: Response) => {
@@ -30,4 +31,7 @@ export const removeProductImage = async (req: Request, res: Response) => {
 
 export const deleteProduct = async (req: Request, res: Response) => {
   await deleteProductService(req, res);
+};
+export const singleProduct = async (req: Request, res: Response) => {
+  await viewSingleProduct(req, res);
 };

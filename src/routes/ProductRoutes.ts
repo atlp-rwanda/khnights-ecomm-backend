@@ -10,12 +10,15 @@ import {
   readProducts,
   readProduct,
   deleteProduct,
+  singleProduct,
 } from '../controllers/productController';
 import { checkUserStatus } from '../middlewares/isAllowed';
 
 const router = Router();
 
+
 router.get('/collection', authMiddleware, checkUserStatus, hasRole('VENDOR'), readProducts);
+router.get('/:id', singleProduct)
 router.get('/collection/:id', authMiddleware, checkUserStatus, hasRole('VENDOR'), readProduct);
 router.post('/', authMiddleware, checkUserStatus, hasRole('VENDOR'), upload.array('images', 10), createProduct);
 router.put('/:id', authMiddleware, checkUserStatus, hasRole('VENDOR'), upload.array('images', 10), updateProduct);
