@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { responseSuccess } from '../utils/response.utils';
 import userRoutes from './UserRoutes';
-import productRoutes from './ProductRoutes';
+
 
 const router = Router();
 
@@ -10,6 +10,6 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 router.use('/user', userRoutes);
-router.use('/product', productRoutes);
+
 
 export default router;

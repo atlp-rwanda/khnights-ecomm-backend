@@ -6,12 +6,6 @@ import {
   resendOTP,
   sendPasswordResetLink,
   userPasswordReset,
-  disable2FA,
-  enable2FA,
-  login,
-  resendOTP,
-  sendPasswordResetLink,
-  userPasswordReset,
   userRegistration,
   userVerification,
   verifyOTP,
@@ -47,7 +41,7 @@ router.get("/auth/google/callback",
     failureRedirect: "/user/login/failed"
   })
 );
-router.get("/login/success", async (req, res) => {
+router.get("/login/success", async (_req, res) => {
   res.status(200).json({
     status: true,
     message: "Login success"

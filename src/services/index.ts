@@ -11,9 +11,3 @@ export * from './userServices/logoutServices';
 export * from './userServices/userProfileUpdateServices';
 
 // Vendor product services
-export * from './productServices/createProduct';
-export * from './productServices/updateProduct';
-export * from './productServices/removeProductImage';
-export * from './productServices/readProduct';
-export * from './productServices/deleteProduct';
-export * from './productServices/getRecommendedProductsService';
