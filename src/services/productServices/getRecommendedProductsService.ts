@@ -22,7 +22,6 @@ export const getRecommendedProductsService = async (req: Request, res: Response)
 
         if (req.query.categories) {
             const categoryIds = Array.isArray(req.query.categories) ? req.query.categories : [req.query.categories];
-console.log(categoryIds)
             condition.categories = categoryIds;
         };
         if (req.query.vendor) condition.vendor = req.query.vendor;
@@ -33,7 +32,6 @@ console.log(categoryIds)
             .leftJoinAndSelect("product.vendor", "vendor")
             .where("1 = 1");
 
-        // Apply conditions if available
         if (condition.categories && condition.categories.length > 0) {
             productsQuery.andWhere("category.id IN (:...categories)", { categories: condition.categories });
         }
@@ -41,23 +39,24 @@ console.log(categoryIds)
             productsQuery.andWhere("vendor.id = :vendorId", { vendorId: condition.vendor });
         }
 
-        console.log("+++++++++++++++++++++++++++++");
-        console.log(condition);
-        console.log("+++++++++++++++++++++++++++++");
         const products = await productsQuery
             .skip(skip)
             .take(limit)
             .getMany();
         if (products.length < 1) {
-            return responseSuccess(res, 200, `No products found for the specified ${ condition.vendor ? 'vendor' : 'category'}`);
+            return responseSuccess(res, 200, `No products found for the specified ${condition.vendor ? 'vendor' : 'category'}`);
         }
-        // { categories: null, vendor: 'e8150556-8737-47dd-a365-da3e82fa84be' }
-        return responseSuccess(res, 200, 'Products retrieved', {products});
+        const sanitizedProducts = products.map(product => ({
+            ...product,
+            vendor: {
+                firstName: product.vendor.firstName,
+                lastName: product.vendor.lastName,
+                phoneNumber: product.vendor.phoneNumber,
+                photoUrl: product.vendor.photoUrl
+            }
+        }));
+        return responseSuccess(res, 200, 'Products retrieved', { products: sanitizedProducts });
     } catch (error) {
-        console.log("**************");
-        console.log(error);
-        console.log("**************");
         return responseError(res, 400, (error as Error).message);
     }
 };
-
