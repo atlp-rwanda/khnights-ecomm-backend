@@ -1,5 +1,14 @@
 import { Request, Response } from 'express';
-import { createProductService, updateProductService, removeProductImageService, readProductService, readProductsService, deleteProductService , getRecommendedProductsService} from '../services';
+import {
+  createProductService,
+  updateProductService,
+  removeProductImageService,
+  readProductService,
+  readProductsService,
+  deleteProductService,
+  getRecommendedProductsService,
+  productStatusServices,
+} from '../services';
 
 export const readProduct = async (req: Request, res: Response) => {
   await readProductService(req, res);
@@ -25,8 +34,10 @@ export const deleteProduct = async (req: Request, res: Response) => {
   await deleteProductService(req, res);
 };
 
-
 export const getRecommendedProducts = async (req: Request, res: Response) => {
   await getRecommendedProductsService(req, res);
 };
 
+export const productStatus = async (req: Request, res: Response) => {
+  await productStatusServices(req, res);
+};
