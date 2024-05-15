@@ -6,9 +6,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
+  OneToMany,
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, IsString, IsBoolean, IsIn } from 'class-validator';
 import { roles } from '../utils/roles';
+import { Order } from './Order';
+
 
 export interface UserInterface {
   id?: string;
@@ -93,6 +96,10 @@ export class User {
   @Column()
   role!: string;
 
+  @OneToMany(() => Order, (order: any) => order.buyer)
+  orders!: Order[];
+
+
   @CreateDateColumn()
   createdAt!: Date;
 
@@ -100,7 +107,7 @@ export class User {
   updatedAt!: Date;
 
   @BeforeInsert()
-  setRole (): void {
+  setRole(): void {
     this.role = this.userType === 'Vendor' ? roles.vendor : roles.buyer;
   }
 }

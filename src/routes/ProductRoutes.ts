@@ -1,8 +1,10 @@
 import { Router } from 'express';
 
+import { productStatus } from '../controllers/index';
+import { hasRole } from '../middlewares/roleCheck';
 import upload from '../middlewares/multer';
 import { authMiddleware } from '../middlewares/verifyToken';
-import { hasRole } from '../middlewares';
+
 import {
   createProduct,
   updateProduct,
@@ -10,16 +12,18 @@ import {
   readProducts,
   readProduct,
   deleteProduct,
-} from '../controllers/productController';
-import { checkUserStatus } from '../middlewares/isAllowed';
-
+  getRecommendedProducts,
+} from '../controllers';
 const router = Router();
 
-router.get('/collection', authMiddleware, checkUserStatus, hasRole('VENDOR'), readProducts);
-router.get('/collection/:id', authMiddleware, checkUserStatus, hasRole('VENDOR'), readProduct);
-router.post('/', authMiddleware, checkUserStatus, hasRole('VENDOR'), upload.array('images', 10), createProduct);
-router.put('/:id', authMiddleware, checkUserStatus, hasRole('VENDOR'), upload.array('images', 10), updateProduct);
-router.delete('/images/:id', authMiddleware, checkUserStatus, hasRole('VENDOR'), removeProductImage);
-router.delete('/:id', authMiddleware, checkUserStatus, hasRole('VENDOR'), deleteProduct);
+router.get('/recommended', authMiddleware, hasRole('BUYER'), getRecommendedProducts);
+router.get('/collection', authMiddleware, hasRole('VENDOR'), readProducts);
+router.get('/', authMiddleware, hasRole('BUYER'), readProducts);
+router.get('/collection/:id', authMiddleware, hasRole('VENDOR'), readProduct);
+router.post('/', authMiddleware, hasRole('VENDOR'), upload.array('images', 10), createProduct);
+router.put('/:id', authMiddleware, hasRole('VENDOR'), upload.array('images', 10), updateProduct);
+router.delete('/images/:id', authMiddleware, hasRole('VENDOR'), removeProductImage);
+router.delete('/:id', authMiddleware, hasRole('VENDOR'), deleteProduct);
+router.put('/availability/:id', authMiddleware, hasRole('VENDOR'), productStatus);
 
 export default router;

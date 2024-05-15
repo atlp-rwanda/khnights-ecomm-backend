@@ -6,6 +6,8 @@ import {
   readProductService,
   readProductsService,
   deleteProductService,
+  getRecommendedProductsService,
+  productStatusServices,
 } from '../services';
 
 export const readProduct = async (req: Request, res: Response) => {
@@ -30,4 +32,12 @@ export const removeProductImage = async (req: Request, res: Response) => {
 
 export const deleteProduct = async (req: Request, res: Response) => {
   await deleteProductService(req, res);
+};
+
+export const getRecommendedProducts = async (req: Request, res: Response) => {
+  await getRecommendedProductsService(req, res);
+};
+
+export const productStatus = async (req: Request, res: Response) => {
+  await productStatusServices(req, res);
 };

@@ -58,19 +58,19 @@ afterAll(async () => {
 });
 
 describe('Middleware - checkUserStatus', () => {
-  beforeEach(() => {
-    reqMock = {};
-    resMock = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-    nextMock = jest.fn();
-  });
+    beforeEach(() => {
+        reqMock = {};
+        resMock = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        };
+        nextMock = jest.fn();
+    });
 
-  it('should return 401 if user is not authenticated', async () => {
-    await checkUserStatus(reqMock as Request, resMock as Response, nextMock);
-    expect(responseError).toHaveBeenCalledWith(resMock, 401, 'Authentication required');
-  });
+    it('should return 401 if user is not authenticated', async () => {
+        await checkUserStatus(reqMock as Request, resMock as Response, nextMock);
+        expect(responseError).toHaveBeenCalledWith(resMock, 401, 'Authentication required');
+    });
 
   it('should return 401 if user is not found', async () => {
     reqMock = { user: { id: uuid() } };

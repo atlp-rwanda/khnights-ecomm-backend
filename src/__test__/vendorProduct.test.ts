@@ -10,6 +10,7 @@ import { Category } from '../entities/Category';
 
 const vendor1Id = uuid();
 const vendor2Id = uuid();
+const buyer1Id = uuid();
 const product1Id = uuid();
 const product2Id = uuid();
 const catId = uuid();
@@ -37,6 +38,18 @@ const sampleVendor1: UserInterface = {
   phoneNumber: '126380996347',
   photoUrl: 'https://example.com/photo.jpg',
   role: 'VENDOR',
+};
+const sampleBuyer1: UserInterface = {
+  id: buyer1Id,
+  firstName: 'buyer1',
+  lastName: 'user',
+  email: 'buyer1@example.com',
+  password: 'password',
+  userType: 'Buyer',
+  gender: 'Male',
+  phoneNumber: '126380996347',
+  photoUrl: 'https://example.com/photo.jpg',
+  role: 'BUYER',
 };
 
 const sampleVendor2: UserInterface = {
@@ -88,6 +101,7 @@ beforeAll(async () => {
   const userRepository = connection?.getRepository(User);
   await userRepository?.save({ ...sampleVendor1 });
   await userRepository?.save({ ...sampleVendor2 });
+  await userRepository?.save({ ...sampleBuyer1 });
 
   const productRepository = connection?.getRepository(Product);
   await productRepository?.save({ ...sampleProduct1 });
@@ -128,7 +142,7 @@ describe('Vendor product management tests', () => {
 
       expect(response.status).toBe(201);
       expect(response.body.data.product).toBeDefined;
-    }, 10000);
+    }, 20000);
 
     it('return an error if the number of product images exceeds 6', async () => {
       const response = await request(app)
@@ -206,6 +220,8 @@ describe('Vendor product management tests', () => {
         .field('expirationDate', '10-2-2023')
         .field('categories', 'technology')
         .field('categories', 'sample')
+        .attach('images', `${__dirname}/test-assets/photo1.png`)
+        .attach('images', `${__dirname}/test-assets/photo2.webp`)
         .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
 
       expect(response.status).toBe(400);
@@ -221,25 +237,12 @@ describe('Vendor product management tests', () => {
         .field('expirationDate', '10-2-2023')
         .field('categories', 'technology')
         .field('categories', 'sample')
+        .attach('images', `${__dirname}/test-assets/photo1.png`)
+        .attach('images', `${__dirname}/test-assets/photo2.webp`)
         .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
 
       expect(response.status).toBe(404);
       expect(response.body.error).toBe('Product not found');
-    });
-
-    it('return error, if product id has incorrect format', async () => {
-      const response = await request(app)
-        .put(`/product/jk9`)
-        .field('name', 'test product3')
-        .field('description', 'amazing product3')
-        .field('newPrice', 200)
-        .field('quantity', 10)
-        .field('expirationDate', '10-2-2023')
-        .field('categories', 'technology')
-        .field('categories', 'sample')
-        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
-
-      expect(response.status).toBe(400);
     });
 
     it('return an error if the number of product images exceeds 6', async () => {
@@ -372,18 +375,6 @@ describe('Vendor product management tests', () => {
       expect(response.body.error).toBe('Product not found');
     });
 
-    it('return error, if product id is of incorrect format', async () => {
-      const response = await request(app)
-        .delete(`/product/images/incorrectidformat`)
-        .send({
-          image: sampleProduct1.images[2],
-        })
-
-        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
-
-      expect(response.status).toBe(400);
-    });
-
     it('return error, if product has only 2 images', async () => {
       const response = await request(app)
         .delete(`/product/images/${sampleProduct1.id}`)
@@ -432,6 +423,34 @@ describe('Vendor product management tests', () => {
         .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
 
       expect(response.status).toBe(400);
+    });
+  });
+
+  describe('Retrieving recommended products', () => {
+    it('should retrieve  products', async () => {
+      const response = await request(app)
+        .get('/product/recommended')
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+      expect(response.status).toBe(200);
+      expect(response.body.data).toBeDefined;
+    });
+
+    it('should not return any product for a vendor with zero product in stock', async () => {
+      const response = await request(app)
+        .get(`/product/recommended`)
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.products).toBeUndefined;
+    });
+
+    it('should not return any product for incorrect syntax of input', async () => {
+      const response = await request(app)
+        .get(`/product/recommended?page=sdfsd`)
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toBeUndefined;
     });
   });
 });

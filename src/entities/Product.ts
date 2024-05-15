@@ -7,11 +7,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToMany,
+  OneToMany,
   JoinTable,
 } from 'typeorm';
-import { IsNotEmpty, IsString, IsBoolean, ArrayNotEmpty, IsArray, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsBoolean, ArrayNotEmpty, IsArray, MaxLength  } from 'class-validator';
 import { User } from './User';
 import { Category } from './Category';
+import { Order } from './Order';
 
 @Entity()
 @Unique(['id'])
@@ -23,6 +25,9 @@ export class Product {
   @ManyToOne(() => User)
   @IsNotEmpty()
   vendor!: User;
+
+  @OneToMany(() => Order, (order: any) => order.product) // Specify the inverse side of the relationship
+  orders!: Order[];
 
   @Column()
   @IsNotEmpty()
