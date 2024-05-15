@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
-import { addProductService } from '../services/wishListServices/addProduct';
-import { removeProductService } from '../services/wishListServices/removeProducts';
-import {getProductsService} from '../services/wishListServices/getProducts'
-import {clearAllProductService} from '../services/wishListServices/clearAll'
+import{
+  addProductService,
+  getProductsService,
+  removeProductService,
+  clearAllProductService
+} from '../services'
 
 export const wishlistAddProduct = async (req: Request, res: Response) => {
     await addProductService(req, res);
