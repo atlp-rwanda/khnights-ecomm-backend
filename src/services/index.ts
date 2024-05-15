@@ -17,3 +17,4 @@ export * from './productServices/removeProductImage';
 export * from './productServices/readProduct';
 export * from './productServices/deleteProduct';
 export * from './productServices/getRecommendedProductsService';
+export * from './productServices/productStatus';
