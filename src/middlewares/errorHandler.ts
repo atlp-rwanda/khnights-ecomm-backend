@@ -19,7 +19,6 @@ const errorHandler = (err: CustomError, req: Request, res: Response, next: NextF
     status: err.statusCode,
     message: err.message,
   });
-  console.error(err.stack);
 };
 
 export { CustomError, errorHandler };

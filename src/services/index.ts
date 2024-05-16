@@ -18,3 +18,9 @@ export * from './productServices/readProduct';
 export * from './productServices/deleteProduct';
 export * from './productServices/getRecommendedProductsService';
 export * from './productServices/productStatus';
+
+// Buyer wishlist services
+export * from './wishListServices/addProduct';
+export * from './wishListServices/getProducts';
+export * from './wishListServices/removeProducts';
+export * from './wishListServices/clearAll';
