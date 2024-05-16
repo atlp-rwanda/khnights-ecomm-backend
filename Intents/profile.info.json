@@ -1,0 +1,15 @@
+{
+    "intent": "profile_info",
+    "utterances": [
+      "How can I change my profile information",
+      "I want to change my password",
+      "I want to change my phone number",
+      "I want to change my address",
+      "I want to Reset my password",
+      "I want to delete my account",
+      "delete my account"
+    ],
+    "responses": [
+        "You can easily add or change your account details by following the steps below: Step 1: Click on 'Account', Step 2: Click on 'Manage my account' from the icon, Step 3: You can change or edit your name, address, email address, mobile number, etc., Step 4: Fill in the required details, and click on Save. Note: You can also change your delivery address from the Checkout page before proceeding to pay."
+      ]
+      }

@@ -1,0 +1,12 @@
+{
+    "intent": "use_voucher",
+    "utterances": [
+      "How to use a voucher?",
+      "Can I use a voucher?",
+      "How to use a voucher?"
+    ],
+    "responses": [
+      "You can add a voucher by clicking on My Cart > Check Out > Enter Voucher Code > APPLY. "
+    ]
+  }
+  

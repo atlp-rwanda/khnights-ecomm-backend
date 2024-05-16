@@ -1,0 +1,13 @@
+{
+    "intent": "reasons",
+    "utterances": [
+      "Common reasons for delivery delay",
+      "common reasons for delivery delay",
+      "reasons for delay",
+      "delivery delay"
+    ],
+    "responses": [
+      "Reasons include Seller Sourcing Issues, Courier Issues, Cross Border shipment delay, Wrong Address or Phone Number, and Unavailability of Customer. "
+    ]
+  }
+  

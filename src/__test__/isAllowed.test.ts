@@ -5,6 +5,8 @@ import { getConnection } from 'typeorm';
 import { User } from '../entities/User';
 import { responseError } from '../utils/response.utils';
 import { v4 as uuid } from 'uuid';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
+import { server } from '..';
 
 jest.mock('../utils/response.utils');
 
@@ -18,7 +20,7 @@ const suspendedUserId = uuid();
 beforeAll(async () => {
   const connection = await dbConnection();
 
-  const userRepository = connection?.getRepository(User);
+  const userRepository = await connection?.getRepository(User);
 
   const activeUser = new User();
   activeUser.id = activeUserId;
@@ -47,31 +49,24 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    const connection = getConnection();
-    const userRepository = connection.getRepository(User);
-
-    
-    // Delete all records from the User
-    await userRepository.delete({});
-
-  // Close the connection to the test database
-  await connection.close();
+  await cleanDatabase();
+  server.close();
 });
 
 describe('Middleware - checkUserStatus', () => {
-    beforeEach(() => {
-        reqMock = {};
-        resMock = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn()
-        };
-        nextMock = jest.fn();
-    });
+  beforeEach(() => {
+    reqMock = {};
+    resMock = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    nextMock = jest.fn();
+  });
 
-    it('should return 401 if user is not authenticated', async () => {
-        await checkUserStatus(reqMock as Request, resMock as Response, nextMock);
-        expect(responseError).toHaveBeenCalledWith(resMock, 401, 'Authentication required');
-    });
+  it('should return 401 if user is not authenticated', async () => {
+    await checkUserStatus(reqMock as Request, resMock as Response, nextMock);
+    expect(responseError).toHaveBeenCalledWith(resMock, 401, 'Authentication required');
+  });
 
   it('should return 401 if user is not found', async () => {
     reqMock = { user: { id: uuid() } };

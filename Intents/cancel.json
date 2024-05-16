@@ -1,0 +1,14 @@
+{
+    "intent": "cancel",
+    "utterances": [
+      "Can I cancel my order?",
+      "Why is my order cancelled?",
+      "How do I can cancel my order",
+      "Can I cancel an order"
+    ],
+    "responses": [
+        "Order can only be cancelled within 7 days of placement. Digital goods do not qualify for refund.",
+        "Visit my orders page to check status of specific orders."
+      ]
+    }
+    

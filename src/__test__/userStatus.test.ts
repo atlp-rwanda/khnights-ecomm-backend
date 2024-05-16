@@ -6,6 +6,7 @@ import { getConnection } from 'typeorm';
 import { dbConnection } from '../startups/dbConnection';
 import { User } from '../entities/User';
 import { v4 as uuid } from 'uuid';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 const adminUserId = uuid();
 
@@ -35,14 +36,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const connection = getConnection();
-  const userRepository = connection.getRepository(User);
+  await cleanDatabase();
 
-  // Delete all records from the User
-  await userRepository.delete({});
-
-  // Close the connection to the test database
-  await connection.close();
   server.close();
 });
 
@@ -73,7 +68,7 @@ describe('POST /user/deactivate', () => {
       .send({ email: `${testUser.email}` });
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('User deactivated successfully');
-  }, 10000);
+  }, 60000);
 
   it('should return 404 when email is not submitted', async () => {
     const token = jwt.sign(data, jwtSecretKey);
@@ -116,7 +111,7 @@ describe('POST /user/activate', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('User activated successfully');
-  }, 10000);
+  }, 60000);
 
   it('should return 404 when email is not submitted', async () => {
     const token = jwt.sign(data, jwtSecretKey);

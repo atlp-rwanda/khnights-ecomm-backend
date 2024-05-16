@@ -1,3 +1,4 @@
+
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -11,7 +12,8 @@ import {
 import { IsEmail, IsNotEmpty, IsString, IsBoolean, IsIn } from 'class-validator';
 import { roles } from '../utils/roles';
 import { Order } from './Order';
-
+import { Transaction } from './transaction';
+import { Feedback } from './Feedback';
 
 export interface UserInterface {
   id?: string;
@@ -33,6 +35,12 @@ export interface UserInterface {
 @Entity()
 @Unique(['email'])
 export class User {
+  static lastName(lastName: any) {
+      throw new Error('Method not implemented.');
+  }
+  static firstName(firstName: any) {
+      throw new Error('Method not implemented.');
+  }
   @PrimaryGeneratedColumn('uuid')
   @IsNotEmpty()
   id!: string;
@@ -99,6 +107,8 @@ export class User {
   @OneToMany(() => Order, (order: any) => order.buyer)
   orders!: Order[];
 
+  @OneToMany(() => Transaction, transaction => transaction.user)
+  transactions!: Transaction[];
 
   @CreateDateColumn()
   createdAt!: Date;
@@ -106,8 +116,13 @@ export class User {
   @UpdateDateColumn()
   updatedAt!: Date;
 
+  @Column({ type: 'numeric', precision: 24, scale: 2, default: 0 })
+  accountBalance!: number;
+  @OneToMany(() => Feedback, feedback => feedback.product)
+  feedbacks!: Feedback[];
+
   @BeforeInsert()
-  setRole(): void {
+  setRole (): void {
     this.role = this.userType === 'Vendor' ? roles.vendor : roles.buyer;
   }
 }

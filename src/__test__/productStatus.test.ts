@@ -7,6 +7,7 @@ import { User } from '../entities/User';
 import { v4 as uuid } from 'uuid';
 import { Product } from '../entities/Product';
 import { Category } from '../entities/Category';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 const vendor1Id = uuid();
 const vendor2Id = uuid();
@@ -102,7 +103,7 @@ sampleProduct3.categories = [sampleCat];
 
 const sampleProduct4 = new Product();
 sampleProduct4.id = product4Id;
-sampleProduct4.name = 'testingmkknkkji product4';
+sampleProduct4.name = 'testingmkknkkjiproduct4';
 sampleProduct4.description = 'amazing product4';
 sampleProduct4.images = ['photo1.jpg', 'photo2.jpg', 'photo3.jpg', 'photo4.jpg', 'photo5.jpg'];
 sampleProduct4.newPrice = 200;
@@ -143,17 +144,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const connection = getConnection();
-  const userRepository = connection.getRepository(User);
-  const categoryRepository = connection.getRepository(Category);
+  await cleanDatabase();
 
-  const productRepository = await connection.getRepository(Product).delete({});
-  if (productRepository) {
-    await userRepository.delete({});
-    await categoryRepository.delete({});
-  }
-
-  await connection.close();
   server.close();
 });
 
@@ -227,5 +219,19 @@ describe('Vendor product availability status management tests', () => {
 
     expect(response.statusCode).toBe(404);
     expect(response.body.message).toBe('Product not found in your stock');
+  });
+});
+
+describe('search product by name availability tests', () => {
+  it('Should search product by name', async () => {
+    const response = await request(app).get(`/product/search?name=testingmkknkkjiproduct4`);
+    expect(response.body.data).toBeDefined;
+  }, 10000);
+
+  it('should return empty array if there is product is not found in the database', async () => {
+    const response = await request(app).put(`/product/search?name=home`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body.data).toBeUndefined;
   });
 });
