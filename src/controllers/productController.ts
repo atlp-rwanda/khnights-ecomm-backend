@@ -8,6 +8,7 @@ import {
   deleteProductService,
   getRecommendedProductsService,
   productStatusServices,
+  viewSingleProduct
 } from '../services';
 
 export const readProduct = async (req: Request, res: Response) => {
@@ -40,4 +41,7 @@ export const getRecommendedProducts = async (req: Request, res: Response) => {
 
 export const productStatus = async (req: Request, res: Response) => {
   await productStatusServices(req, res);
+};
+export const singleProduct = async (req: Request, res: Response) => {
+  await viewSingleProduct(req, res);
 };
