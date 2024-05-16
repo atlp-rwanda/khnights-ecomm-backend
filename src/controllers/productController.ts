@@ -14,7 +14,9 @@ import {
   
   getRecommendedProductsService,
   productStatusServices,
-  viewSingleProduct
+  viewSingleProduct,
+  searchProductService
+  
 , 
   listAllProductsService}
 from '../services';
@@ -56,4 +58,24 @@ export const listAllProducts = async (req: Request, res: Response) => {
 };
 export const singleProduct = async (req: Request, res: Response) => {
   await viewSingleProduct(req, res);
+};
+export const searchProduct = async (req: Request, res: Response) => {
+  const { name, sortBy, sortOrder, page, limit } = req.query;
+
+  try {
+    const searchParams = {
+      name: name as string,
+      sortBy: sortBy as string,
+      sortOrder: sortOrder as 'ASC' | 'DESC',
+      page: parseInt(page as string, 10) || 1,
+      limit: parseInt(limit as string, 10) || 10,
+    };
+
+    const result = await searchProductService(searchParams);
+
+    res.json(result);
+  } catch (error) {
+    console.error('Error searching products:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 };

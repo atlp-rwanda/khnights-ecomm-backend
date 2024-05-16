@@ -20,6 +20,7 @@ export * from './productServices/getRecommendedProductsService';
 export * from './productServices/listAllProductsService';
 export * from './productServices/productStatus';
 export * from './productServices/viewSingleProduct';
+export * from './productServices/searchProduct'
 
 // Buyer wishlist services
 export * from './wishListServices/addProduct';

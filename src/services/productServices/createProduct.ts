@@ -12,7 +12,9 @@ declare module 'express' {
   }
 }
 
+
 export const createProductService = async (req: Request, res: Response) => {
+  try{
   const { error } = validateProduct(req.body);
   if (error !== undefined) {
     return res.status(400).json({ status: 'error', error: error?.details[0].message });
@@ -98,4 +100,8 @@ export const createProductService = async (req: Request, res: Response) => {
       product: { ...savedProduct }
     },
   });
+}
+  catch(error){
+    res.status(400).json({'message':(error as Error).message})
+  }
 };
