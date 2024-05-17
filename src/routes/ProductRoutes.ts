@@ -13,10 +13,12 @@ import {
   readProduct,
   deleteProduct,
   getRecommendedProducts,
+  listAllProducts,
   singleProduct,
 } from '../controllers';
 const router = Router();
 
+router.get('/all', listAllProducts);
 router.get('/recommended', authMiddleware, hasRole('BUYER'), getRecommendedProducts);
 router.get('/collection', authMiddleware, hasRole('VENDOR'), readProducts);
 router.get('/', authMiddleware, hasRole('BUYER'), readProducts);
