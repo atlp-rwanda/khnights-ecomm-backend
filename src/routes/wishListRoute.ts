@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { RequestHandler, Router } from 'express';
 import { authMiddleware } from '../middlewares/verifyToken';
 import { hasRole } from '../middlewares';
 import { checkUserStatus } from '../middlewares/isAllowed';
@@ -6,9 +6,9 @@ import { wishlistAddProduct,wishlistRemoveProduct,wishlistGetProducts,wishlistCl
 
 const router = Router();
 
-router.post('/add/:id', authMiddleware, checkUserStatus, hasRole('BUYER'), wishlistAddProduct);
-router.get('/',authMiddleware, checkUserStatus, hasRole('BUYER'),wishlistGetProducts);
-router.delete('/delete/:id',authMiddleware, checkUserStatus, hasRole('BUYER'),wishlistRemoveProduct);
-router.delete('/clearAll',authMiddleware, checkUserStatus, hasRole('BUYER'),wishlistClearAllProducts);
+router.post('/add/:id', authMiddleware as RequestHandler, checkUserStatus, hasRole('BUYER'), wishlistAddProduct);
+router.get('/',authMiddleware as RequestHandler, checkUserStatus, hasRole('BUYER'),wishlistGetProducts);
+router.delete('/delete/:id',authMiddleware as RequestHandler, checkUserStatus, hasRole('BUYER'),wishlistRemoveProduct);
+router.delete('/clearAll',authMiddleware as RequestHandler, checkUserStatus, hasRole('BUYER'),wishlistClearAllProducts);
 
 export default router;
