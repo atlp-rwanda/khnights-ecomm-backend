@@ -18,6 +18,9 @@ import { Order } from './Order';
 @Entity()
 @Unique(['id'])
 export class Product {
+  static query() {
+      throw new Error('Method not implemented.');
+  }
   @PrimaryGeneratedColumn('uuid')
   @IsNotEmpty()
   id!: string;

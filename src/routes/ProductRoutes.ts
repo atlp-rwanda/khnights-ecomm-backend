@@ -1,6 +1,6 @@
 import { RequestHandler, Router } from 'express';
 
-import { productStatus } from '../controllers/index';
+import { productStatus, searchProduct } from '../controllers/index';
 import { hasRole } from '../middlewares/roleCheck';
 import upload from '../middlewares/multer';
 import { authMiddleware } from '../middlewares/verifyToken';
@@ -14,7 +14,7 @@ import {
   deleteProduct,
   getRecommendedProducts,
   listAllProducts,
-  singleProduct,
+  singleProduct
 } from '../controllers';
 const router = Router();
 router.get('/all', listAllProducts);
