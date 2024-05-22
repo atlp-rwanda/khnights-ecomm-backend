@@ -456,29 +456,27 @@ describe('Vendor product management tests', () => {
 
   describe('List all products service', () => {
     it('should return all products for a given category', async () => {
-      const response = await request(app)
-        .get('/product/all')
+      const response = await request(app).get('/product/all');
 
       expect(response.status).toBe(200);
       expect(response.body.data.products).toBeDefined();
     });
-  
+
     it('should return no products for a non-existent category', async () => {
       const response = await request(app)
         .get('/product/all')
-        .query({ page: 1, limit: 10, category: 'nonexistentcategory' })
-  
+        .query({ page: 1, limit: 10, category: 'nonexistentcategory' });
+
       expect(response.status).toBe(200);
       expect(response.body.data.products).toBeUndefined();
     });
-  
+
     it('should return an error for invalid input syntax', async () => {
       const response = await request(app)
         .get('/product/all')
-        .query({ page: 'invalid', limit: 'limit', category: 'technology' })
-  
+        .query({ page: 'invalid', limit: 'limit', category: 'technology' });
+
       expect(response.status).toBe(400);
     });
   });
-  
 });
