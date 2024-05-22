@@ -1,3 +1,4 @@
+
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -12,6 +13,7 @@ import { IsEmail, IsNotEmpty, IsString, IsBoolean, IsIn } from 'class-validator'
 import { roles } from '../utils/roles';
 import { Order } from './Order';
 import { Transaction } from './transaction';
+import { Feedback } from './Feedback';
 
 export interface UserInterface {
   id?: string;
@@ -99,7 +101,7 @@ export class User {
   @OneToMany(() => Order, (order: any) => order.buyer)
   orders!: Order[];
 
-  @OneToMany(() => Transaction, (transaction) => transaction.user)
+  @OneToMany(() => Transaction, transaction => transaction.user)
   transactions!: Transaction[];
 
   @CreateDateColumn()
@@ -110,9 +112,11 @@ export class User {
 
   @Column({ type: 'numeric', precision: 24, scale: 2, default: 0 })
   accountBalance!: number;
+  @OneToMany(() => Feedback, feedback => feedback.product)
+  feedbacks!: Feedback[];
 
   @BeforeInsert()
-  setRole(): void {
+  setRole (): void {
     this.role = this.userType === 'Vendor' ? roles.vendor : roles.buyer;
   }
 }

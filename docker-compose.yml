@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  postgresdb:
+    image: postgres
+    environment:
+      POSTGRES_USER: $DEV_DB_USER
+      POSTGRES_PASSWORD: $DEV_DB_PASS
+      POSTGRES_DB: $DEV_DB_NAME
+    volumes:
+      - knights-data:/var/lib/postgresql/data
+
+  node-app:
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+    image: knights-app:1.0
+    env_file:
+      - ./.env
+    ports:
+      - $PORT:$PORT
+    depends_on:
+      - postgresdb
+
+volumes:
+  knights-data:

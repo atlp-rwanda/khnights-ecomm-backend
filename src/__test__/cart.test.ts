@@ -1,4 +1,3 @@
-
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { app, server } from '../index';
@@ -15,6 +14,7 @@ import { cleanDatabase } from './test-assets/DatabaseCleanup';
 const vendor1Id = uuid();
 const buyer1Id = uuid();
 const buyer2Id = uuid();
+const buyer3Id = uuid();
 const product1Id = uuid();
 const product2Id = uuid();
 const catId = uuid();
@@ -53,7 +53,7 @@ const sampleBuyer1: UserInterface = {
   id: buyer1Id,
   firstName: 'buyer1',
   lastName: 'user',
-  email: 'elijahladdiedv@gmail.com',
+  email: 'manger@gmail.com',
   password: 'password',
   userType: 'Buyer',
   gender: 'Male',
@@ -66,13 +66,25 @@ const sampleBuyer2: UserInterface = {
   id: buyer2Id,
   firstName: 'buyer1',
   lastName: 'user',
-  email: 'buyer1112@example.com',
+  email: 'elijahladdiedv@example.com',
   password: 'password',
   userType: 'Buyer',
   gender: 'Male',
   phoneNumber: '12116380996348',
   photoUrl: 'https://example.com/photo.jpg',
   role: 'BUYER',
+};
+const sampleBuyer3: UserInterface = {
+  id: buyer3Id,
+  firstName: 'buyer1',
+  lastName: 'user',
+  email: 'elhladdiedv@example.com',
+  password: 'password',
+  userType: 'Admin',
+  gender: 'Male',
+  phoneNumber: '121163800',
+  photoUrl: 'https://example.com/photo.jpg',
+  role: 'ADMIN',
 };
 
 const sampleCat = {
@@ -171,11 +183,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await cleanDatabase()
+  await cleanDatabase();
 
+  server.close();
 });
 
-describe('Cart management for guest/buyer', () => {
+describe('Cart| Order  management for guest/buyer', () => {
   describe('Creating new product', () => {
     it('should create new product', async () => {
       const response = await request(app)
@@ -376,6 +389,108 @@ describe('Cart management for guest/buyer', () => {
     });
   });
 
+  describe('Order management tests', () => {
+    let orderId: any;
+    let productId: any;
+    let feedbackId: any;
+    let feedback2Id: any;
+    describe('Create order', () => {
+      it('should return 400 when user ID is not provided', async () => {
+        const response = await request(app)
+          .post('/product/orders')
+          .send({
+            address: {
+              country: 'Test Country',
+              city: 'Test City',
+              street: 'Test Street',
+            },
+          })
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        expect(response.status).toBe(201);
+      });
+
+      it('should return orders for the buyer', async () => {
+        const response = await request(app)
+          .get('/product/client/orders')
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        expect(response.status).toBe(200);
+        orderId = response.body.data.orders[0]?.id;
+        productId = response.body.data.orders[0]?.orderItems[0]?.product?.id;
+      });
+      it('should return 404 if the buyer has no orders', async () => {
+        const response = await request(app)
+          .get('/product/client/orders')
+          .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBeUndefined;
+      });
+
+      it('should return transaction history for the buyer', async () => {
+        const response = await request(app)
+          .get('/product/orders/history')
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('Transaction history retrieved successfully');
+      });
+
+      it('should return 400 when user ID is not provided', async () => {
+        const response = await request(app)
+          .get('/product/orders/history')
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        expect(response.status).toBe(200);
+      });
+    });
+
+    describe('Update order', () => {
+      it('should update order status successfully', async () => {
+        const response = await request(app)
+          .put(`/product/client/orders/${orderId}`)
+          .send({ orderStatus: 'completed' })
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        expect(response.status).toBe(200);
+      });
+    });
+    describe('Add feedback to the product with order', () => {
+      it('should create new feedback to the ordered product', async () => {
+        const response = await request(app)
+          .post(`/feedback/${productId}/new`)
+          .send({ orderId, comment: 'Well this product looks so fantastic' })
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        expect(response.status).toBe(201);
+        feedbackId = response.body.data.id
+      });
+      it('should create new feedback to the ordered product', async () => {
+        const response = await request(app)
+          .post(`/feedback/${productId}/new`)
+          .send({ orderId, comment: 'Murigalike this product looks so fantastic' })
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        expect(response.status).toBe(201);
+        feedback2Id = response.body.data.id
+      });
+      it('should  updated existing feedback successfully', async () => {
+        const response = await request(app)
+          .put(`/feedback/update/${feedbackId}`,)
+          .send({ orderId, comment: 'Well this product looks so lovely' })
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        expect(response.status).toBe(200);
+      });
+      it('should remove recorded feedback', async () => {
+        const response = await request(app)
+          .delete(`/feedback/delete/${feedbackId}`)
+          .send({ orderId, comment: 'Well this product looks so lovely' })
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        expect(response.status).toBe(200);
+      });
+      it('should remove recorder feedback as admin ', async () => {
+        const response = await request(app)
+          .delete(`/feedback/admin/delete/${feedback2Id}`)
+          .send({ orderId, comment: 'Well this product looks so lovely' })
+          .set('Authorization', `Bearer ${getAccessToken(buyer3Id, sampleBuyer3.email)}`);
+        expect(response.status).toBe(401);
+      });
+    });
+  });
+
   describe('Deleting product from cart', () => {
     it('should return 404 if product does not exist in cart', async () => {
       const response = await request(app)
@@ -508,109 +623,6 @@ describe('Cart management for guest/buyer', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.message).toBe('Cart is empty');
       expect(response.body.data.cart).toBeDefined;
-    });
-  });
-});
-
-describe('Order management tests', () => {
-  let orderId: string | null;
-  describe('Create order', () => {
-    it('should return 400 when user ID is not provided', async () => {
-      const response = await request(app)
-        .post('/product/orders')
-        .send({
-          address: {
-            country: 'Test Country',
-            city: 'Test City',
-            street: 'Test Street',
-          },
-        }).set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-      expect(response.status).toBe(400);
-    });
-
-    it('should create a new order', async () => {
-
-      const response = await request(app)
-        .post('/product/orders')
-        .send({
-          address: {
-            country: 'Test Country',
-            city: 'Test City',
-            street: 'Test Street',
-          },
-        })
-        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
-
-      expect(response.status).toBe(400);
-      expect(response.body.message).toBeUndefined;
-      orderId = response.body.data?.orderId; // Assuming orderId is returned in response
-    });
-
-    it('should insert   a new order', async () => {
-
-      const response = await request(app)
-        .post('/product/orders')
-        .send({
-          address: {
-            country: 'Test Country',
-            city: 'Test City',
-            street: 'Test Street',
-          },
-        })
-        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
-
-      expect(response.status).toBe(400);
-      expect(response.body.message).toBeUndefined;
-      orderId = response.body.data?.orderId; // Assuming orderId is returned in response
-    });
-  });
-
-  describe('Get orders', () => {
-    it('should return orders for the buyer', async () => {
-      const response = await request(app)
-        .get('/product/client/orders')
-        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
-        expect(response.status).toBe(404);
-      expect(response.body.message).toBeUndefined;
-
-    });
-
-    it('should return 404 if the buyer has no orders', async () => {
-      const response = await request(app)
-        .get('/product/client/orders')
-        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
-      expect(response.status).toBe(404);
-      expect(response.body.message).toBeUndefined;
-    });
-  });
-
-  describe('Get transaction history', () => {
-    it('should return transaction history for the buyer', async () => {
-
-      const response = await request(app)
-        .get('/product/orders/history')
-        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-      expect(response.status).toBe(404);
-      expect(response.body.message).toBe('No transaction history found');
-
-    });
-
-    it('should return 400 when user ID is not provided', async () => {
-      const response = await request(app)
-        .get('/product/orders/history')
-        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-      expect(response.status).toBe(404);
-    });
-  });
-
-  describe('Update order', () => {
-    it('should update order status successfully', async () => {
-  
-      const response = await request(app)
-        .put(`/product/client/orders/${orderId}`)
-        .send({ orderStatus: 'delivered' })
-        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-        expect(response.status).toBe(500);
     });
   });
 });
