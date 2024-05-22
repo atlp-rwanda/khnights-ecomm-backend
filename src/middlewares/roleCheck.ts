@@ -31,6 +31,7 @@ export const hasRole =
         return responseError(res, 401, 'User not found');
       }
       if (user.role !== role) {
+        console.log(user.role)
         return responseError(res, 403, 'Unauthorized action');
       }
 

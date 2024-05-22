@@ -1,6 +1,6 @@
 import { RequestHandler, Router } from 'express';
 
-import { productStatus, searchProduct } from '../controllers/index';
+import { payment, productStatus, searchProduct } from '../controllers/index';
 import { hasRole } from '../middlewares/roleCheck';
 import upload from '../middlewares/multer';
 import { authMiddleware } from '../middlewares/verifyToken';
@@ -14,7 +14,7 @@ import {
   deleteProduct,
   getRecommendedProducts,
   listAllProducts,
-  singleProduct
+  singleProduct,
 } from '../controllers';
 const router = Router();
 router.get('/all', listAllProducts);
@@ -28,5 +28,7 @@ router.put('/:id', authMiddleware as RequestHandler, hasRole('VENDOR'), upload.a
 router.delete('/images/:id', authMiddleware as RequestHandler, hasRole('VENDOR'), removeProductImage);
 router.delete('/:id', authMiddleware as RequestHandler, hasRole('VENDOR'), deleteProduct);
 router.put('/availability/:id', authMiddleware as RequestHandler, hasRole('VENDOR'), productStatus);
+// router.post('/payment', authMiddleware as RequestHandler, hasRole('BUYER'), payment)
+router.post('/payment', payment)
 
 export default router;
