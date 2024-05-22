@@ -3,24 +3,15 @@ import { app, server } from '../index';
 import { createConnection, getConnection, getConnectionOptions, getRepository } from 'typeorm';
 import { User } from '../entities/User';
 import { response } from 'express';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 beforeAll(async () => {
-  // Connect to the test database
-  const connectionOptions = await getConnectionOptions();
-
-  await createConnection({ ...connectionOptions, name: 'testConnection' });
+  await createConnection();
 });
 
 jest.setTimeout(20000);
 afterAll(async () => {
-  const connection = getConnection('testConnection');
-  const userRepository = connection.getRepository(User);
-
-  // Delete all records from the User
-  await userRepository.delete({});
-
-  // Close the connection to the test database
-  await connection.close();
+  await cleanDatabase();
 
   server.close();
 });

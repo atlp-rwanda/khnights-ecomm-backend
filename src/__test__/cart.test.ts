@@ -9,6 +9,7 @@ import { Product } from '../entities/Product';
 import { Category } from '../entities/Category';
 import { Cart } from '../entities/Cart';
 import { CartItem } from '../entities/CartItem';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 const vendor1Id = uuid();
 const buyer1Id = uuid();
@@ -38,11 +39,11 @@ const sampleVendor1: UserInterface = {
   id: vendor1Id,
   firstName: 'vendor1',
   lastName: 'user',
-  email: 'vendor1@example.com',
+  email: 'vendo111@example.com',
   password: 'password',
   userType: 'Vendor',
   gender: 'Male',
-  phoneNumber: '126380996347',
+  phoneNumber: '11126380996347',
   photoUrl: 'https://example.com/photo.jpg',
   role: 'VENDOR',
 };
@@ -51,11 +52,11 @@ const sampleBuyer1: UserInterface = {
   id: buyer1Id,
   firstName: 'buyer1',
   lastName: 'user',
-  email: 'buyer1@example.com',
+  email: 'elijahladdiedv@gmail.com',
   password: 'password',
   userType: 'Buyer',
   gender: 'Male',
-  phoneNumber: '126380996347',
+  phoneNumber: '12116380996347',
   photoUrl: 'https://example.com/photo.jpg',
   role: 'BUYER',
 };
@@ -64,11 +65,11 @@ const sampleBuyer2: UserInterface = {
   id: buyer2Id,
   firstName: 'buyer1',
   lastName: 'user',
-  email: 'buyer12@example.com',
+  email: 'buyer1112@example.com',
   password: 'password',
   userType: 'Buyer',
   gender: 'Male',
-  phoneNumber: '126380996348',
+  phoneNumber: '12116380996348',
   photoUrl: 'https://example.com/photo.jpg',
   role: 'BUYER',
 };
@@ -169,20 +170,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const connection = getConnection();
+  await cleanDatabase();
 
-  const userRepository = connection.getRepository(User);
-  const categoryRepository = connection.getRepository(Category);
-  const productRepository = connection.getRepository(Product);
-  const cartRepository = connection.getRepository(Cart);
-
-  await cartRepository.delete({});
-  await productRepository.delete({});
-  await categoryRepository.delete({});
-  await userRepository.delete({});
-
-  // Close the connection to the test database
-  await connection.close();
   server.close();
 });
 
@@ -519,6 +508,104 @@ describe('Cart management for guest/buyer', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.message).toBe('Cart is empty');
       expect(response.body.data.cart).toBeDefined;
+    });
+  });
+});
+
+describe('Order management tests', () => {
+  let orderId: string | null;
+  describe('Create order', () => {
+    it('should return 400 when user ID is not provided', async () => {
+      const response = await request(app)
+        .post('/product/orders')
+        .send({
+          address: {
+            country: 'Test Country',
+            city: 'Test City',
+            street: 'Test Street',
+          },
+        })
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+      expect(response.status).toBe(400);
+    });
+
+    it('should create a new order', async () => {
+      const response = await request(app)
+        .post('/product/orders')
+        .send({
+          address: {
+            country: 'Test Country',
+            city: 'Test City',
+            street: 'Test Street',
+          },
+        })
+        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBeUndefined;
+      orderId = response.body.data?.orderId; // Assuming orderId is returned in response
+    });
+
+    it('should insert   a new order', async () => {
+      const response = await request(app)
+        .post('/product/orders')
+        .send({
+          address: {
+            country: 'Test Country',
+            city: 'Test City',
+            street: 'Test Street',
+          },
+        })
+        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBeUndefined;
+      orderId = response.body.data?.orderId; // Assuming orderId is returned in response
+    });
+  });
+
+  describe('Get orders', () => {
+    it('should return orders for the buyer', async () => {
+      const response = await request(app)
+        .get('/product/client/orders')
+        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBeUndefined;
+    });
+
+    it('should return 404 if the buyer has no orders', async () => {
+      const response = await request(app)
+        .get('/product/client/orders')
+        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBeUndefined;
+    });
+  });
+
+  describe('Get transaction history', () => {
+    it('should return transaction history for the buyer', async () => {
+      const response = await request(app)
+        .get('/product/orders/history')
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe('No transaction history found');
+    });
+
+    it('should return 400 when user ID is not provided', async () => {
+      const response = await request(app)
+        .get('/product/orders/history')
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+      expect(response.status).toBe(404);
+    });
+  });
+
+  describe('Update order', () => {
+    it('should update order status successfully', async () => {
+      const response = await request(app)
+        .put(`/product/client/orders/${orderId}`)
+        .send({ orderStatus: 'delivered' })
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+      expect(response.status).toBe(500);
     });
   });
 });

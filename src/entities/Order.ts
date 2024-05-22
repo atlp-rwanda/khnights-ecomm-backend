@@ -1,7 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { IsNotEmpty, IsNumber, IsDate } from 'class-validator';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { IsNotEmpty, IsNumber, IsDate, IsIn } from 'class-validator';
 import { User } from './User';
-import { Product } from './Product';
+import { OrderItem } from './OrderItem';
+import { Transaction } from './transaction';
 
 @Entity()
 export class Order {
@@ -9,23 +18,42 @@ export class Order {
   @IsNotEmpty()
   id!: string;
 
-  @ManyToOne(() => User, user => user.orders) // <- Correctly reference the User entity and its orders property
+  @ManyToOne(() => User, user => user.orders)
   @IsNotEmpty()
   buyer!: User;
 
-  @ManyToOne(() => Product, product => product.orders) // <- Correctly reference the Product entity and its orders property
+  @OneToMany(() => OrderItem, orderItem => orderItem.order, { cascade: true })
   @IsNotEmpty()
-  product!: Product;
+  orderItems!: OrderItem[];
 
   @Column('decimal')
   @IsNotEmpty()
   @IsNumber()
   totalPrice!: number;
 
+  @OneToMany(() => Transaction, transaction => transaction.order)
+  transactions!: Transaction[];
+  @Column({ default: 'order placed' })
+  @IsNotEmpty()
+  @IsIn([
+    'order placed',
+    'cancelled',
+    'awaiting shipment',
+    'in transit',
+    'delivered',
+    'received',
+    'returned',
+    'completed',
+  ])
+  orderStatus!: string;
+
   @Column('int')
   @IsNotEmpty()
   @IsNumber()
   quantity!: number;
+
+  @Column({ default: 'City, Country street address' })
+  address!: string;
 
   @Column()
   @IsDate()

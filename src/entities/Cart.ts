@@ -36,7 +36,7 @@ export class Cart {
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  updateTotal(): void {
+  updateTotal (): void {
     if (this.items) {
       let total: number = 0;
       for (let i = 0; i < this.items.length; i++) {

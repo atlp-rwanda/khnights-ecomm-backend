@@ -7,6 +7,7 @@ import { User, UserInterface } from '../entities/User';
 import { v4 as uuid } from 'uuid';
 import { Product } from '../entities/Product';
 import { Category } from '../entities/Category';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 const vendor1Id = uuid();
 const vendor2Id = uuid();
@@ -109,18 +110,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const connection = getConnection();
-  const userRepository = connection.getRepository(User);
-  const categoryRepository = connection.getRepository(Category);
+  await cleanDatabase();
 
-  const productRepository = await connection.getRepository(Product).delete({});
-  if (productRepository) {
-    await userRepository.delete({});
-    await categoryRepository.delete({});
-  }
-
-  // Close the connection to the test database
-  await connection.close();
   server.close();
 });
 
@@ -456,29 +447,27 @@ describe('Vendor product management tests', () => {
 
   describe('List all products service', () => {
     it('should return all products for a given category', async () => {
-      const response = await request(app)
-        .get('/product/all')
+      const response = await request(app).get('/product/all');
 
       expect(response.status).toBe(200);
       expect(response.body.data.products).toBeDefined();
     });
-  
+
     it('should return no products for a non-existent category', async () => {
       const response = await request(app)
         .get('/product/all')
-        .query({ page: 1, limit: 10, category: 'nonexistentcategory' })
-  
+        .query({ page: 1, limit: 10, category: 'nonexistentcategory' });
+
       expect(response.status).toBe(200);
       expect(response.body.data.products).toBeUndefined();
     });
-  
+
     it('should return an error for invalid input syntax', async () => {
       const response = await request(app)
         .get('/product/all')
-        .query({ page: 'invalid', limit: 'limit', category: 'technology' })
-  
+        .query({ page: 'invalid', limit: 'limit', category: 'technology' });
+
       expect(response.status).toBe(400);
     });
   });
-  
 });
