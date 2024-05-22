@@ -7,6 +7,7 @@ import { User } from '../entities/User';
 import { v4 as uuid } from 'uuid';
 import { Product } from '../entities/Product';
 import { Category } from '../entities/Category';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 const vendor1Id = uuid();
 const vendor2Id = uuid();
@@ -143,17 +144,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const connection = getConnection();
-  const userRepository = connection.getRepository(User);
-  const categoryRepository = connection.getRepository(Category);
+  await cleanDatabase()
 
-  const productRepository = await connection.getRepository(Product).delete({});
-  if (productRepository) {
-    await userRepository.delete({});
-    await categoryRepository.delete({});
-  }
-
-  await connection.close();
   server.close();
 });
 

@@ -6,6 +6,7 @@ import { getConnection } from 'typeorm';
 import { dbConnection } from '../startups/dbConnection';
 import { User } from '../entities/User';
 import { v4 as uuid } from 'uuid';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 const adminUserId = uuid();
 
@@ -35,14 +36,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const connection = getConnection();
-  const userRepository = connection.getRepository(User);
+  await cleanDatabase()
 
-  // Delete all records from the User
-  await userRepository.delete({});
-
-  // Close the connection to the test database
-  await connection.close();
   server.close();
 });
 

@@ -5,6 +5,7 @@ import { getConnection } from 'typeorm';
 import { User } from '../entities/User';
 import { responseError } from '../utils/response.utils';
 import { v4 as uuid } from 'uuid';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 jest.mock('../utils/response.utils');
 
@@ -47,15 +48,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    const connection = getConnection();
-    const userRepository = connection.getRepository(User);
+  await cleanDatabase()
 
-    
-    // Delete all records from the User
-    await userRepository.delete({});
-
-  // Close the connection to the test database
-  await connection.close();
 });
 
 describe('Middleware - checkUserStatus', () => {

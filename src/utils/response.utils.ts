@@ -45,3 +45,11 @@ export const responseServerError = (res: Response, error: string): Response<ApiR
     })
   );
 };
+
+export const sendSuccessResponse = (res: Response, statusCode: number, message: string, data?: any) => {
+  return res.status(statusCode).json({ status: 'success', message, data });
+};
+
+export const sendErrorResponse = (res: Response, statusCode: number, message: string) => {
+  return res.status(statusCode).json({ status: 'error', message });
+};
