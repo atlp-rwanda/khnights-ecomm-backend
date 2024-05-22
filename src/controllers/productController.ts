@@ -2,22 +2,16 @@ import { Request, Response } from 'express';
 import {
  
   createProductService,
- 
   updateProductService,
- 
   removeProductImageService, 
- 
   readProductService,
   readProductsService, 
- 
   deleteProductService,
-  
   getRecommendedProductsService,
   productStatusServices,
   viewSingleProduct,
-  searchProductService
-  
-, 
+  searchProductService,
+  createPaymentIntent, 
   listAllProductsService}
 from '../services';
 
@@ -79,3 +73,7 @@ export const searchProduct = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+export const payment = async (req: Request, res:Response) => {
+  await createPaymentIntent(req, res)
+}
