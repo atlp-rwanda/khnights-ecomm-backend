@@ -29,10 +29,7 @@ const sendMail = async (message: Message) => {
     },
   });
 
-  const { subject, fullName, email, products, totalAmount,
-    quantity,
-    orderDate,
-    address } = message;
+  const { subject, fullName, email, products, totalAmount, quantity, orderDate, address } = message;
 
   const mailOptions = {
     to: email,
@@ -180,14 +177,18 @@ const sendMail = async (message: Message) => {
               <th>Quantity</th>
               <th>Total</th>
             </tr>
-            ${products.map((product: Product) => `
+            ${products
+              .map(
+                (product: Product) => `
             <tr>
               <td>${product.name}</td>
               <td>${formatMoney(product.newPrice)}</td>
               <td>${product.quantity}</td>
               <td>${product.quantity * product.newPrice}</td>
             </tr>
-            `).join('')}
+            `
+              )
+              .join('')}
             <tr>
               <td colspan="3">Total</td>
               <td>${totalAmount}</td>

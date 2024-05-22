@@ -36,7 +36,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await cleanDatabase()
+  await cleanDatabase();
 
   server.close();
 });

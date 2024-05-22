@@ -1,4 +1,3 @@
-
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { app, server } from '../index';
@@ -171,8 +170,9 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await cleanDatabase()
+  await cleanDatabase();
 
+  server.close();
 });
 
 describe('Cart management for guest/buyer', () => {
@@ -524,12 +524,12 @@ describe('Order management tests', () => {
             city: 'Test City',
             street: 'Test Street',
           },
-        }).set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        })
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
       expect(response.status).toBe(400);
     });
 
     it('should create a new order', async () => {
-
       const response = await request(app)
         .post('/product/orders')
         .send({
@@ -547,7 +547,6 @@ describe('Order management tests', () => {
     });
 
     it('should insert   a new order', async () => {
-
       const response = await request(app)
         .post('/product/orders')
         .send({
@@ -570,9 +569,8 @@ describe('Order management tests', () => {
       const response = await request(app)
         .get('/product/client/orders')
         .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
-        expect(response.status).toBe(404);
+      expect(response.status).toBe(404);
       expect(response.body.message).toBeUndefined;
-
     });
 
     it('should return 404 if the buyer has no orders', async () => {
@@ -586,13 +584,11 @@ describe('Order management tests', () => {
 
   describe('Get transaction history', () => {
     it('should return transaction history for the buyer', async () => {
-
       const response = await request(app)
         .get('/product/orders/history')
         .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
       expect(response.status).toBe(404);
       expect(response.body.message).toBe('No transaction history found');
-
     });
 
     it('should return 400 when user ID is not provided', async () => {
@@ -605,12 +601,11 @@ describe('Order management tests', () => {
 
   describe('Update order', () => {
     it('should update order status successfully', async () => {
-  
       const response = await request(app)
         .put(`/product/client/orders/${orderId}`)
         .send({ orderStatus: 'delivered' })
         .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-        expect(response.status).toBe(500);
+      expect(response.status).toBe(500);
     });
   });
 });

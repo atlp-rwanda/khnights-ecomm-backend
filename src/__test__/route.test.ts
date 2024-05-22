@@ -11,8 +11,7 @@ beforeAll(async () => {
 
 jest.setTimeout(20000);
 afterAll(async () => {
-  await cleanDatabase()
-
+  await cleanDatabase();
 
   server.close();
 });
