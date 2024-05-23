@@ -10,7 +10,7 @@ import {
   OneToMany,
   JoinTable,
 } from 'typeorm';
-import { IsNotEmpty, IsString, IsBoolean, ArrayNotEmpty, IsArray, MaxLength  } from 'class-validator';
+import { IsNotEmpty, IsString, IsBoolean, ArrayNotEmpty, IsArray, MaxLength } from 'class-validator';
 import { User } from './User';
 import { Category } from './Category';
 import { Order } from './Order';
@@ -19,7 +19,7 @@ import { Order } from './Order';
 @Unique(['id'])
 export class Product {
   static query() {
-      throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.');
   }
   @PrimaryGeneratedColumn('uuid')
   @IsNotEmpty()
