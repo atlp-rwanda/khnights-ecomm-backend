@@ -20,10 +20,16 @@ export * from './productServices/getRecommendedProductsService';
 export * from './productServices/listAllProductsService';
 export * from './productServices/productStatus';
 export * from './productServices/viewSingleProduct';
-export * from './productServices/searchProduct'
+export * from './productServices/searchProduct';
 
 // Buyer wishlist services
 export * from './wishListServices/addProduct';
 export * from './wishListServices/getProducts';
 export * from './wishListServices/removeProducts';
 export * from './wishListServices/clearAll';
+
+// cart managment
+export * from './cartServices/createCart';
+export * from './cartServices/readCart';
+export * from './cartServices/removeProductInCart';
+export * from './cartServices/clearCart';
