@@ -12,7 +12,6 @@ import { IsEmail, IsNotEmpty, IsString, IsBoolean, IsIn } from 'class-validator'
 import { roles } from '../utils/roles';
 import { Order } from './Order';
 
-
 export interface UserInterface {
   id?: string;
   firstName: string;
@@ -98,7 +97,6 @@ export class User {
 
   @OneToMany(() => Order, (order: any) => order.buyer)
   orders!: Order[];
-
 
   @CreateDateColumn()
   createdAt!: Date;
