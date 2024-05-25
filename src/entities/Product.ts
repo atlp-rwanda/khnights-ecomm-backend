@@ -9,11 +9,14 @@ import {
   ManyToMany,
   OneToMany,
   JoinTable,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { IsNotEmpty, IsString, IsBoolean, ArrayNotEmpty, IsArray, MaxLength } from 'class-validator';
 import { User } from './User';
 import { Category } from './Category';
 import { Order } from './Order';
+import { Coupon } from './coupon';
 
 @Entity()
 @Unique(['id'])
@@ -31,6 +34,10 @@ export class Product {
 
   @OneToMany(() => Order, (order: any) => order.product) // Specify the inverse side of the relationship
   orders!: Order[];
+
+  @OneToOne(() => Coupon, (coupons: any) => coupons.product)
+  @JoinColumn()
+  coupons?: Coupon;
 
   @Column()
   @IsNotEmpty()
