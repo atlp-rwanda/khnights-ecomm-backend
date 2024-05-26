@@ -1,0 +1,97 @@
+/wish-list:
+  get:
+    tags:
+      - Wish list
+    summary: Get all products in wishlist
+    description: Return all products in wish list for authenticated buyer
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Return all products in wish list for a buyer
+      '400':
+        description: Bad Request (syntax error, incorrect input format, etc..)
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden (Unauthorized action)
+      '500':
+        description: Internal server error
+
+/wish-list/add/{id}:
+  post:
+    tags:
+      - Wish list
+    summary: Add product to wish list
+    description: Adds selected product (product id) to the wish list
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Product id
+    responses:
+      '201':
+        description: Product Added to wish list
+      '400':
+        description: Bad Request (syntax error, incorrect input format, etc..)
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden (Unauthorized action)
+      '404':
+        description: Product not found in wish list
+      '500':
+        description: Internal server error
+
+/wish-list/delete/{id}:
+  delete:
+    tags:
+      - Wish list
+    summary: Remove product from wish list
+    description: Remove product from wish list for an authenticated buyer
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Product id
+    responses:
+      '200':
+        description: Product removed from wish list
+      '400':
+        description: Bad Request (syntax error, incorrect input format, etc..)
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden (Unauthorized action)
+      '404':
+        description: Product not found in wish list
+      '500':
+        description: Internal server error
+
+/wish-list/clearAll:
+  delete:
+    tags:
+      - Wish list
+    summary: Clear entire wish list
+    description: Clears entire wish list for authenticated buyer
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: All products removed successfully
+      '400':
+        description: Bad Request (syntax error, incorrect input format, etc..)
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden (Unauthorized action)
+      '500':
+        description: Internal server error
