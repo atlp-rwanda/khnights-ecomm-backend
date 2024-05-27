@@ -8,7 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { IsDate, IsNotEmpty } from 'class-validator';
+import { IsDate, IsNotEmpty, IsArray, IsIn } from 'class-validator';
 import { User } from './User';
 import { Product } from './Product';
 
@@ -36,7 +36,8 @@ export class Coupon {
 
   @Column()
   @IsNotEmpty()
-  discountType!: string;
+  @IsIn(['percentage', 'money'])
+  discountType!: 'percentage' | 'money';
 
   @Column('float')
   @IsNotEmpty()
@@ -47,9 +48,17 @@ export class Coupon {
   @IsDate()
   expirationDate?: Date;
 
+  @Column('int', { default: 0 })
+  @IsNotEmpty()
+  usageTimes!: number;
+
   @Column('int')
   @IsNotEmpty()
   maxUsageLimit!: number;
+
+  @Column('simple-array', { nullable: true, default: '' })
+  @IsArray()
+  usedBy!: string[];
 
   @CreateDateColumn()
   createdAt!: Date;

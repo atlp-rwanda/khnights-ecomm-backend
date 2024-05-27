@@ -180,3 +180,38 @@
         description: Coupon not found
       '500':
         description: Internal server error
+
+/coupons/apply:
+  post:
+    tags:
+      - Buyer Coupon Discount Management
+    summary: Give discount according to coupon code
+    description: Buyer gets discount on a product when all the checks pass
+    security:
+      - bearerAuth: []
+    consumes:
+      - application/json
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              couponCode:
+                type: string
+            required:
+              - couponCode
+    responses:
+      '200':
+        description: Successfully Got Discount
+      '400':
+        description: Bad Request (Syntax error, No coupon code provide, Coupon is expired, Coupon Discount Ended,etc)
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden (Unauthorized action)
+      '404':
+        description: Coupon not found, No cart or product with that coupon is not in cart
+      '500':
+        description: Internal server error
