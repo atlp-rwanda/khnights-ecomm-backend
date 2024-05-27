@@ -8,6 +8,7 @@ import { Product } from '../entities/Product';
 import { Category } from '../entities/Category';
 import { wishList } from '../entities/wishList';
 import { User, UserInterface } from '../entities/User';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 const buyer1Id = uuid();
 const buyer2Id = uuid();
@@ -64,22 +65,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const connection = getConnection();
-  const userRepository = connection.getRepository(User);
-  const categoryRepository = connection.getRepository(Category);
-  const wishListRepository = connection.getRepository(wishList);
-
-  // Delete all records
-  const productRepository = await connection.getRepository(Product).delete({});
-  if (productRepository) {
-    await userRepository.delete({});
-    await categoryRepository.delete({});
-  }
-  await userRepository.delete({});
-  await wishListRepository.delete({});
-
-  // Close the connection to the test database
-  await connection.close();
+  await cleanDatabase()
   server.close();
 });
 const data1 = {

@@ -17,6 +17,7 @@ import { User } from './User';
 import { Category } from './Category';
 import { Order } from './Order';
 import { Coupon } from './coupon';
+import { OrderItem } from './OrderItem';
 
 @Entity()
 @Unique(['id'])
@@ -32,8 +33,8 @@ export class Product {
   @IsNotEmpty()
   vendor!: User;
 
-  @OneToMany(() => Order, (order: any) => order.product) // Specify the inverse side of the relationship
-  orders!: Order[];
+  @OneToMany(() => OrderItem, orderItem => orderItem.product)
+  orderItems!: OrderItem[];
 
   @OneToOne(() => Coupon, (coupons: any) => coupons.product)
   @JoinColumn()

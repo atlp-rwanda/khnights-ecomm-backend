@@ -14,7 +14,11 @@ import {
   deleteProduct,
   getRecommendedProducts,
   listAllProducts,
-  singleProduct
+  singleProduct,
+  createOrder,
+  getOrders,
+  updateOrder,
+  getOrdersHistory
 } from '../controllers';
 const router = Router();
 router.get('/all', listAllProducts);
@@ -28,5 +32,9 @@ router.put('/:id', authMiddleware as RequestHandler, hasRole('VENDOR'), upload.a
 router.delete('/images/:id', authMiddleware as RequestHandler, hasRole('VENDOR'), removeProductImage);
 router.delete('/:id', authMiddleware as RequestHandler, hasRole('VENDOR'), deleteProduct);
 router.put('/availability/:id', authMiddleware as RequestHandler, hasRole('VENDOR'), productStatus);
+router.post('/orders', authMiddleware as RequestHandler, hasRole('BUYER'), createOrder);
+router.get('/client/orders', authMiddleware as RequestHandler, hasRole('BUYER'), getOrders);
+router.put('/client/orders/:orderId', authMiddleware as RequestHandler, hasRole('BUYER'), updateOrder);
+router.get('/orders/history', authMiddleware as RequestHandler, hasRole('BUYER'), getOrdersHistory);
 
 export default router;

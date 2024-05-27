@@ -5,6 +5,7 @@ import { responseError } from '../utils/response.utils';
 import { dbConnection } from '../startups/dbConnection';
 import { v4 as uuid } from 'uuid';
 import { getConnection } from 'typeorm';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 let reqMock: Partial<Request>;
 let resMock: Partial<Response>;
@@ -34,14 +35,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const connection = getConnection();
-  const userRepository = connection.getRepository(User);
-
-  // Delete all records from the User
-  await userRepository.delete({});
-
-  // Close the connection to the test database
-  await connection.close();
+  await cleanDatabase()
 });
 
 describe('hasRole MiddleWare Test', () => {

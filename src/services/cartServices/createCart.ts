@@ -11,8 +11,7 @@ export const createCartService = async (req: Request, res: Response) => {
   try {
     const { error } = validateCartItem(req.body);
     if (error) {
-      responseError(res, 400, error.details[0].message);
-      return;
+      return responseError(res, 400, error.details[0].message);
     }
 
     if (req.body.quantity < 1) {

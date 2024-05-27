@@ -7,6 +7,7 @@ import { User, UserInterface } from '../entities/User';
 import { Coupon } from '../entities/coupon';
 import { Product } from '../entities/Product';
 import { v4 as uuid } from 'uuid';
+import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
 const vendor1Id = uuid();
 const product1Id = uuid();
@@ -86,18 +87,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const connection = getConnection();
+  await cleanDatabase()
 
-  const couponRepository = connection.getRepository(Coupon);
-  await couponRepository.delete({});
-
-  const productRepository = connection.getRepository(Product);
-  await productRepository.delete({});
-
-  const userRepository = connection.getRepository(User);
-  await userRepository.delete({});
-
-  await connection.close();
   server.close();
 });
 
