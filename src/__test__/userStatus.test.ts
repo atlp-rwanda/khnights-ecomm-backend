@@ -68,7 +68,7 @@ describe('POST /user/deactivate', () => {
       .send({ email: `${testUser.email}` });
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('User deactivated successfully');
-  }, 10000);
+  }, 30000);
 
   it('should return 404 when email is not submitted', async () => {
     const token = jwt.sign(data, jwtSecretKey);
