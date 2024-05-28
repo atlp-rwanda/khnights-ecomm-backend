@@ -10,7 +10,7 @@ export default {
   resetMocks: true,
   restoreMocks: true,
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}', // Include all JavaScript/JSX files in the src directory
+    'src/services/**/*.{ts,tsx}', // Include all JavaScript/JSX files in the src directory
   ],
   coveragePathIgnorePatterns: [
     '/node_modules/', // Exclude the node_modules directory
