@@ -271,4 +271,3 @@ describe('User Entity', () => {
     expect(foundUser?.transactions.length).toBe(1);
   });
 });
-

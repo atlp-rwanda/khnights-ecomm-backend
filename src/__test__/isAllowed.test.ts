@@ -6,6 +6,7 @@ import { User } from '../entities/User';
 import { responseError } from '../utils/response.utils';
 import { v4 as uuid } from 'uuid';
 import { cleanDatabase } from './test-assets/DatabaseCleanup';
+import { server } from '..';
 
 jest.mock('../utils/response.utils');
 
@@ -19,7 +20,7 @@ const suspendedUserId = uuid();
 beforeAll(async () => {
   const connection = await dbConnection();
 
-  const userRepository = connection?.getRepository(User);
+  const userRepository = await connection?.getRepository(User);
 
   const activeUser = new User();
   activeUser.id = activeUserId;
@@ -49,6 +50,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await cleanDatabase();
+  server.close();
 });
 
 describe('Middleware - checkUserStatus', () => {
