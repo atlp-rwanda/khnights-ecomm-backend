@@ -21,7 +21,7 @@ const product2Id = uuid();
 const couponCode = 'DISCOUNT20';
 const couponCode1 = 'DISCOUNT10';
 const couponCode2 = 'DISCOUNT99';
-const couponCode3 = 'DISCOUNT22'
+const couponCode3 = 'DISCOUNT22';
 const expiredCouponCode = 'EXPIRED';
 const finishedCouponCode = 'FINISHED';
 const moneyCouponCode = 'MONEY';
@@ -199,11 +199,10 @@ beforeAll(async () => {
 
   const cartItemRepository = connection?.getRepository(CartItem);
   await cartItemRepository?.save({ ...sampleCartItem1 });
-  
 });
 
 afterAll(async () => {
-  await cleanDatabase()
+  await cleanDatabase();
 
   server.close();
 });
@@ -340,84 +339,87 @@ describe('Coupon Management System', () => {
 });
 
 describe('Buyer Coupon Application', () => {
-  describe('Checking Coupon Conditions', () =>{
+  describe('Checking Coupon Conditions', () => {
     it('should return 400 when no coupon submitted', async () => {
       const response = await request(app)
         .post(`/coupons/apply`)
         .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
 
-        expect(response.status).toBe(400);
-        expect(response.body.message).toBe('Coupon Code is required');
-    })
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Coupon Code is required');
+    });
     it('should return 404 if coupon code is not found in the database', async () => {
       const response = await request(app)
         .post(`/coupons/apply`)
         .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`)
         .send({
-          couponCode: "InvalidCode",
+          couponCode: 'InvalidCode',
         });
 
-        expect(response.status).toBe(404);
-        expect(response.body.message).toBe('Invalid Coupon Code');
-    })
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe('Invalid Coupon Code');
+    });
     it('should not allow use of expired tokens', async () => {
       const response = await request(app)
-      .post(`/coupons/apply`)
+        .post(`/coupons/apply`)
         .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`)
         .send({
           couponCode: expiredCoupon.code,
         });
 
-        expect(response.status).toBe(400);
-        expect(response.body.message).toBe('Coupon is expired');
-    })
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Coupon is expired');
+    });
     it('should not allow use of coupon that reach maximum users', async () => {
       const response = await request(app)
-      .post(`/coupons/apply`)
+        .post(`/coupons/apply`)
         .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`)
         .send({
           couponCode: finishedCoupon.code,
         });
 
-        expect(response.status).toBe(400);
-        expect(response.body.message).toBe('Coupon Discount Ended');
-    })
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Coupon Discount Ended');
+    });
     it('Should not work when the product is not in cart', async () => {
       const response = await request(app)
-      .post(`/coupons/apply`)
-      .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`)
-      .send({
+        .post(`/coupons/apply`)
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`)
+        .send({
           couponCode: sampleCoupon3.code,
         });
 
       expect(response.status).toBe(404);
-      expect(response.body.message).toBe("No product in Cart with that coupon code");
-    })
-  })
+      expect(response.body.message).toBe('No product in Cart with that coupon code');
+    });
+  });
 
-  describe("Giving discount according the the  product coupon", () => {
+  describe('Giving discount according the the  product coupon', () => {
     it('Should give discont when discount-type is percentage', async () => {
       const response = await request(app)
-      .post(`/coupons/apply`)
-      .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`)
-      .send({
+        .post(`/coupons/apply`)
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`)
+        .send({
           couponCode: sampleCoupon2.code,
         });
 
       expect(response.status).toBe(200);
-      expect(response.body.message).toBe(`Coupon Code successfully activated discount on product: ${sampleProduct1.name}`);
-    })
+      expect(response.body.message).toBe(
+        `Coupon Code successfully activated discount on product: ${sampleProduct1.name}`
+      );
+    });
     it('Should give discont when discount-type is money', async () => {
       const response = await request(app)
-      .post(`/coupons/apply`)
-      .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`)
-      .send({
+        .post(`/coupons/apply`)
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`)
+        .send({
           couponCode: moneyCoupon.code,
         });
 
       expect(response.status).toBe(200);
-      expect(response.body.message).toBe(`Coupon Code successfully activated discount on product: ${sampleProduct1.name}`);
-    })
-  })
-
-})
+      expect(response.body.message).toBe(
+        `Coupon Code successfully activated discount on product: ${sampleProduct1.name}`
+      );
+    });
+  });
+});

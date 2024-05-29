@@ -4,7 +4,7 @@ import { updateCouponService } from '../services/couponServices/updateService';
 import { deleteCouponService } from '../services/couponServices/deleteCoupon';
 import { accessAllCouponService } from '../services/couponServices/accessAllCoupon';
 import { readCouponService } from '../services/couponServices/readCoupon';
-import { buyerApplyCouponService } from '../services/couponServices/buyerApplyCoupon'
+import { buyerApplyCouponService } from '../services/couponServices/buyerApplyCoupon';
 
 export const createCoupon = async (req: Request, res: Response) => {
   await createCouponService(req, res);

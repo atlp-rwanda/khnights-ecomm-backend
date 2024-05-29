@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app, server } from '../index';
-import { createConnection, getConnection, getConnectionOptions, getRepository } from 'typeorm';
+import { createConnection, getRepository } from 'typeorm';
 import { User } from '../entities/User';
 import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
@@ -9,7 +9,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await cleanDatabase()
+  await cleanDatabase();
   server.close();
 });
 

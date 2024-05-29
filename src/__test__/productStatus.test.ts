@@ -144,7 +144,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await cleanDatabase()
+  await cleanDatabase();
 
   server.close();
 });
@@ -222,22 +222,16 @@ describe('Vendor product availability status management tests', () => {
   });
 });
 
-
 describe('search product by name availability tests', () => {
   it('Should search product by name', async () => {
-    const response = await request(app)
-      .get(`/product/search?name=testingmkknkkjiproduct4`)
+    const response = await request(app).get(`/product/search?name=testingmkknkkjiproduct4`);
     expect(response.body.data).toBeDefined;
   }, 10000);
 
   it('should return empty array if there is product is not found in the database', async () => {
-    const response = await request(app)
-      .put(`/product/search?name=home`)
-
+    const response = await request(app).put(`/product/search?name=home`);
 
     expect(response.statusCode).toBe(401);
     expect(response.body.data).toBeUndefined;
   });
-
-  });
-
+});
