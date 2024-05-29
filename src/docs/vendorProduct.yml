@@ -35,7 +35,7 @@
         description: The id of product
     responses:
       '200':
-        description: Return info for the product 
+        description: Return info for the product
       '400':
         description: Bad Request (syntax error, incorrect input format, etc..)
       '401':
@@ -59,7 +59,7 @@
     requestBody:
       required: true
       content:
-         application/json:
+        application/json:
           schema:
             type: object
             properties:
@@ -75,10 +75,10 @@
                 type: file
               categories:
                 oneOf:
-                    - type: string
-                    - type: array
-                      items:
-                        type: string
+                  - type: string
+                  - type: array
+                    items:
+                      type: string
                 example: "'category' or ['category1', 'category2', ...]"
               expirationDate:
                 type: string
@@ -159,7 +159,7 @@
         description: Product not found
       '500':
         description: Internal server error
-  
+
 /product/images/{id}:
   delete:
     tags:

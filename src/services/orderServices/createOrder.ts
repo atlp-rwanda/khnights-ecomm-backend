@@ -8,6 +8,9 @@ import { Cart } from '../../entities/Cart';
 import { Transaction } from '../../entities/transaction';
 import { responseError, sendErrorResponse, sendSuccessResponse } from '../../utils/response.utils';
 import sendMail from '../../utils/sendOrderMail';
+import { VendorOrders } from '../../entities/vendorOrders';
+import { CartItem } from '../../entities/CartItem';
+import { VendorOrderItem } from '../../entities/VendorOrderItem';
 
 export const createOrderService = async (req: Request, res: Response) => {
   const { cartId, address } = req.body;
@@ -76,7 +79,6 @@ export const createOrderService = async (req: Request, res: Response) => {
     await getManager().transaction(async transactionalEntityManager => {
       for (const item of cart.items) {
         const product = item.product;
-        product.quantity -= item.quantity;
         await transactionalEntityManager.save(Product, product);
       }
 
@@ -118,14 +120,67 @@ export const createOrderService = async (req: Request, res: Response) => {
 
     const message = {
       subject: 'Order created successfully',
-      ...orderResponse
+      ...orderResponse,
     };
 
     await sendMail(message);
 
+    // separate order by each vendor getting order related to his products
+    await saveVendorRelatedOrder(newOrder, cart.items);
+
     return sendSuccessResponse(res, 201, 'Order created successfully', orderResponse);
   } catch (error) {
-    console.error('Error creating order:', error);
     return sendErrorResponse(res, 500, (error as Error).message);
+  }
+};
+
+const saveVendorRelatedOrder = async (order: Order, CartItem: CartItem[]) => {
+  try {
+    for (const item of CartItem) {
+      const productRepository = getRepository(Product);
+
+      const product = await productRepository.findOne({
+        where: {
+          id: item.product.id,
+        },
+        relations: ['vendor'],
+      });
+
+      if (!product) return;
+
+      const orderItem = new VendorOrderItem();
+      orderItem.product = product;
+      orderItem['price/unit'] = product.newPrice;
+      orderItem.quantity = item.quantity;
+
+      const vendorOrdersRepository = getRepository(VendorOrders);
+      let vendorOrders = await vendorOrdersRepository.findOne({
+        where: {
+          vendor: {
+            id: product.vendor.id,
+          },
+          order: {
+            id: order.id,
+          },
+        },
+        relations: ['vendorOrderItems'],
+      });
+
+      if (vendorOrders) {
+        vendorOrders.totalPrice = Number(vendorOrders.totalPrice) + +product.newPrice * +item.quantity;
+        vendorOrders.vendorOrderItems = [...vendorOrders.vendorOrderItems, orderItem];
+      } else {
+        const newVendorOrders = new VendorOrders();
+        newVendorOrders.vendor = product.vendor;
+        newVendorOrders.vendorOrderItems = [orderItem];
+        newVendorOrders.order = order;
+        newVendorOrders.totalPrice = +product.newPrice * item.quantity;
+        vendorOrders = newVendorOrders;
+      }
+
+      await vendorOrdersRepository.save(vendorOrders);
+    }
+  } catch (error) {
+    console.log((error as Error).message);
   }
 };

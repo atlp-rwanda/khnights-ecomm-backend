@@ -21,7 +21,7 @@ export const removeProductImageService = async (req: Request, res: Response) => 
   const product = await productRepository.findOne({
     where: {
       id,
-      vendor: { id: req.user?.id }
+      vendor: { id: req.user?.id },
     },
     relations: ['vendor'],
   });

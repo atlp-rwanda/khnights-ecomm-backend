@@ -99,7 +99,7 @@ export class User {
   @OneToMany(() => Order, (order: any) => order.buyer)
   orders!: Order[];
 
-  @OneToMany(() => Transaction, (transaction) => transaction.user)
+  @OneToMany(() => Transaction, transaction => transaction.user)
   transactions!: Transaction[];
 
   @CreateDateColumn()
@@ -112,7 +112,7 @@ export class User {
   accountBalance!: number;
 
   @BeforeInsert()
-  setRole(): void {
+  setRole (): void {
     this.role = this.userType === 'Vendor' ? roles.vendor : roles.buyer;
   }
 }

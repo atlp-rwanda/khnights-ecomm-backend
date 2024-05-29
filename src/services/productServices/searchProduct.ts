@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 import { getRepository, Like } from 'typeorm';
 import { Product } from '../../entities/Product';
 
@@ -26,10 +26,7 @@ export const searchProductService = async (params: SearchProductParams) => {
 
   const skip = (page - 1) * limit;
 
-  const [products, total] = await query
-    .skip(skip)
-    .take(limit)
-    .getManyAndCount();
+  const [products, total] = await query.skip(skip).take(limit).getManyAndCount();
 
   const totalPages = Math.ceil(total / limit);
 
