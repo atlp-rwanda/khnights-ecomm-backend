@@ -23,6 +23,8 @@ export const getTransactionHistoryService = async (req: Request, res: Response) 
       id: transaction.id,
       amount: transaction.amount,
       type: transaction.type,
+      previousBalance: transaction.previousBalance,
+      currentBalance: transaction.currentBalance,
       description: transaction.description,
       createdAt: transaction.createdAt,
       order: transaction.order
