@@ -10,7 +10,8 @@ import {
   productStatusServices,
   viewSingleProduct,
   searchProductService,
-  listAllProductsService,
+  listAllProductsService, 
+  confirmPayment,
 } from '../services';
 
 export const readProduct = async (req: Request, res: Response) => {
@@ -69,4 +70,7 @@ export const searchProduct = async (req: Request, res: Response) => {
     console.error('Error searching products:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
+};
+export const Payment = async (req: Request, res: Response) => {
+  await confirmPayment(req, res);
 };

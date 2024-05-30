@@ -1,6 +1,6 @@
 import { RequestHandler, Router } from 'express';
 
-import { productStatus, searchProduct } from '../controllers/index';
+import { productStatus, searchProduct, } from '../controllers/index';
 import { hasRole } from '../middlewares/roleCheck';
 import upload from '../middlewares/multer';
 import { authMiddleware } from '../middlewares/verifyToken';
@@ -18,7 +18,7 @@ import {
   createOrder,
   getOrders,
   updateOrder,
-  getOrdersHistory,
+  getOrdersHistory,Payment,
   getSingleVendorOrder,
   getVendorOrders,
   updateVendorOrder,
@@ -54,5 +54,6 @@ router.put('/vendor/orders/:id', authMiddleware as RequestHandler, hasRole('VEND
 router.get('/admin/orders', authMiddleware as RequestHandler, hasRole('ADMIN'), getBuyerVendorOrders);
 router.get('/admin/orders/:id', authMiddleware as RequestHandler, hasRole('ADMIN'), getSingleBuyerVendorOrder);
 router.put('/admin/orders/:id', authMiddleware as RequestHandler, hasRole('ADMIN'), updateBuyerVendorOrder);
+router.post('/payment/:id', authMiddleware as RequestHandler, hasRole('BUYER'), Payment)
 
 export default router;

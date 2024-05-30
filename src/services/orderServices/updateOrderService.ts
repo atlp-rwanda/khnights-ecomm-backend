@@ -93,7 +93,7 @@ export const updateOrderService = async (req: Request, res: Response) => {
       return sendSuccessResponse(res, 200, 'Order updated successfully', orderResponse);
     });
   } catch (error) {
-    console.error('Error updating order:', error);
+    console.error('Error updating order:', (error as Error).message);
     return sendErrorResponse(res, 500, (error as Error).message);
   }
 };
