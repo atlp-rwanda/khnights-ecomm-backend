@@ -5,6 +5,7 @@ import productRoutes from './ProductRoutes';
 import wishListRoutes from './wishListRoute';
 import couponRoute from './couponRoutes';
 import cartRoutes from './CartRoutes';
+import feedbackRoute from './feedbackRoutes';
 
 const router = Router();
 
@@ -17,5 +18,6 @@ router.use('/product', productRoutes);
 router.use('/wish-list', wishListRoutes);
 router.use('/cart', cartRoutes);
 router.use('/coupons', couponRoute);
+router.use('/feedback', feedbackRoute);
 
 export default router;

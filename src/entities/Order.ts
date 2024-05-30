@@ -11,6 +11,7 @@ import { IsNotEmpty, IsNumber, IsDate, IsIn } from 'class-validator';
 import { User } from './User';
 import { OrderItem } from './OrderItem';
 import { Transaction } from './transaction';
+import { Feedback } from './Feedback';
 
 @Entity()
 export class Order {
@@ -33,6 +34,10 @@ export class Order {
 
   @OneToMany(() => Transaction, transaction => transaction.order)
   transactions!: Transaction[];
+
+  @OneToMany(() => Feedback, feedback => feedback.order)
+  feedbacks!: Feedback[];
+
   @Column({ default: 'order placed' })
   @IsNotEmpty()
   @IsIn([

@@ -30,6 +30,7 @@ export const getRecommendedProductsService = async (req: Request, res: Response)
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.categories', 'category')
       .leftJoinAndSelect('product.vendor', 'vendor')
+      .leftJoinAndSelect('product.feedbacks', 'feedbacks')
       .where('1 = 1');
 
     if (condition.categories && condition.categories.length > 0) {
