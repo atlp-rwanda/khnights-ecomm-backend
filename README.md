@@ -72,6 +72,24 @@ logger.debug('This is a debug message');
   npm test
   ```
 
+### Setting up docker and using it
+
+- Download and install docker
+  ```
+  https://www.docker.com/products/docker-desktop/
+  ```
+- Download Subsystem for Linux for none linux users
+- Set environment varibles like database host to postgresdb
+
+- Building the image, you must navigate to the project directory in the terminal, then run
+  ```
+  docker-compose up --build
+  ```
+- Stoping docker-compose container, run
+  ```
+  docker-compose down
+  ```  
+  
 ## Authors
 
 - [Maxime Mizero](https://github.com/maxCastro1)
