@@ -21,7 +21,7 @@ export * from './productServices/listAllProductsService';
 export * from './productServices/productStatus';
 export * from './productServices/viewSingleProduct';
 export * from './productServices/searchProduct';
-export * from './productServices/payment'
+export * from './productServices/payment';
 
 // Buyer wishlist services
 export * from './wishListServices/addProduct';
@@ -42,3 +42,8 @@ export * from './vendorOrderServices/updateVendorOrder';
 // vendor order management
 export * from './adminOrderServices/readOrder';
 export * from './adminOrderServices/updateOrder';
+
+// Nofication management
+export * from './notificationServices/getNotifications';
+export * from './notificationServices/deleteNotification';
+export * from './notificationServices/updateNotification';

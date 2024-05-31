@@ -13,6 +13,7 @@ import { IsEmail, IsNotEmpty, IsString, IsBoolean, IsIn } from 'class-validator'
 import { roles } from '../utils/roles';
 import { Order } from './Order';
 import { Transaction } from './transaction';
+import { Feedback } from './Feedback';
 
 export interface UserInterface {
   id?: string;
@@ -111,6 +112,8 @@ export class User {
 
   @Column({ type: 'numeric', precision: 24, scale: 2, default: 0 })
   accountBalance!: number;
+  @OneToMany(() => Feedback, feedback => feedback.product)
+  feedbacks!: Feedback[];
 
   @BeforeInsert()
   setRole (): void {

@@ -19,11 +19,12 @@ import { Order } from './Order';
 import { Coupon } from './coupon';
 import { OrderItem } from './OrderItem';
 import { VendorOrderItem } from './VendorOrderItem';
+import { Feedback } from './Feedback';
 
 @Entity()
 @Unique(['id'])
 export class Product {
-  static query () {
+  static query() {
     throw new Error('Method not implemented.');
   }
   @PrimaryGeneratedColumn('uuid')
@@ -39,6 +40,8 @@ export class Product {
 
   @OneToMany(() => VendorOrderItem, vendorOrderItems => vendorOrderItems.product)
   vendorOrderItems!: VendorOrderItem[];
+  @OneToMany(() => Feedback, feedback => feedback.product)
+  feedbacks!: Feedback[];
 
   @OneToOne(() => Coupon, (coupons: any) => coupons.product)
   @JoinColumn()

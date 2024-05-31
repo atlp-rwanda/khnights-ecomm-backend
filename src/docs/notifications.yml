@@ -1,0 +1,126 @@
+/notification:
+  get:
+    tags:
+      - Notification Management
+    summary: Get all user notifications
+    description: Return all user notifications of an authenticated buyer
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Return all user notifications for a user
+      '400':
+        description: Bad Request (syntax error, incorrect input format, etc..)
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden (Unauthorized action)
+      '500':
+        description: Internal server error
+
+  delete:
+    tags:
+      - Notification Management
+    summary: Delete selected notifications
+    description: Delete all selected notification for an authenticated buyer
+    security:
+      - bearerAuth: []
+    consumes:
+      - application/json
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              notificationIds:
+                example: "[]"
+    responses:
+      '200':
+        description: Notifications deleted successfully
+      '400':
+        description: Bad Request (syntax error, incorrect input format, etc..)
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden (Unauthorized action)
+      '404':
+        description: Notification not found
+      '500':
+        description: Internal server error
+        
+  put:
+    tags:
+      - Notification Management
+    summary: Update selected notifications
+    description: Update selected notifications for an authenticated buyer
+    security:
+      - bearerAuth: []
+    consumes:
+      - application/json
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              notificationIds:
+                example: "[]"
+    responses:
+      '200':
+        description: Notification updated successfully
+      '400':
+        description: Bad Request (syntax error, incorrect input format, etc..)
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden (Unauthorized action)
+      '404':
+        description: Notification not found
+      '500':
+        description: Internal server error
+
+/notification/all:
+  delete:
+    tags:
+      - Notification Management
+    summary: Delete all notifications
+    description: Delete all notification for an authenticated buyer
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: All notifications deleted successfully
+      '400':
+        description: Bad Request (syntax error, incorrect input format, etc..)
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden (Unauthorized action)
+      '404':
+        description: Notification not found
+      '500':
+        description: Internal server error
+        
+  put:
+    tags:
+      - Notification Management
+    summary: Update all notifications
+    description: Update all notifications for an authenticated buyer
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Notification updated successfully
+      '400':
+        description: Bad Request (syntax error, incorrect input format, etc..)
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden (Unauthorized action)
+      '404':
+        description: Notification not found
+      '500':
+        description: Internal server error

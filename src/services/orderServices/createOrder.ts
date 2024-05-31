@@ -11,6 +11,7 @@ import sendMail from '../../utils/sendOrderMail';
 import { VendorOrders } from '../../entities/vendorOrders';
 import { CartItem } from '../../entities/CartItem';
 import { VendorOrderItem } from '../../entities/VendorOrderItem';
+import { sendNotification } from '../../utils/sendNotification';
 
 export const createOrderService = async (req: Request, res: Response) => {
   const { cartId, address } = req.body;
@@ -59,15 +60,6 @@ export const createOrderService = async (req: Request, res: Response) => {
       orderItem.quantity = item.quantity;
       orderItems.push(orderItem);
     }
-
-    if (!buyer.accountBalance || buyer.accountBalance < totalPrice) {
-      return sendErrorResponse(res, 400, 'Not enough funds to perform this transaction');
-    }
-
-    const previousBalance = buyer.accountBalance;
-    buyer.accountBalance -= totalPrice;
-    const currentBalance = buyer.accountBalance;
-
     const newOrder = new Order();
     newOrder.buyer = buyer;
     newOrder.totalPrice = totalPrice;
@@ -94,8 +86,6 @@ export const createOrderService = async (req: Request, res: Response) => {
       orderTransaction.user = buyer;
       orderTransaction.order = newOrder;
       orderTransaction.amount = totalPrice;
-      orderTransaction.previousBalance = previousBalance;
-      orderTransaction.currentBalance = currentBalance;
       orderTransaction.type = 'debit';
       orderTransaction.description = 'Purchase of products';
       await transactionalEntityManager.save(Transaction, orderTransaction);
@@ -105,6 +95,7 @@ export const createOrderService = async (req: Request, res: Response) => {
     });
 
     const orderResponse = {
+      id: newOrder.id,
       fullName: `${newOrder.buyer.firstName} ${newOrder.buyer.lastName}`,
       email: newOrder.buyer.email,
       products: orderItems.map(item => ({
@@ -138,6 +129,7 @@ const saveVendorRelatedOrder = async (order: Order, CartItem: CartItem[]) => {
   try {
     for (const item of CartItem) {
       const productRepository = getRepository(Product);
+      let sendNotif: boolean = false
 
       const product = await productRepository.findOne({
         where: {
@@ -174,11 +166,22 @@ const saveVendorRelatedOrder = async (order: Order, CartItem: CartItem[]) => {
         newVendorOrders.vendor = product.vendor;
         newVendorOrders.vendorOrderItems = [orderItem];
         newVendorOrders.order = order;
-        newVendorOrders.totalPrice = +product.newPrice * item.quantity;
+        newVendorOrders.totalPrice = product.newPrice * item.quantity;
         vendorOrders = newVendorOrders;
+
+        sendNotif = true;
       }
 
       await vendorOrdersRepository.save(vendorOrders);
+
+      if (sendNotif) {
+        await sendNotification({
+          content: `Buyer "${vendorOrders.order.buyer.firstName} ${vendorOrders.order.buyer.lastName}" has added one of your products to their order. Please confirm that you'll be able to deliver it.`,
+          type: 'order',
+          user: vendorOrders.vendor,
+          link: `/product/vendor/orders/${vendorOrders.id}`
+        });
+      }
     }
   } catch (error) {
     console.log((error as Error).message);

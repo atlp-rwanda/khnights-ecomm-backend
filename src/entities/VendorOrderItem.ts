@@ -10,11 +10,11 @@ export class VendorOrderItem {
   @IsNotEmpty()
   'id'!: string;
 
-  @ManyToOne(() => VendorOrders, order => order.vendorOrderItems)
+  @ManyToOne(() => VendorOrders, order => order.vendorOrderItems, {onDelete: 'CASCADE'})
   @IsNotEmpty()
   'order'!: VendorOrders;
 
-  @ManyToOne(() => Product, product => product.vendorOrderItems)
+  @ManyToOne(() => Product, product => product.vendorOrderItems, {onDelete: 'CASCADE'})
   @IsNotEmpty()
   'product'!: Product;
 
