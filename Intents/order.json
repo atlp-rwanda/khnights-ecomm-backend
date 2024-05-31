@@ -1,0 +1,12 @@
+{
+    "intent": "order_status",
+    "utterances": [
+      "What is my order status",
+      "I want to know my return status",
+      "How to return status"
+    ],
+    "responses": [
+      "Please visit the My Orders page for a list of your confirmed orders."
+    ]
+  }
+  

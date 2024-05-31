@@ -1,0 +1,14 @@
+{
+    "intent": "demandin_refund",
+    "utterances": [
+      "Can I refund an item.",
+      "I want to refund an item",
+      "can I refund my order",
+      "Are refunds available"
+    ],
+    "responses": [
+      "Refund can only be issued within 7 days of placement. Digital goods do not qualify for refund.",
+      "Visit my orders page to check for specific orders."
+    ]
+  }
+  

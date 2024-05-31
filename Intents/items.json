@@ -1,0 +1,23 @@
+{
+    "intent": "items",
+    "utterances": [
+      "Which items do you have?",
+      "What kinds of items are there?",
+      "What do you sell?",
+      "What do you offer?",
+      "What can I buy?",
+      "I'm looking for...", 
+      "Do you have any...",  
+      "I'm interested in...",  
+      "Can I see what you have in...", 
+      "I want to buy a...",  
+      "I'm looking for something like this...",  
+      "What are your most popular items?",
+      "What are some of your best deals?",
+      "Do you have any new arrivals?"
+    ],
+    "responses": [
+      "Search your preference in our flagship store's search bar to see all available products. "
+    ]
+  }
+  

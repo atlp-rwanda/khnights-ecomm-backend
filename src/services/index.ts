@@ -42,3 +42,7 @@ export * from './vendorOrderServices/updateVendorOrder';
 // vendor order management
 export * from './adminOrderServices/readOrder';
 export * from './adminOrderServices/updateOrder';
+
+// chatbot 
+
+export * from './chatbotServices/chatBot';
