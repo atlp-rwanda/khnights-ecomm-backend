@@ -102,9 +102,6 @@ async function processRefund (order: Order, entityManager: EntityManager) {
   const buyer = order.buyer;
 
   // Refund buyer
-  const previousBalance = buyer.accountBalance;
-  buyer.accountBalance += order.totalPrice;
-  const currentBalance = buyer.accountBalance;
   await entityManager.save(buyer);
 
   // Record refund transaction
@@ -112,8 +109,6 @@ async function processRefund (order: Order, entityManager: EntityManager) {
   refundTransaction.user = buyer;
   refundTransaction.order = order;
   refundTransaction.amount = order.totalPrice;
-  refundTransaction.previousBalance = previousBalance;
-  refundTransaction.currentBalance = currentBalance;
   refundTransaction.type = 'credit';
   refundTransaction.description = 'Refund for cancelled or returned order';
   await entityManager.save(refundTransaction);

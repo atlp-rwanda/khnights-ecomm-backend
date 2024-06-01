@@ -59,15 +59,6 @@ export const createOrderService = async (req: Request, res: Response) => {
       orderItem.quantity = item.quantity;
       orderItems.push(orderItem);
     }
-
-    if (!buyer.accountBalance || buyer.accountBalance < totalPrice) {
-      return sendErrorResponse(res, 400, 'Not enough funds to perform this transaction');
-    }
-
-    const previousBalance = buyer.accountBalance;
-    buyer.accountBalance -= totalPrice;
-    const currentBalance = buyer.accountBalance;
-
     const newOrder = new Order();
     newOrder.buyer = buyer;
     newOrder.totalPrice = totalPrice;
@@ -94,8 +85,6 @@ export const createOrderService = async (req: Request, res: Response) => {
       orderTransaction.user = buyer;
       orderTransaction.order = newOrder;
       orderTransaction.amount = totalPrice;
-      orderTransaction.previousBalance = previousBalance;
-      orderTransaction.currentBalance = currentBalance;
       orderTransaction.type = 'debit';
       orderTransaction.description = 'Purchase of products';
       await transactionalEntityManager.save(Transaction, orderTransaction);
@@ -105,6 +94,7 @@ export const createOrderService = async (req: Request, res: Response) => {
     });
 
     const orderResponse = {
+      id: newOrder.id,
       fullName: `${newOrder.buyer.firstName} ${newOrder.buyer.lastName}`,
       email: newOrder.buyer.email,
       products: orderItems.map(item => ({
@@ -174,7 +164,7 @@ const saveVendorRelatedOrder = async (order: Order, CartItem: CartItem[]) => {
         newVendorOrders.vendor = product.vendor;
         newVendorOrders.vendorOrderItems = [orderItem];
         newVendorOrders.order = order;
-        newVendorOrders.totalPrice = +product.newPrice * item.quantity;
+        newVendorOrders.totalPrice = product.newPrice * item.quantity;
         vendorOrders = newVendorOrders;
       }
 

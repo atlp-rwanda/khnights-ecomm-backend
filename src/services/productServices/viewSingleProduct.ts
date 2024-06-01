@@ -13,7 +13,7 @@ export const viewSingleProduct = async (req: Request, res: Response) => {
     }
     if (productId) {
       const products = getRepository(Product);
-      const product = await products.findOneBy({ id: productId });
+      const product = await products.findOne({ where: { id: productId }, relations: ['categories', 'vendor', 'feedbacks'], });
 
       if (!product) {
         return res.status(404).send({ status: 'error', message: 'Product not found' });

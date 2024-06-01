@@ -26,7 +26,6 @@ import {
   getSingleBuyerVendorOrder,
   updateBuyerVendorOrder,
 } from '../controllers';
-
 const router = Router();
 router.get('/all', listAllProducts);
 router.get('/recommended', authMiddleware as RequestHandler, hasRole('BUYER'), getRecommendedProducts);
