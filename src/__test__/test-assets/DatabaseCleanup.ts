@@ -12,11 +12,15 @@ import { User } from '../../entities/User';
 import { server } from '../..';
 import { VendorOrderItem } from '../../entities/VendorOrderItem';
 import { VendorOrders } from '../../entities/vendorOrders';
+import { Feedback } from '../../entities/Feedback';
+import { NotificationItem } from '../../entities/NotificationItem';
+import { Notification } from '../../entities/Notification';
 
 export const cleanDatabase = async () => {
   const connection = getConnection();
 
   // Delete from child tables first
+  await connection.getRepository(Feedback).delete({});
   await connection.getRepository(Transaction).delete({});
   await connection.getRepository(Coupon).delete({});
   await connection.getRepository(VendorOrderItem).delete({});
@@ -26,6 +30,8 @@ export const cleanDatabase = async () => {
   await connection.getRepository(CartItem).delete({});
   await connection.getRepository(Cart).delete({});
   await connection.getRepository(wishList).delete({});
+  await connection.getRepository(NotificationItem).delete({});
+  await connection.getRepository(Notification).delete({});
 
   // Many-to-Many relations
   // Clear junction table entries before deleting products and categories

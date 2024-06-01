@@ -5,6 +5,8 @@ import productRoutes from './ProductRoutes';
 import wishListRoutes from './wishListRoute';
 import couponRoute from './couponRoutes';
 import cartRoutes from './CartRoutes';
+import feedbackRoute from './feedbackRoutes';
+import notificationRoute from './NoficationRoutes'
 
 const router = Router();
 
@@ -17,5 +19,7 @@ router.use('/product', productRoutes);
 router.use('/wish-list', wishListRoutes);
 router.use('/cart', cartRoutes);
 router.use('/coupons', couponRoute);
+router.use('/feedback', feedbackRoute);
+router.use('/notification', notificationRoute);
 
 export default router;
