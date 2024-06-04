@@ -11,6 +11,7 @@ import sendMail from '../../utils/sendOrderMail';
 import { VendorOrders } from '../../entities/vendorOrders';
 import { CartItem } from '../../entities/CartItem';
 import { VendorOrderItem } from '../../entities/VendorOrderItem';
+import { sendNotification } from '../../utils/sendNotification';
 
 export const createOrderService = async (req: Request, res: Response) => {
   const { cartId, address } = req.body;
@@ -128,6 +129,7 @@ const saveVendorRelatedOrder = async (order: Order, CartItem: CartItem[]) => {
   try {
     for (const item of CartItem) {
       const productRepository = getRepository(Product);
+      let sendNotif: boolean = false
 
       const product = await productRepository.findOne({
         where: {
@@ -166,9 +168,20 @@ const saveVendorRelatedOrder = async (order: Order, CartItem: CartItem[]) => {
         newVendorOrders.order = order;
         newVendorOrders.totalPrice = product.newPrice * item.quantity;
         vendorOrders = newVendorOrders;
+
+        sendNotif = true;
       }
 
       await vendorOrdersRepository.save(vendorOrders);
+
+      if (sendNotif) {
+        await sendNotification({
+          content: `Buyer "${vendorOrders.order.buyer.firstName} ${vendorOrders.order.buyer.lastName}" has added one of your products to their order. Please confirm that you'll be able to deliver it.`,
+          type: 'order',
+          user: vendorOrders.vendor,
+          link: `/product/vendor/orders/${vendorOrders.id}`
+        });
+      }
     }
   } catch (error) {
     console.log((error as Error).message);

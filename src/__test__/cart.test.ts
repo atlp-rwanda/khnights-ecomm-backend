@@ -206,7 +206,7 @@ describe('Cart| Order  management for guest/buyer', () => {
 
       expect(response.status).toBe(201);
       expect(response.body.data.product).toBeDefined;
-    }, 60000);
+    });
 
     it('return an error if the number of product images exceeds 6', async () => {
       const response = await request(app)
@@ -417,6 +417,33 @@ describe('Cart| Order  management for guest/buyer', () => {
         orderId = response.body.data.orders[0]?.id;
         productId = response.body.data.orders[0]?.orderItems[0]?.product?.id;
       });
+
+
+      it('should get single order', async () => {
+        const response = await request(app)
+          .get(`/product/client/orders/${orderId}`)
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.data.order).toBeDefined();
+      });
+
+      it('should not return data for single order, if order doesn\'t exist', async () => {
+        const response = await request(app)
+          .get(`/product/client/orders/${uuid()}`)
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+        expect(response.status).toBe(404);
+      });
+      
+      it('should not return data for single order, for an incorrect id syntax', async () => {
+        const response = await request(app)
+          .get(`/product/client/orders/incorrectId`)
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+        expect(response.status).toBe(400);
+      });
+
       it('should return 404 if the buyer has no orders', async () => {
         const response = await request(app)
           .get('/product/client/orders')
