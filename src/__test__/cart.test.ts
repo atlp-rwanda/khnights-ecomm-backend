@@ -394,8 +394,9 @@ describe('Cart| Order  management for guest/buyer', () => {
     let productId: any;
     let feedbackId: any;
     let feedback2Id: any;
+
     describe('Create order', () => {
-      it('should return 400 when user ID is not provided', async () => {
+      it('should return 201 when user is found', async () => {
         const response = await request(app)
           .post('/product/orders')
           .send({
@@ -433,11 +434,11 @@ describe('Cart| Order  management for guest/buyer', () => {
         expect(response.body.message).toBe('Transaction history retrieved successfully');
       });
 
-      it('should return 400 when user ID is not provided', async () => {
+      it('should return 400 when user is not AUTHORIZED', async () => {
         const response = await request(app)
           .get('/product/orders/history')
-          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-        expect(response.status).toBe(200);
+          .set('Authorization', `Bearer ''`);
+        expect(response.status).toBe(403);
       });
     });
 

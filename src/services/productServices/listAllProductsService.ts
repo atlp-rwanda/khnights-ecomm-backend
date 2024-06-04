@@ -40,8 +40,8 @@ export const listAllProductsService = async (req: Request, res: Response) => {
       return responseSuccess(res, 200, 'No products found');
     }
 
-        return responseSuccess(res, 200, 'Products retrieved', { products });
-    } catch (error) {
-        responseError(res, 400, (error as Error).message);
-    }
+    return responseSuccess(res, 200, 'Products retrieved', { products });
+  } catch (error) {
+    responseError(res, 400, (error as Error).message);
+  }
 };

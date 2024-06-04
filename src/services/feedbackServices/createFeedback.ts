@@ -5,6 +5,7 @@ import { Product } from '../../entities/Product';
 import { User } from '../../entities/User';
 import { responseError, responseSuccess } from '../../utils/response.utils';
 import { Order } from '../../entities/Order';
+import { sendNotification } from '../../utils/sendNotification';
 
 interface AuthRequest extends Request {
   user?: User;
@@ -21,12 +22,12 @@ export const createFeedbackService = async (req: Request, res: Response) => {
     if (!orderId) {
       return responseError(res, 404, `Your feedback can't be recorded at this time Your order doesn't exist `);
     }
-    const product = await productRepository.findOne({ where: { id: productId } });
+    const product = await productRepository.findOne({ where: { id: productId }, relations: ['vendor'] });
     if (!product) {
       return responseError(res, 404, `Your feedback can't be recorded at this time product not found`);
     }
-    const order = await orderRepository.findBy({ id: orderId, orderStatus: 'completed', buyer: { id: req.user?.id }, orderItems: { product: { id: productId } } })
-    if (!order.length) {
+    const order = await orderRepository.findOne({ where: {id: orderId, orderStatus: 'completed', buyer: { id: req.user?.id }, orderItems: { product: { id: productId } }}, relations: ['buyer'] })
+    if (!order) {
       return responseError(res, 404, `Your feedback can't be recorded at this time Your order haven't been completed yet or doesn't contain this product`);
     }
 
@@ -36,6 +37,13 @@ export const createFeedbackService = async (req: Request, res: Response) => {
     feedback.product = product;
 
     await feedbackRepository.save(feedback);
+
+    await sendNotification({
+      content: `Buyer: "${order.buyer.firstName} ${order.buyer.lastName}" sent feedback on product: ${product.name}`,
+      type: "product",
+      user: product.vendor,
+      link: `/product/collection/${product.id}`
+    })
 
     return responseSuccess(res, 201, 'Feedback created successfully', feedback);
   } catch (error) {

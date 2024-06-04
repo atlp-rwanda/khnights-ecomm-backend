@@ -5,6 +5,7 @@ import productRoutes from './ProductRoutes';
 import wishListRoutes from './wishListRoute';
 import couponRoute from './couponRoutes';
 import cartRoutes from './CartRoutes';
+import notificationRoute from './NoficationRoutes'
 import feedbackRoute from './feedbackRoutes';
 import { authMiddleware } from '../middlewares/verifyToken';
 
@@ -36,5 +37,7 @@ router.get('/test/secure', authMiddleware as RequestHandler, (req: Request, res:
 router.get('/test/error', (req: Request, res: Response) => {
   responseServerError(res, 'This is server error route.');
 });
+router.use('/feedback', feedbackRoute);
+router.use('/notification', notificationRoute);
 
 export default router;

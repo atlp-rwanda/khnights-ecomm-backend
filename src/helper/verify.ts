@@ -13,7 +13,7 @@ export const verifiedToken = (token: string): any => {
   try {
     return jwt.verify(token, jwtSecretKey);
   } catch (err) {
-    console.error(err);
+    console.log(err);
     return null;
   }
 };
