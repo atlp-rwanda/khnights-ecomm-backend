@@ -1,0 +1,15 @@
+{
+    "intent": "delivery",
+    "utterances": [
+      "How long does delivery take?",
+      "How long does shipping take?",
+      "Please Tell me about my delivery",
+      "When do I get my delivery?",
+      "Why is my order not delivered yet"
+    ],
+    "responses": [
+      "Delivery takes 2-4 days. Please bear with us!",
+      "Shipping takes 2-4 days. Please bear with us!"
+    ]
+  }
+  

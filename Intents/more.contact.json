@@ -1,0 +1,12 @@
+{
+    "intent": "more_contact",
+    "utterances": [
+      "Need more help",
+      "Help me more"
+    ],
+    "responses": [
+      "Absolutely! How can I help you today? Here are some options based on your inquiry:",
+      "Sure, let me know what you need help with. Here are a few things I can assist you with:"
+    ]
+  }
+  

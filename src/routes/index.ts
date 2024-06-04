@@ -7,6 +7,7 @@ import couponRoute from './couponRoutes';
 import cartRoutes from './CartRoutes';
 import feedbackRoute from './feedbackRoutes';
 import notificationRoute from './NoficationRoutes'
+import  chatBot  from './chatBot';
 
 const router = Router();
 
@@ -21,5 +22,6 @@ router.use('/cart', cartRoutes);
 router.use('/coupons', couponRoute);
 router.use('/feedback', feedbackRoute);
 router.use('/notification', notificationRoute);
+router.use('/chat', chatBot);
 
 export default router;

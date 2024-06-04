@@ -1,0 +1,18 @@
+{
+  "intent": "goodbye",
+  "utterances": [
+    "goodbye",
+    "bye take care",
+    "see you later",
+    "bye for now",
+    "i must go"
+  ],
+  "responses": [
+    "see you soon!",
+    "Till next time",
+    "bye bye",
+    "have a great day", 
+    "See you later, thanks for visiting. Hope I was able to help!",
+    "Have a nice day. Hope I was able to help!"
+  ]
+}
