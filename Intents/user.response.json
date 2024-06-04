@@ -1,0 +1,14 @@
+{
+    "intent": "user_response",
+    "utterances": [
+      "I'm good",
+      "Im good",
+      "Im doing good",
+      "I am good",
+      "I am okay"
+    ],
+    "responses": [
+      "Great to hear you are doing good."
+    ]
+  }
+  

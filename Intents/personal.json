@@ -1,0 +1,12 @@
+{
+    "intent": "personal",
+    "utterances": [
+      "How are you?",
+      "How are you doing?",
+      "How is your day?"
+    ],
+    "responses": [
+      "I'm good, all's good, thanks. How about you?"
+    ]
+  }
+  

@@ -47,3 +47,6 @@ export * from './adminOrderServices/updateOrder';
 export * from './notificationServices/getNotifications';
 export * from './notificationServices/deleteNotification';
 export * from './notificationServices/updateNotification';
+
+// chatbot 
+export * from './chatbotServices/chatBot';

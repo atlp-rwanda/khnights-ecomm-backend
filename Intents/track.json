@@ -1,0 +1,13 @@
+{
+    "intent": "track",
+    "utterances": [
+      "How can I track my order",
+      "I want to track my order",
+      "Can I track my order",
+      "Track order"
+    ],
+    "responses": [
+      "Visit the order page, click on the specific order, select 'track my order', and check the status"
+    ]
+  }
+  
