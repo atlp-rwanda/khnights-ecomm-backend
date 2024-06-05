@@ -2,11 +2,9 @@ import { Request, Response } from 'express';
 import { Not, getRepository } from 'typeorm';
 import { responseSuccess, responseError } from '../../utils/response.utils';
 import { VendorOrderItem } from '../../entities/VendorOrderItem';
-import { sendNotification } from '../../utils/sendNotification';
 import { VendorOrders } from '../../entities/vendorOrders';
 import { Order } from '../../entities/Order';
 import { getIO } from '../../utils/socket';
-import { getNotifications } from '../../utils/getNotifications';
 
 export const updateBuyerVendorOrderService = async (req: Request, res: Response) => {
   try {
@@ -40,7 +38,7 @@ export const updateBuyerVendorOrderService = async (req: Request, res: Response)
           id: order.id,
         },
       },
-      relations: ['vendor','order.buyer','vendorOrderItems', 'vendorOrderItems.product'],
+      relations: ['vendor', 'vendorOrderItems', 'vendorOrderItems.product'],
     });
 
     for (const order of vendorOrders) {
@@ -54,23 +52,9 @@ export const updateBuyerVendorOrderService = async (req: Request, res: Response)
     order.orderStatus = 'completed';
     await orderRepository.save(order);
 
-    await sendNotification({
-      content: 'Your order was marked completed',
-      type: 'order',
-      user: order.buyer,
-      link: `/product/client/orders/${order.id}`
-    });
-
     const updatedVendorOrder = vendorOrders.map(async order => {
       order.orderStatus = 'completed';
       await vendorOrderRepository.save(order);
-
-      await sendNotification({
-        content:`Order from buyer "${order.order.buyer.firstName} ${order.order.buyer.lastName}" has been marked completed`,
-        type: 'order',
-        user: order.vendor,
-        link: `/product/vendor/orders/${order.id}`
-      });
     });
 
     const sanitizedOrderResponse = {

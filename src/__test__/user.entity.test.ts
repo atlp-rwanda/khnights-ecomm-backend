@@ -26,7 +26,11 @@ const vendorOrderItemId = uuid();
 const vendorOrder2Id = uuid();
 const catId = uuid();
 
-if (!process.env.TEST_USER_EMAIL || !process.env.TEST_BUYER_EMAIL || !process.env.TEST_VENDOR1_EMAIL || !process.env.TEST_VENDOR_EMAIL || !process.env.TEST_USER_PASS) throw new Error('TEST_USER_PASS or TEST_USER_EMAIL not set in .env');
+if (!process.env.TEST_USER_EMAIL 
+  || !process.env.TEST_BUYER_EMAIL 
+  || !process.env.TEST_VENDOR1_EMAIL 
+  || !process.env.TEST_VENDOR_EMAIL 
+  || !process.env.TEST_USER_PASS) throw new Error('TEST_USER_PASS or TEST_USER_EMAIL not set in .env');
 
 const sampleAdmin: UserInterface = {
   id: adminId,
@@ -271,4 +275,3 @@ describe('User Entity', () => {
     expect(foundUser?.transactions.length).toBe(1);
   });
 });
-

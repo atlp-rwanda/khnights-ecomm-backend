@@ -19,7 +19,8 @@ const couponId2 = uuid();
 const couponCode1 = 'DISCOUNT10';
 const couponCode2 = 'DISCOUNT20';
 
-if (!process.env.TEST_USER_EMAIL || !process.env.TEST_USER_PASS) throw new Error('TEST_USER_PASS or TEST_USER_EMAIL not set in .env');
+if (!process.env.TEST_USER_EMAIL 
+  || !process.env.TEST_USER_PASS) throw new Error('TEST_USER_PASS or TEST_USER_EMAIL not set in .env');
 
 const sampleVendor3 = new User();
 sampleVendor3.id = vendor3Id;

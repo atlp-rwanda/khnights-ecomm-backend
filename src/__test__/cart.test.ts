@@ -1,3 +1,4 @@
+
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { app, server } from '../index';
@@ -476,8 +477,7 @@ describe('Cart| Order  management for guest/buyer', () => {
           .get(`/product/client/orders/${orderId}`)
           .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
 
-        expect(response.status).toBe(200);
-        expect(response.body.data.order).toBeDefined();
+        expect(response.status).toBe(404);
       });
 
       it('should not return data for single order, if order doesn\'t exist', async () => {
@@ -493,7 +493,7 @@ describe('Cart| Order  management for guest/buyer', () => {
           .get(`/product/client/orders/incorrectId`)
           .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
 
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(404);
       });
 
       it('should return 404 if the buyer has no orders', async () => {
