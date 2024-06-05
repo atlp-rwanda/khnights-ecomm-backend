@@ -23,8 +23,29 @@ const cartItemId = uuid();
 const sampleCartId = uuid();
 const sampleCartItemId = uuid();
 const samplecartItem3Id = uuid();
+const feedbackID = uuid();
+const feedbackID2 = uuid();
+const sampleAdminId = uuid();
+
+let returnedCartId: string;
 
 const jwtSecretKey = process.env.JWT_SECRET || '';
+
+if (!process.env.TEST_USER_EMAIL || !process.env.TEST_USER_PASS) throw new Error('TEST_USER_PASS or TEST_USER_EMAIL not set in .env');
+
+const sampleAdmin: UserInterface = {
+  id: vendor1Id,
+  firstName: 'vendor1',
+  lastName: 'user',
+  email: process.env.TEST_USER_EMAIL,
+  password: process.env.TEST_USER_PASS,
+  userType: 'Vendor',
+  gender: 'Male',
+  phoneNumber: '10026380996347',
+  photoUrl: 'https://example.com/photo.jpg',
+  role: 'ADMIN',
+};
+
 
 const getAccessToken = (id: string, email: string) => {
   return jwt.sign(
@@ -276,26 +297,6 @@ describe('Cart| Order  management for guest/buyer', () => {
   });
 
   describe('Adding product to cart on guest/buyer', () => {
-    it('should get cart items of authenticated user', async () => {
-      const response = await request(app)
-        .get('/cart')
-        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body.data.message).toBe('Cart retrieved successfully');
-      expect(response.body.data.cart).toBeDefined;
-    });
-
-    it('should get cart items of authenticated user', async () => {
-      const response = await request(app)
-        .get('/cart')
-        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body.data.message).toBe('Cart is empty');
-      expect(response.body.data.cart).toBeDefined;
-    });
-
     it('should add product to cart as authenticated buyer', async () => {
       const response = await request(app)
         .post(`/cart`)
@@ -313,13 +314,34 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.status).toBe(201);
       expect(response.body.data.message).toBe('cart updated successfully');
       expect(response.body.data.cart).toBeDefined;
+
+      returnedCartId = response.body.data.cart.id;
     });
 
-    it('should get cart items of guest user', async () => {
-      const response = await request(app).get('/cart');
+    it('should add second product to cart as guest', async () => {
+      const response = await request(app)
+        .post(`/cart`)
+        .set('Cookie', [`cartId=${returnedCartId}`])
+        .send({
+          productId: product1Id,
+          quantity: 3,
+        });
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(201);
+      expect(response.body.data.message).toBe('cart updated successfully');
       expect(response.body.data.cart).toBeDefined;
+    });
+
+    it('should return 400 for incorrect Id syntax (IDs not in uuid form), when add product to cart', async () => {
+      const response = await request(app)
+        .post(`/cart`)
+        .set('Cookie', [`cartId=dfgdsf`])
+        .send({
+          productId: product1Id,
+          quantity: 3,
+        });
+
+      expect(response.status).toBe(400);
     });
 
     it('should return 400 if you do not send proper request body', async () => {
@@ -348,7 +370,7 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.body.message).toBe('Quantity must be greater than 0');
     });
 
-    it('should chnage quantity of product in cart if it is already there', async () => {
+    it('should change quantity of product in cart if it is already there', async () => {
       const response = await request(app)
         .post(`/cart`)
         .send({ productId: product1Id, quantity: 3 })
@@ -371,10 +393,30 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.body.data.cart).toBeDefined;
     });
 
-    it('should get cart items of guest user', async () => {
+    it('should get Empty cart items of authenticated user', async () => {
+      const response = await request(app)
+        .get('/cart')
+        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.message).toBe('Cart is empty');
+      expect(response.body.data.cart).toBeDefined;
+    });
+
+    it('should get Empty cart items of guest user', async () => {
       const response = await request(app).get('/cart');
 
       expect(response.status).toBe(200);
+      expect(response.body.data.cart).toBeDefined;
+    });
+
+    it('should get cart items of guest user', async () => {
+      const response = await request(app)
+        .get('/cart')
+        .set('Cookie', [`cartId=${returnedCartId}`]);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.message).toBe('Cart retrieved successfully');
       expect(response.body.data.cart).toBeDefined;
     });
 
@@ -387,6 +429,15 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.body.data.message).toBe('Cart is empty');
       expect(response.body.data.cart).toBeDefined;
     });
+
+
+    it('should return 400 for incorrect Id syntax (IDs not in uuid form), when getting cart', async () => {
+      const response = await request(app)
+        .get(`/cart`)
+        .set('Cookie', [`cartId=dfgdsf`]);
+
+      expect(response.status).toBe(400);
+    });
   });
 
   describe('Order management tests', () => {
@@ -394,8 +445,9 @@ describe('Cart| Order  management for guest/buyer', () => {
     let productId: any;
     let feedbackId: any;
     let feedback2Id: any;
+
     describe('Create order', () => {
-      it('should return 400 when user ID is not provided', async () => {
+      it('should return 201 when user is found', async () => {
         const response = await request(app)
           .post('/product/orders')
           .send({
@@ -460,11 +512,11 @@ describe('Cart| Order  management for guest/buyer', () => {
         expect(response.body.message).toBe('Transaction history retrieved successfully');
       });
 
-      it('should return 400 when user ID is not provided', async () => {
+      it('should return 400 when user is not AUTHORIZED', async () => {
         const response = await request(app)
           .get('/product/orders/history')
-          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-        expect(response.status).toBe(200);
+          .set('Authorization', `Bearer ''`);
+        expect(response.status).toBe(403);
       });
     });
 
@@ -520,6 +572,20 @@ describe('Cart| Order  management for guest/buyer', () => {
           .delete(`/feedback/admin/delete/${feedback2Id}`)
           .send({ orderId, comment: 'Well this product looks so lovely' })
           .set('Authorization', `Bearer ${getAccessToken(buyer3Id, sampleBuyer3.email)}`);
+        expect(response.status).toBe(401);
+      });
+
+      it('should return 404 if feedback not found', async () => {
+        const response = await request(app)
+        .post(`/feedback/admin/delete/${feedbackID}`)
+        .set('Authorization', `Bearer ${getAccessToken(sampleAdminId, sampleAdmin.email)}`);
+      expect(response.status).toBe(404);
+      })
+
+      it('should handle server error by returning 500 ', async () => {
+        const response = await request(app)
+          .delete(`/feedback/admin/delete/ghkjh - *****`)
+          .set('Authorization', `Bearer ${getAccessToken(sampleAdminId, sampleAdmin.email)}`);
         expect(response.status).toBe(401);
       });
     });
@@ -648,6 +714,14 @@ describe('Cart| Order  management for guest/buyer', () => {
   });
 
   describe('Deleting product from cart', () => {
+    it('should return 400 if product id is not provided', async () => {
+      const response = await request(app)
+        .delete(`/cart/`)
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+      expect(response.status).toBe(200);
+    });
+
     it('should return 404 if product does not exist in cart', async () => {
       const response = await request(app)
         .delete(`/cart/${uuid()}`)

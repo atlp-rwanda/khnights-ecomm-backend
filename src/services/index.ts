@@ -43,5 +43,10 @@ export * from './vendorOrderServices/updateVendorOrder';
 export * from './adminOrderServices/readOrder';
 export * from './adminOrderServices/updateOrder';
 
+// Nofication management
+export * from './notificationServices/getNotifications';
+export * from './notificationServices/deleteNotification';
+export * from './notificationServices/updateNotification';
+
 // chatbot 
 export * from './chatbotServices/chatBot';

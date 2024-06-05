@@ -10,6 +10,7 @@ export const updateCouponService = async (req: Request, res: Response) => {
     const { code } = req.params;
     const { error } = validateCouponUpdate(req.body);
     if (error) {
+      console.log(error);
       return res.status(400).json({ status: 'error', error: error?.details[0].message });
     }
 

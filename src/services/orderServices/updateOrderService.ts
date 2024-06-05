@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getManager, EntityManager, Repository } from 'typeorm';
+import { getManager, EntityManager, Repository, getRepository } from 'typeorm';
 import { Order } from '../../entities/Order';
 import { Product } from '../../entities/Product';
 import { User } from '../../entities/User';
@@ -7,6 +7,8 @@ import { OrderItem } from '../../entities/OrderItem';
 import { Transaction } from '../../entities/transaction';
 import { responseError, sendErrorResponse, sendSuccessResponse } from '../../utils/response.utils';
 import sendMail from '../../utils/sendOrderMail';
+import { sendNotification } from '../../utils/sendNotification';
+import { VendorOrders } from '../../entities/vendorOrders';
 interface OrderStatusType {
   orderStatus:
     | 'order placed'
@@ -66,6 +68,43 @@ export const updateOrderService = async (req: Request, res: Response) => {
 
       // Save updated order status
       await orderRepository.save(order);
+      
+      if (orderStatus === 'received') {
+        const admins = await getRepository(User).find({
+          where: {
+            role: 'ADMIN'
+          }
+        });
+        
+        admins.forEach( async (admin) => {
+          await sendNotification({
+            content: `The Buyer named "${order.buyer.firstName} ${order.buyer.lastName}", has confirmed that they have successfully received their order.`,
+            type: 'order',
+            user: admin,
+            link: `/product/admin/orders/${order.id}`
+          });
+        });
+      }
+
+      const vendorOrders = await getRepository(VendorOrders).find({
+        where: {
+          order: {
+            id: order.id
+          }
+        },
+        relations: {
+          vendor: true
+        }
+      });
+
+      vendorOrders.forEach(async (vendorOrder) => {
+        await sendNotification({
+          content: `The Buyer named "${order.buyer.firstName} ${order.buyer.lastName}", has marked their order as "${orderStatus}". Please ensure that you update the order status on your side as well.`,
+          type: 'order',
+          user: vendorOrder.vendor,
+          link: `/product/vendor/orders/${vendorOrder.id}`
+        });
+      });
 
       // Prepare response data
       const orderResponse = {

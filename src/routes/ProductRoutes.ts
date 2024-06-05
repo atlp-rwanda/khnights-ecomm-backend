@@ -16,7 +16,7 @@ import {
   listAllProducts,
   singleProduct,
   createOrder,
-  getOrders,
+  getOrders, getOrder,
   updateOrder,
   getOrdersHistory,Payment,
   getSingleVendorOrder,
@@ -41,6 +41,7 @@ router.put('/availability/:id', authMiddleware as RequestHandler, hasRole('VENDO
 
 router.post('/orders', authMiddleware as RequestHandler, hasRole('BUYER'), createOrder);
 router.get('/client/orders', authMiddleware as RequestHandler, hasRole('BUYER'), getOrders);
+router.get('/client/orders/:orderId', authMiddleware as RequestHandler, hasRole('BUYER'), getOrder);
 router.put('/client/orders/:orderId', authMiddleware as RequestHandler, hasRole('BUYER'), updateOrder);
 router.get('/orders/history', authMiddleware as RequestHandler, hasRole('BUYER'), getOrdersHistory);
 
