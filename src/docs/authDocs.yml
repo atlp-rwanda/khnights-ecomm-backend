@@ -1,0 +1,163 @@
+/user/login:
+  post:
+    tags:
+      - Auth
+    summary: Login a user
+    description: Login a user with email and password
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+                format: password
+            required:
+              - email
+              - password
+    responses:
+      '200':
+        description: user logged in successfully, complete 2fa process
+      '400':
+        description: provide an email and password, Invalid email or password, email not verified, account suspended
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden
+      '404':
+        description: user not found
+      '500':
+        description: Internal server error
+
+/user/enable-2fa:
+  post:
+    tags:
+      - Auth
+    summary: Enable 2fa
+    description: Enable 2fa for a user
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+            required:
+              - email
+    responses:
+      '200':
+        description: 2fa enabled successfully
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden
+      '404':
+        description: user not found
+      '500':
+        description: Internal server error
+
+/user/disable-2fa:
+  post:
+    tags:
+      - Auth
+    summary: Disable 2fa
+    description: Disable 2fa for a user
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+
+            required:
+              - email
+    responses:
+      '200':
+        description: 2fa disabled successfully
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden
+      '404':
+        description: user not found
+      '500':
+        description: Internal server error
+
+/user/verify-otp:
+  post:
+    tags:
+      - Auth
+    summary: Verify OTP
+    description: Verify OTP for 2fa
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              otp:
+                type: string
+            required:
+              - email
+              - otp
+    responses:
+      '200':
+        description: OTP verified successfully
+      '400':
+        description: Please provide an email and OTP code
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden
+      '404':
+        description: user not found
+      '500':
+        description: Internal server error
+
+/user/resend-otp:
+  post:
+    tags:
+      - Auth
+    summary: Resend OTP
+    description: Resend OTP for 2fa
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+            required:
+              - email
+    responses:
+      '200':
+        description: OTP resent successfully
+      '400':
+        description: Please provide an email
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden
+      '404':
+        description: user not found
+      '500':
+        description: Internal server error
