@@ -3,6 +3,8 @@ import { getRepository } from 'typeorm';
 import { Coupon } from '../../entities/coupon';
 import { Cart } from '../../entities/Cart';
 import { CartItem } from '../../entities/CartItem';
+import { sendNotification } from '../../utils/sendNotification';
+import { responseSuccess, responseError } from '../../utils/response.utils';
 
 export const buyerApplyCouponService = async (req: Request, res: Response) => {
   try {
@@ -13,7 +15,7 @@ export const buyerApplyCouponService = async (req: Request, res: Response) => {
     const couponRepository = getRepository(Coupon);
     const coupon = await couponRepository.findOne({
       where: { code: couponCode },
-      relations: ['product'],
+      relations: ['product', 'vendor'],
     });
 
     if (!coupon) return res.status(404).json({ message: 'Invalid Coupon Code' });
@@ -32,7 +34,7 @@ export const buyerApplyCouponService = async (req: Request, res: Response) => {
     const cartRepository = getRepository(Cart);
     let cart = await cartRepository.findOne({
       where: { user: { id: req.user?.id }, isCheckedOut: false },
-      relations: ['items', 'items.product'],
+      relations: ['items', 'items.product', 'user'],
     });
 
     if (!cart) return res.status(400).json({ message: "You don't have a product in cart" });
@@ -61,12 +63,11 @@ export const buyerApplyCouponService = async (req: Request, res: Response) => {
       await cartItemRepository.save(couponCartItem);
     }
 
-    cart = await cartRepository.findOne({ where: { id: cart.id }, relations: ['items', 'items.product'] });
-    if (cart) {
-      cart.updateTotal();
-      await cartRepository.save(cart);
-    }
+    cart = await cartRepository.findOne({ where: { id: cart.id }, relations: ['items', 'items.product', 'user'] });
+    if (!cart) return;
 
+    cart.updateTotal();
+    await cartRepository.save(cart);
     coupon.usageTimes += 1;
 
     if (req.user?.id) {
@@ -75,6 +76,19 @@ export const buyerApplyCouponService = async (req: Request, res: Response) => {
 
     await couponRepository.save(coupon);
 
+    await sendNotification({
+      content: `Coupon Code successfully activated discount on product: ${couponCartItem.product.name}`,
+      type: 'coupon',
+      user: cart.user
+    })
+
+    await sendNotification({
+      content: `Buyer: "${cart?.user.firstName} ${cart?.user.lastName}" used coupon and got discount on product: "${couponCartItem.product.name}"`,
+      type:'coupon',
+      user: coupon.vendor,
+      link: `/coupons/vendor/${coupon.vendor.id}/checkout/${couponCode}`
+    });
+
     return res
       .status(200)
       .json({
@@ -82,6 +96,6 @@ export const buyerApplyCouponService = async (req: Request, res: Response) => {
         amountDiscounted: amountReducted,
       });
   } catch (error) {
-    return res.status(500).json({ error: 'Internal server error' });
-  }
+        return responseError(res, 500, (error as Error).message);
+    }
 };

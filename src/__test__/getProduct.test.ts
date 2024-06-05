@@ -104,7 +104,7 @@ describe('Creating new product', () => {
 
     expect(response.status).toBe(201);
     expect(response.body.data.product).toBeDefined;
-  }, 60000);
+  }, 20000);
 });
 describe('Get single product', () => {
   it('should get a single product', async () => {
