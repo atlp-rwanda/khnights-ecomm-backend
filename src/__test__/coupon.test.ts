@@ -454,6 +454,24 @@ describe('Coupon Management System', () => {
   
       expect(response.status).toBe(200);
     }, 10000);
+
+    it('should return 200 for updating a product of coupon', async () => {
+      const response = await request(app)
+        .put(`/coupons/vendor/${vendor1Id}/update-coupon/${couponCode}`)
+        .send({ product: uuid() })
+        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+  
+      expect(response.status).toBe(200);
+    }, 10000);
+
+    it('should return 404 for coupon not found', async () => {
+      const response = await request(app)
+        .put(`/coupons/vendor/${vendor1Id}/update-coupon/===__8899jjhh`)
+        .send({ product: uuid() })
+        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+  
+      expect(response.status).toBe(404);
+    }, 10000);
   });
 
   describe('Delete Coupon', () => {

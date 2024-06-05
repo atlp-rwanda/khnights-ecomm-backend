@@ -18,7 +18,7 @@ interface Message {
   address: string;
 }
 
-const sendMail = async (message: Message) => {
+const sendOrderMailUpdated = async (message: Message) => {
   const transporter = nodemailer.createTransport({
     host: process.env.HOST,
     port: 587,
@@ -212,4 +212,4 @@ const sendMail = async (message: Message) => {
   }
 };
 
-export default sendMail;
+export default sendOrderMailUpdated;

@@ -70,6 +70,8 @@ export const buyerApplyCouponService = async (req: Request, res: Response) => {
     await cartRepository.save(cart);
     coupon.usageTimes += 1;
 
+    coupon.usageTimes += 1;
+
     if (req.user?.id) {
       coupon.usedBy.push(req.user?.id);
     }

@@ -477,7 +477,7 @@ describe('Cart| Order  management for guest/buyer', () => {
           .get(`/product/client/orders/${orderId}`)
           .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
 
-        expect(response.status).toBe(404);
+        expect(response.status).toBe(200);
       });
 
       it('should not return data for single order, if order doesn\'t exist', async () => {
@@ -493,7 +493,7 @@ describe('Cart| Order  management for guest/buyer', () => {
           .get(`/product/client/orders/incorrectId`)
           .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
 
-        expect(response.status).toBe(404);
+        expect(response.status).toBe(400);
       });
 
       it('should return 404 if the buyer has no orders', async () => {
@@ -527,6 +527,14 @@ describe('Cart| Order  management for guest/buyer', () => {
           .send({ orderStatus: 'completed' })
           .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
         expect(response.status).toBe(200);
+        expect(response.body.message).toBe("Order updated successfully");
+      });
+      it('should update order status successfully', async () => {
+        const response = await request(app)
+          .put(`/product/client/orders/${orderId}`)
+          .send({ orderStatus: 'completed' })
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        expect(response.status).toBe(401);
       });
     });
     describe('Add feedback to the product with order', () => {

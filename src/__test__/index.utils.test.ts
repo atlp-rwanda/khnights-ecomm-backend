@@ -1,4 +1,3 @@
-import { server } from '..';
 import { formatMoney, formatDate } from '../utils/index'; 
 
 describe('Utility Functions', () => {

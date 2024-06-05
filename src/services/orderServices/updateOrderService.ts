@@ -6,7 +6,7 @@ import { User } from '../../entities/User';
 import { OrderItem } from '../../entities/OrderItem';
 import { Transaction } from '../../entities/transaction';
 import { responseError, sendErrorResponse, sendSuccessResponse } from '../../utils/response.utils';
-import sendMail from '../../utils/sendOrderMail';
+import sendMail from '../../utils/sendOrderMailUpdated';
 import { sendNotification } from '../../utils/sendNotification';
 import { VendorOrders } from '../../entities/vendorOrders';
 interface OrderStatusType {

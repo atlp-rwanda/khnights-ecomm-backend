@@ -35,6 +35,12 @@ export interface UserInterface {
 @Entity()
 @Unique(['email'])
 export class User {
+  static lastName(lastName: any) {
+      throw new Error('Method not implemented.');
+  }
+  static firstName(firstName: any) {
+      throw new Error('Method not implemented.');
+  }
   @PrimaryGeneratedColumn('uuid')
   @IsNotEmpty()
   id!: string;

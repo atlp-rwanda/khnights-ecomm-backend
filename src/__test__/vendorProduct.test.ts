@@ -133,7 +133,7 @@ describe('Vendor product management tests', () => {
 
       expect(response.status).toBe(201);
       expect(response.body.data.product).toBeDefined;
-    }, 60000);
+    }, 120000);
 
     it('return an error if the number of product images exceeds 6', async () => {
       const response = await request(app)

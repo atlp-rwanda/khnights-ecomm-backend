@@ -54,6 +54,6 @@ router.put('/vendor/orders/:id', authMiddleware as RequestHandler, hasRole('VEND
 router.get('/admin/orders', authMiddleware as RequestHandler, hasRole('ADMIN'), getBuyerVendorOrders);
 router.get('/admin/orders/:id', authMiddleware as RequestHandler, hasRole('ADMIN'), getSingleBuyerVendorOrder);
 router.put('/admin/orders/:id', authMiddleware as RequestHandler, hasRole('ADMIN'), updateBuyerVendorOrder);
-router.post('/payment/:id', authMiddleware as RequestHandler, hasRole('BUYER'), Payment);
+router.post('/payment/:id', authMiddleware as RequestHandler, hasRole('BUYER'), Payment)
 
 export default router;

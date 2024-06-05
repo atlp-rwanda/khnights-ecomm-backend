@@ -20,6 +20,7 @@ export const adminDeleteFeedbackService = async (req: Request, res: Response) =>
 
     return responseSuccess(res, 200, 'Feedback successfully  removed');
   } catch (error) {
+    console.log(error)
     return responseError(res, 500, 'Server error');
   }
 };

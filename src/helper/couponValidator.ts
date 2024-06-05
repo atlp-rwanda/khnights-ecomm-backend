@@ -42,6 +42,9 @@ export const validateCouponUpdate = (
     expirationDate: Joi.date().messages({
       'date.base': 'expirationDate must be a valid date.',
     }),
+    product: Joi.string().messages({
+      'string.base': 'product must be a string.',
+    }),
     maxUsageLimit: Joi.number().messages({
       'number.base': 'maxUsageLimit must be a number.',
     }),

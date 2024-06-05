@@ -21,7 +21,7 @@ export * from './productServices/listAllProductsService';
 export * from './productServices/productStatus';
 export * from './productServices/viewSingleProduct';
 export * from './productServices/searchProduct';
-export * from './productServices/payment';
+export * from './productServices/payment'
 
 // Buyer wishlist services
 export * from './wishListServices/addProduct';
