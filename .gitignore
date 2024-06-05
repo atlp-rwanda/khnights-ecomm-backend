@@ -6,3 +6,13 @@ coverage/
 dist
 /src/logs
 .DS_Store
+
+        src/controllers/notificationControllers.ts
+        src/entities/Notification.ts
+        src/entities/NotificationItem.ts
+        src/routes/NoficationRoutes.ts
+        src/services/notificationServices/deleteNotification.ts
+        src/services/notificationServices/getNotifications.ts
+        src/services/notificationServices/updateNotification.ts
+        src/utils/getNotifications.ts
+        src/utils/sendNotification.ts
