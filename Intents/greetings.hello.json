@@ -1,0 +1,19 @@
+{
+    "intent": "greetings",
+    "utterances": [
+      "hello",
+      "hi",
+      "howdy",
+      "Greetings",
+       "Is anyone there?",
+      "Hello",
+      "Good day"
+    ],
+    "responses": [
+      "Hey :-) My name is knight!",
+      "Hello, thanks for visiting. My name is knight!",
+      "Hi there, My name is knight!. What can I do for you?",
+      "Hi there, My name is knight! How can I help?"
+    ]
+  }
+  

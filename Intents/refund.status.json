@@ -1,0 +1,14 @@
+{
+    "intent": "refund_status",
+    "utterances": [
+      "Why is the status Refunded when it's not credited?",
+      "No refund even though status is refunded",
+      "No refund when status says refunded",
+      "I did not receive my refund money",
+      "Refund money not received"
+    ],
+    "responses": [
+      "Please be patient as refunds take upto 30 days to receive into bank. "
+    ]
+  }
+

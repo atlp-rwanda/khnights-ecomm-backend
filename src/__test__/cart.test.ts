@@ -469,6 +469,33 @@ describe('Cart| Order  management for guest/buyer', () => {
         orderId = response.body.data.orders[0]?.id;
         productId = response.body.data.orders[0]?.orderItems[0]?.product?.id;
       });
+
+
+      it('should get single order', async () => {
+        const response = await request(app)
+          .get(`/product/client/orders/${orderId}`)
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.data.order).toBeDefined();
+      });
+
+      it('should not return data for single order, if order doesn\'t exist', async () => {
+        const response = await request(app)
+          .get(`/product/client/orders/${uuid()}`)
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+        expect(response.status).toBe(404);
+      });
+
+      it('should not return data for single order, for an incorrect id syntax', async () => {
+        const response = await request(app)
+          .get(`/product/client/orders/incorrectId`)
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+        expect(response.status).toBe(400);
+      });
+
       it('should return 404 if the buyer has no orders', async () => {
         const response = await request(app)
           .get('/product/client/orders')
@@ -533,6 +560,13 @@ describe('Cart| Order  management for guest/buyer', () => {
           .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
         expect(response.status).toBe(200);
       });
+      it('should remove recorderd feedback as admin ', async () => {
+        const response = await request(app)
+          .delete(`/feedback/admin/delete/${feedback2Id}`)
+          .send({ orderId, comment: 'Well this product looks so lovely' })
+          .set('Authorization', `Bearer ${getAccessToken(buyer3Id, sampleBuyer3.email)}`);
+        expect(response.status).toBe(401);
+      });
       it('should remove recorder feedback as admin ', async () => {
         const response = await request(app)
           .delete(`/feedback/admin/delete/${feedback2Id}`)
@@ -555,6 +589,128 @@ describe('Cart| Order  management for guest/buyer', () => {
         expect(response.status).toBe(401);
       });
     });
+  
+    describe('Feedback API', () => {
+
+      describe('Add feedback to the product with order', () => {
+        it('should create new feedback for the ordered product', async () => {
+          const response = await request(app)
+            .post(`/feedback/${productId}/new`)
+            .send({ orderId, comment: 'Well this product looks so fantastic' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(201);
+          feedbackId = response.body.data.id;
+        });
+
+        it('should create another feedback for the ordered product', async () => {
+          const response = await request(app)
+            .post(`/feedback/${productId}/new`)
+            .send({ orderId, comment: 'Murigalike this product looks so fantastic' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(201);
+          feedback2Id = response.body.data.id;
+        });
+
+        it('should fail to create feedback with missing orderId', async () => {
+          const response = await request(app)
+            .post(`/feedback/${productId}/new`)
+            .send({ comment: 'Missing orderId' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(404);
+        });
+
+        it('should fail to create feedback with missing comment', async () => {
+          const response = await request(app)
+            .post(`/feedback/${productId}/new`)
+            .send({ orderId })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(500);
+        });
+
+        it('should fail to create feedback with invalid productId', async () => {
+          const response = await request(app)
+            .post(`/feedback/invalidProductId/new`)
+            .send({ orderId, comment: 'Invalid productId' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(500);
+        });
+      });
+
+      describe('Update feedback', () => {
+        it('should update existing feedback successfully', async () => {
+          const response = await request(app)
+            .put(`/feedback/update/${feedbackId}`)
+            .send({ orderId, comment: 'Well this product looks so lovely' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(200);
+        });
+
+        it('should fail to update feedback with invalid feedbackId', async () => {
+          const response = await request(app)
+            .put(`/feedback/update/invalidFeedbackId`)
+            .send({ orderId, comment: 'Invalid feedbackId' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(500);
+        });
+
+        it('should fail to update feedback without authorization', async () => {
+          const response = await request(app)
+            .put(`/feedback/update/${feedbackId}`)
+            .send({ orderId, comment: 'Unauthorized update' });
+          expect(response.status).toBe(401);
+        });
+      });
+
+      describe('Delete feedback', () => {
+        it('should remove recorded feedback', async () => {
+          const response = await request(app)
+            .delete(`/feedback/delete/${feedbackId}`)
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(200);
+        });
+
+        it('should not allow a different user (admin) to remove feedback', async () => {
+          const response = await request(app)
+            .delete(`/feedback/admin/delete/${feedback2Id}`)
+            .set('Authorization', `Bearer ${getAccessToken(buyer3Id, sampleBuyer3.email)}`);
+          expect(response.status).toBe(401);
+        });
+
+        it('should fail to delete feedback with invalid feedbackId', async () => {
+          const response = await request(app)
+            .delete(`/feedback/delete/invalidFeedbackId`)
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(500);
+        });
+
+        it('should fail to delete feedback without authorization', async () => {
+          const response = await request(app)
+            .delete(`/feedback/delete/${feedback2Id}`);
+          expect(response.status).toBe(401);
+        });
+      });
+
+      describe('Edge Cases', () => {
+        it('should not allow creating feedback for a product not in the order', async () => {
+          const invalidOrderId = 999; // Assuming an invalid orderId
+          const response = await request(app)
+            .post(`/feedback/${productId}/new`)
+            .send({ orderId: invalidOrderId, comment: 'Invalid orderId' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(500);
+        });
+
+        it('should fail to update feedback with a comment that is too long', async () => {
+          const longComment = 'a'.repeat(1001); // Assuming max length is 1000
+          const response = await request(app)
+            .put(`/feedback/update/${feedback2Id}`)
+            .send({ orderId, comment: longComment })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(200);
+        });
+      });
+    });
+
   });
 
   describe('Deleting product from cart', () => {

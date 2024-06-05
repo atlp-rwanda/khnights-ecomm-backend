@@ -6,8 +6,9 @@ import wishListRoutes from './wishListRoute';
 import couponRoute from './couponRoutes';
 import cartRoutes from './CartRoutes';
 import notificationRoute from './NoficationRoutes'
-import feedbackRoute from './feedbackRoutes';
+import  chatBot  from './chatBot';
 import { authMiddleware } from '../middlewares/verifyToken';
+import feedbackRoute from './feedbackRoutes';
 
 const router = Router();
 
@@ -39,6 +40,7 @@ router.get('/test/error', (req: Request, res: Response) => {
 });
 router.use('/feedback', feedbackRoute);
 router.use('/notification', notificationRoute);
+router.use('/chat', chatBot);
 
 // ROUTES FOR TESTING PURPOSE
 router.get('/test', (req: Request, res: Response) => {
