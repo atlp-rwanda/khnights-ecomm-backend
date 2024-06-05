@@ -8,7 +8,6 @@ import cartRoutes from './CartRoutes';
 import notificationRoute from './NoficationRoutes'
 import { authMiddleware } from '../middlewares/verifyToken';
 import  chatBot  from './chatBot';
-import { authMiddleware } from '../middlewares/verifyToken';
 import feedbackRoute from './feedbackRoutes';
 
 const router = Router();
