@@ -6,7 +6,7 @@ import { dbConnection } from '../startups/dbConnection';
 import { v4 as uuid } from 'uuid';
 import { getConnection } from 'typeorm';
 import { cleanDatabase } from './test-assets/DatabaseCleanup';
-import { server } from '..';
+
 
 let reqMock: Partial<Request>;
 let resMock: Partial<Response>;
@@ -37,7 +37,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await cleanDatabase();
-  server.close();
 });
 
 describe('hasRole MiddleWare Test', () => {

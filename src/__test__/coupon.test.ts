@@ -1,4 +1,3 @@
-
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { app, server } from '../index';
@@ -241,7 +240,7 @@ describe('Coupon Management System', () => {
 
       expect(response.status).toBe(201);
       expect(response.body.status).toBe('success');
-    }, 10000);
+    });
 
     it('should return 400 for invalid coupon data', async () => {
       const response = await request(app)
@@ -257,7 +256,7 @@ describe('Coupon Management System', () => {
         .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
 
       expect(response.status).toBe(400);
-    }, 10000);
+    });
 
     it('should return 403 if product not found', async () => {
       const response = await request(app)
@@ -317,7 +316,7 @@ describe('Coupon Management System', () => {
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('success');
       expect(response.body.data).toBeInstanceOf(Object);
-    }, 10000);
+    });
 
     it('should return 404 if no coupons found', async () => {
       const newVendorId = uuid();
@@ -326,7 +325,7 @@ describe('Coupon Management System', () => {
         .set('Authorization', `Bearer ${getAccessToken(newVendorId, 'newvendor@example.com')}`);
 
       expect(response.status).toBe(401);
-    }, 10000);
+    });
   });
 
   describe('Vendor access all Coupon', () => {
@@ -337,7 +336,7 @@ describe('Coupon Management System', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('success');
-    }, 10000);
+    });
 
     it('should return 404 for invalid vendor id', async () => {
       const invalidVendorId = uuid();
@@ -347,7 +346,7 @@ describe('Coupon Management System', () => {
 
       expect(response.status).toBe(404);
       expect(response.body.message).toBe('User not found');
-    }, 10000);
+    });
 
     it('should return 404 if no coupon found for VENDOR', async () => {
       const response = await request(app)
@@ -373,7 +372,7 @@ describe('Coupon Management System', () => {
         .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
 
       expect(response.status).toBe(200);
-    }, 10000);
+    });
 
     it('should return 404 for invalid coupon code', async () => {
       const response = await request(app)
@@ -383,7 +382,7 @@ describe('Coupon Management System', () => {
       expect(response.status).toBe(404);
       expect(response.body.status).toBe('error');
       expect(response.body.message).toBe('Invalid coupon');
-    }, 10000);
+    });
   });
 
   describe('Update Coupon', () => {
@@ -397,7 +396,7 @@ describe('Coupon Management System', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('success');
-    }, 10000);
+    });
 
     it('should validate coupon update input', async () => {
       const response = await request(app)
@@ -417,43 +416,79 @@ describe('Coupon Management System', () => {
         .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
 
       expect(response.status).toBe(404);
-    }, 10000);
+    });
 
     it('should return 200 for updating a discount of coupon', async () => {
       const response = await request(app)
         .put(`/coupons/vendor/${vendor1Id}/update-coupon/${couponCode}`)
         .send({ discountRate: 25 })
         .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
-  
+
       expect(response.status).toBe(200);
-    }, 10000);
+    });
 
     it('should return 200 for updating a expirationDate of coupon', async () => {
       const response = await request(app)
         .put(`/coupons/vendor/${vendor1Id}/update-coupon/${couponCode}`)
         .send({ expirationDate: '2025-12-31' })
         .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
-  
+
       expect(response.status).toBe(200);
-    }, 10000);
+    });
 
     it('should return 200 for updating a maxUsageLimit of coupon', async () => {
       const response = await request(app)
         .put(`/coupons/vendor/${vendor1Id}/update-coupon/${couponCode}`)
         .send({ maxUsageLimit: 40 })
         .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
-  
+
       expect(response.status).toBe(200);
-    }, 10000);
+    });
 
     it('should return 200 for updating a discountType of coupon', async () => {
       const response = await request(app)
         .put(`/coupons/vendor/${vendor1Id}/update-coupon/${couponCode}`)
         .send({ discountType: 'MONEY' })
         .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
-  
+
       expect(response.status).toBe(200);
-    }, 10000);
+    });
+
+    it('should return 200 for updating a product of coupon', async () => {
+      const response = await request(app)
+        .put(`/coupons/vendor/${vendor1Id}/update-coupon/${couponCode}`)
+        .send({ product: product1Id })
+        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+
+      expect(response.status).toBe(200);
+    });
+
+    it('should return 404, if product doesn\'t exist', async () => {
+      const response = await request(app)
+        .put(`/coupons/vendor/${vendor1Id}/update-coupon/${couponCode}`)
+        .send({ product: uuid() })
+        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+
+      expect(response.status).toBe(404);
+    });
+
+    it('should return 404 for coupon not found', async () => {
+      const response = await request(app)
+        .put(`/coupons/vendor/${vendor1Id}/update-coupon/===__8899jjhh`)
+        .send({ product: uuid() })
+        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+
+      expect(response.status).toBe(404);
+    });
+
+    it('should return 500, incorrect product ids (invalid uuid)', async () => {
+      const response = await request(app)
+        .put(`/coupons/vendor/${vendor1Id}/update-coupon/${couponCode}`)
+        .send({ product: 'invalid-uuid' })
+        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+
+      expect(response.status).toBe(500);
+    });
   });
 
   describe('Delete Coupon', () => {
@@ -467,7 +502,7 @@ describe('Coupon Management System', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('success');
-    }, 10000);
+    });
 
     it('should return 404 for deleting a non-existent coupon', async () => {
       const response = await request(app)
@@ -480,7 +515,7 @@ describe('Coupon Management System', () => {
       expect(response.status).toBe(404);
       expect(response.body.status).toBe('error');
       expect(response.body.message).toBe('Invalid coupon');
-    }, 10000);
+    });
   });
 });
 
@@ -554,7 +589,7 @@ describe('Buyer Coupon Application', () => {
         `Coupon Code successfully activated discount on product: ${sampleProduct1.name}`
       );
     });
-    it('Should give discont when discount-type is money', async () => {
+    it('Should give discount when discount-type is money', async () => {
       const response = await request(app)
         .post(`/coupons/apply`)
         .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`)

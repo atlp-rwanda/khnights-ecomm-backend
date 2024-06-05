@@ -9,25 +9,20 @@ export const removeProductInCartService = async (req: Request, res: Response) =>
   try {
     const cartItemRepository = getRepository(CartItem);
     const cartRepository = getRepository(Cart);
-
-    if (!req.params.id) {
-      responseError(res, 400, 'Cart item id is required');
-      return;
-    }
-
-    const cartItem = await cartItemRepository.findOne({
-      where: {
-        id: req.params.id,
-      },
-      relations: ['cart', 'cart.user'],
-    });
-
-    if (!cartItem) {
-      responseError(res, 404, 'Cart item not found');
-      return;
-    }
-
+    
     if (req.user) {
+      const cartItem = await cartItemRepository.findOne({
+        where: {
+          id: req.params.id,
+        },
+        relations: ['cart', 'cart.user'],
+      });
+
+      if (!cartItem) {
+        responseError(res, 404, 'Cart item not found');
+        return;
+      }
+
       if (cartItem?.cart.user.id !== req.user.id) {
         responseError(res, 401, 'You are not authorized to perform this action');
         return;
@@ -61,11 +56,6 @@ export const removeProductInCartService = async (req: Request, res: Response) =>
     }
 
     if (!req.user) {
-      if (!req.params.id) {
-        responseError(res, 400, 'Cart item id is required');
-        return;
-      }
-
       const cartItem = await cartItemRepository.findOne({
         where: {
           id: req.params.id,
@@ -89,12 +79,12 @@ export const removeProductInCartService = async (req: Request, res: Response) =>
 
       if (cart) {
         if (cart.items.length === 0) {
+          
           await cartRepository.remove(cart);
 
           responseSuccess(res, 200, 'cart removed successfully', { cart: [] });
           return;
         }
-
         cart.updateTotal();
         await cartRepository.save(cart);
 

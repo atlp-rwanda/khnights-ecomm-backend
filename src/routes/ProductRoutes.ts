@@ -16,7 +16,7 @@ import {
   listAllProducts,
   singleProduct,
   createOrder,
-  getOrders,
+  getOrders, getOrder,
   updateOrder,
   getOrdersHistory,Payment,
   getSingleVendorOrder,
@@ -27,6 +27,8 @@ import {
   updateBuyerVendorOrder,
 } from '../controllers';
 const router = Router();
+
+router.get('/search', searchProduct);
 router.get('/all', listAllProducts);
 router.get('/recommended', authMiddleware as RequestHandler, hasRole('BUYER'), getRecommendedProducts);
 router.get('/collection', authMiddleware as RequestHandler, hasRole('VENDOR'), readProducts);
@@ -41,6 +43,7 @@ router.put('/availability/:id', authMiddleware as RequestHandler, hasRole('VENDO
 
 router.post('/orders', authMiddleware as RequestHandler, hasRole('BUYER'), createOrder);
 router.get('/client/orders', authMiddleware as RequestHandler, hasRole('BUYER'), getOrders);
+router.get('/client/orders/:orderId', authMiddleware as RequestHandler, hasRole('BUYER'), getOrder);
 router.put('/client/orders/:orderId', authMiddleware as RequestHandler, hasRole('BUYER'), updateOrder);
 router.get('/orders/history', authMiddleware as RequestHandler, hasRole('BUYER'), getOrdersHistory);
 
@@ -53,6 +56,7 @@ router.put('/vendor/orders/:id', authMiddleware as RequestHandler, hasRole('VEND
 router.get('/admin/orders', authMiddleware as RequestHandler, hasRole('ADMIN'), getBuyerVendorOrders);
 router.get('/admin/orders/:id', authMiddleware as RequestHandler, hasRole('ADMIN'), getSingleBuyerVendorOrder);
 router.put('/admin/orders/:id', authMiddleware as RequestHandler, hasRole('ADMIN'), updateBuyerVendorOrder);
-router.post('/payment/:id', authMiddleware as RequestHandler, hasRole('BUYER'), Payment)
+router.post('/payment/:id', authMiddleware as RequestHandler, hasRole('BUYER'), Payment);
+
 
 export default router;

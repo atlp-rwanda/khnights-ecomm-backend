@@ -20,12 +20,6 @@ export interface UserInterface {
   updatedAt: Date;
 }
 
-declare module 'express' {
-  interface Request {
-    user?: Partial<UserInterface>;
-  }
-}
-
 export const checkUserStatus = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.user) {

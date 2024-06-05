@@ -44,6 +44,8 @@ export const clearCartService = async (req: Request, res: Response) => {
       });
 
       if (!cart) {
+        console.log(cart);
+        
         responseSuccess(res, 200, 'Cart is empty', { cart: [] });
         return;
       }

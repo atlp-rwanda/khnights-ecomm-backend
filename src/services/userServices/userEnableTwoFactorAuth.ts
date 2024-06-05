@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { User } from '../../entities/User';
 import { getRepository } from 'typeorm';
+import { sendNotification } from '../../utils/sendNotification';
 
 export const userEnableTwoFactorAuth = async (req: Request, res: Response) => {
   try {
@@ -20,6 +21,11 @@ export const userEnableTwoFactorAuth = async (req: Request, res: Response) => {
     user.twoFactorEnabled = true;
     await userRepository.save(user);
 
+    await sendNotification({
+      content: "You enabled Two factor authentication on you account",
+      type: 'user',
+      user: user
+    })
     return res.status(200).json({ status: 'success', message: 'Two factor authentication enabled successfully' });
   } catch (error) {
     if (error instanceof Error) {

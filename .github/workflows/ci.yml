@@ -26,7 +26,7 @@ env:
   TEST_SAMPLE_BUYER_EMAIL: ${{secrets.TEST_SAMPLE_BUYER_EMAIL}}
   TEST_VENDOR2_EMAIL: ${{secrets.TEST_VENDOR2_EMAIL}}
 
-  STRIPE_SECRET_KEY: ${{secrets.STRIPE_SECRET_KEYT}}
+  STRIPE_SECRET_KEY: ${{secrets.STRIPE_SECRET_KEY}}
   
 jobs:
   build-lint-test-coverage:

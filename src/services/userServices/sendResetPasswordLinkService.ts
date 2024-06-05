@@ -5,30 +5,30 @@ import { getRepository } from 'typeorm';
 import { User } from '../../entities/User';
 
 export const sendPasswordResetLinkService = async (req: Request, res: Response) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.HOST,
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: process.env.AUTH_EMAIL,
-        pass: process.env.AUTH_PASSWORD,
-      },
-    });
-    const email = req.query.email as string;
+    try {
+        const transporter = nodemailer.createTransport({
+            host: process.env.HOST,
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: process.env.AUTH_EMAIL,
+                pass: process.env.AUTH_PASSWORD,
+            },
+        });
+        const email = req.query.email as string;
 
-    if (!email) {
-      return responseError(res, 404, 'Missing required field');
-    }
-    const userRepository = getRepository(User);
-    const existingUser = await userRepository.findOneBy({ email });
-    if (!existingUser) {
-      return responseError(res, 404, 'User not found', existingUser);
-    }
-    const mailOptions: nodemailer.SendMailOptions = {
-      to: email,
-      subject: `Password reset link `,
-      html: `
+        if (!email) {
+            return responseError(res, 400, 'Missing required field');
+        }
+        const userRepository = getRepository(User);
+        const existingUser = await userRepository.findOneBy({ email });
+        if (!existingUser) {
+            return responseError(res, 404, 'User not found', existingUser);
+        }
+        const mailOptions: nodemailer.SendMailOptions = {
+            to: email,
+            subject: `Password reset link `,
+            html: `
             <!doctype html>
             <html lang="en-US">
             
@@ -103,15 +103,15 @@ export const sendPasswordResetLinkService = async (req: Request, res: Response) 
             </body>
             
             </html>`,
-    };
+        };
 
-    try {
-      const sendMail = await transporter.sendMail(mailOptions);
-      return responseSuccess(res, 200, 'Code sent on your email', sendMail);
+        try {
+            const sendMail = await transporter.sendMail(mailOptions);
+            return responseSuccess(res, 200, 'Code sent on your email', sendMail);
+        } catch (error) {
+            return responseError(res, 500, 'Error occurred while sending email');
+        }
     } catch (error) {
-      return responseError(res, 500, 'Error occurred while sending email');
+        return responseServerError(res, `Internal server error: `);
     }
-  } catch (error) {
-    return responseServerError(res, `Internal server error: `);
-  }
 };

@@ -7,12 +7,11 @@ import { responseSuccess, responseError, responseServerError } from '../../utils
 export const productStatusServices = async (req: Request, res: Response) => {
   try {
     const { isAvailable } = req.body;
-    const availability = isAvailable;
     const { id } = req.params;
 
-    if (availability === undefined) {
+    if (isAvailable === undefined) {
       console.log('Error: Please fill all the required fields');
-      return responseError(res, 401, 'Please fill all t he required fields');
+      return responseError(res, 400, 'Please fill all t he required fields');
     }
 
     const userRepository = getRepository(User);
@@ -45,15 +44,14 @@ export const productStatusServices = async (req: Request, res: Response) => {
     if (hasProduct.expirationDate && hasProduct.expirationDate < new Date()) {
       hasProduct.isAvailable = false;
       await productRepository.save(hasProduct);
-      return responseSuccess(res, 201, 'Product status is set to false because it is expired.');
+      return responseSuccess(res, 200, 'Product status is set to false because it is expired.');
     } else if (hasProduct.quantity < 1) {
       product.isAvailable = false;
       await productRepository.save(hasProduct);
-      return responseSuccess(res, 202, 'Product status is set to false because it is out of stock.');
+      return responseSuccess(res, 200, 'Product status is set to false because it is out of stock.');
     }
 
     if (hasProduct.isAvailable === isAvailable) {
-      console.log('Error: Product status is already updated');
       responseError(res, 400, 'Product status is already up to date');
       return;
     }
@@ -63,7 +61,6 @@ export const productStatusServices = async (req: Request, res: Response) => {
 
     return responseSuccess(res, 200, 'Product status updated successfully');
   } catch (error) {
-    console.log('Error: Product status is not update due to this error:\n', error);
     return responseServerError(res, 'Sorry, Something went wrong. Try again later.');
   }
 };

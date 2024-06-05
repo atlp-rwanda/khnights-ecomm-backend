@@ -13,7 +13,6 @@ export const accessAllCouponService = async (req: Request, res: Response) => {
     const user = await userRepository.findOne({ where: { id } });
 
     if (!user) {
-      console.log('User not found with id:', id);
       return responseError(res, 404, 'User not found');
     }
 
@@ -25,13 +24,11 @@ export const accessAllCouponService = async (req: Request, res: Response) => {
     });
 
     if (!coupons.length) {
-      console.log('No coupons found for user with id:', id);
       return responseError(res, 404, 'No coupons found');
     }
 
     return responseSuccess(res, 200, 'Coupons retrieved successfully', coupons);
   } catch (error: any) {
-    console.log('Error retrieving all coupons:\n', error);
     return responseServerError(res, error);
   }
 };

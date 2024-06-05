@@ -1,20 +1,31 @@
-import { Product } from '../entities/Product';
+import request from 'supertest';
+import jwt from 'jsonwebtoken';
 import { app, server } from '../index';
+import { getConnection } from 'typeorm';
 import { dbConnection } from '../startups/dbConnection';
 import { User, UserInterface } from '../entities/User';
 import { v4 as uuid } from 'uuid';
+import { Product } from '../entities/Product';
 import { Category } from '../entities/Category';
 import { cleanDatabase } from './test-assets/DatabaseCleanup';
 
-import { searchProductService } from '../services/productServices/searchProduct';
-
 const vendor1Id = uuid();
-const vendor2Id = uuid();
-const buyerId = uuid();
 const product1Id = uuid();
 const product2Id = uuid();
-const product3Id = uuid();
+const InvalidID = uuid();
+const expiredProductId = uuid();
 const catId = uuid();
+const jwtSecretKey = process.env.JWT_SECRET || '';
+
+const getAccessToken = (id: string, email: string) => {
+  return jwt.sign(
+    {
+      id: id,
+      email: email,
+    },
+    jwtSecretKey
+  );
+};
 
 const sampleVendor1: UserInterface = {
   id: vendor1Id,
@@ -29,85 +40,58 @@ const sampleVendor1: UserInterface = {
   role: 'VENDOR',
 };
 
-const sampleVendor2: UserInterface = {
-  id: vendor2Id,
-  firstName: 'vendor2o',
-  lastName: 'user',
-  email: 'vendor20@example.com',
-  password: 'password',
-  userType: 'Vendor',
-  gender: 'Female',
-  phoneNumber: '1234567890',
-  photoUrl: 'https://example.com/photo.jpg',
-  role: 'VENDOR',
-};
-
-const sampleBuyer1: UserInterface = {
-  id: buyerId,
-  firstName: 'buyer1o',
-  lastName: 'user',
-  email: 'buyer10@example.com',
-  password: 'password',
-  userType: 'Buyer',
-  gender: 'Male',
-  phoneNumber: '000380996348',
-  photoUrl: 'https://example.com/photo.jpg',
-  role: 'BUYER',
-};
-
-const sampleCat: Category = {
+const sampleCat = {
   id: catId,
   name: 'accessories',
-} as Category;
+};
 
-const sampleProduct1: Product = {
+const sampleProduct1 = {
   id: product1Id,
-  name: 'Product A',
-  description: 'Amazing product A',
+  name: 'test product single',
+  description: 'amazing product',
   images: ['photo1.jpg', 'photo2.jpg', 'photo3.jpg'],
-  newPrice: 100,
+  newPrice: 200,
   quantity: 10,
   vendor: sampleVendor1,
   categories: [sampleCat],
-} as Product;
+};
 
-const sampleProduct2: Product = {
+const sampleProduct2 = {
   id: product2Id,
-  name: 'Product B',
-  description: 'Amazing product B',
-  images: ['photo1.jpg', 'photo2.jpg', 'photo3.jpg'],
-  newPrice: 200,
-  quantity: 20,
+  name: 'another test product',
+  description: 'another amazing product',
+  images: ['photo4.jpg', 'photo5.jpg'],
+  newPrice: 150,
+  quantity: 5,
   vendor: sampleVendor1,
   categories: [sampleCat],
-} as Product;
+};
 
-const sampleProduct3: Product = {
-  id: product3Id,
-  name: 'Product C',
-  description: 'Amazing product C',
-  images: ['photo1.jpg', 'photo2.jpg', 'photo3.jpg'],
-  newPrice: 300,
-  quantity: 30,
-  vendor: sampleVendor2,
+const expiredProduct = {
+  id: expiredProductId,
+  name: 'expired product',
+  description: 'this product is expired',
+  images: ['photo6.jpg'],
+  newPrice: 100,
+  quantity: 3,
+  vendor: sampleVendor1,
   categories: [sampleCat],
-} as Product;
+  expirationDate: new Date('2023-01-01'),
+};
 
 beforeAll(async () => {
   const connection = await dbConnection();
 
   const categoryRepository = connection?.getRepository(Category);
-  await categoryRepository?.save(sampleCat);
+  await categoryRepository?.save({ ...sampleCat });
 
   const userRepository = connection?.getRepository(User);
-  await userRepository?.save(sampleVendor1);
-  await userRepository?.save(sampleVendor2);
-  await userRepository?.save(sampleBuyer1);
+  await userRepository?.save({ ...sampleVendor1 });
 
   const productRepository = connection?.getRepository(Product);
-  await productRepository?.save(sampleProduct1);
-  await productRepository?.save(sampleProduct2);
-  await productRepository?.save(sampleProduct3);
+  await productRepository?.save({ ...sampleProduct1 });
+  await productRepository?.save({ ...sampleProduct2 });
+  await productRepository?.save({ ...expiredProduct });
 });
 
 afterAll(async () => {
@@ -115,49 +99,73 @@ afterAll(async () => {
   server.close();
 });
 
-describe('searchProductService', () => {
-  it('should return all products without filters', async () => {
-    const result = await searchProductService({});
-    expect(result.data.length).toBe(3);
-    expect(result.pagination.totalItems).toBe(3);
-    expect(result.pagination.totalPages).toBe(1);
+describe('Get single product', () => {
+  it('should get a single product', async () => {
+    const response = await request(app)
+      .get(`/product/${product1Id}`)
+      .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe('success');
+    expect(response.body.product).toBeDefined();
+    expect(response.body.product.id).toBe(product1Id);
   });
 
-  it('should return products matching the name filter', async () => {
-    const result = await searchProductService({ name: 'Product A' });
-    expect(result.data.length).toBe(1);
-    expect(result.data[0].name).toBe('Product A');
-    expect(result.pagination.totalItems).toBe(1);
-    expect(result.pagination.totalPages).toBe(1);
+  it('should return 400 if product is expired', async () => {
+    const response = await request(app)
+      .get(`/product/${expiredProductId}`)
+      .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body.status).toBe('error');
+    expect(response.body.message).toBe('Product expired');
   });
 
-  it('should return sorted products by price in descending order', async () => {
-    const result = await searchProductService({ sortBy: 'newPrice', sortOrder: 'DESC' });
-    expect(result.data.length).toBe(3);
-    expect(result.data[0].newPrice).toBe("300");
-    expect(result.data[1].newPrice).toBe("200");
-    expect(result.data[2].newPrice).toBe("100");
+  it('should return 400 for invalid product id', async () => {
+    const response = await request(app)
+      .get(`/product/${InvalidID}`)
+      .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body.status).toBe('error');
+    expect(response.body.message).toBe('Product not found');
   });
 
-  it('should return paginated results', async () => {
-    const result = await searchProductService({ page: 1, limit: 2 });
-    expect(result.data.length).toBe(2);
-    expect(result.pagination.totalItems).toBe(3);
-    expect(result.pagination.totalPages).toBe(2);
+    it('should return 404 if product not found', async () => {
+        const response = await request(app)
+          .get(`/product/${InvalidID}`)
+          .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
 
-    const resultPage2 = await searchProductService({ page: 2, limit: 2 });
-    expect(resultPage2.data.length).toBe(1);
-    expect(resultPage2.pagination.currentPage).toBe(2);
+        expect(response.status).toBe(404);
+  });
+});
+
+describe('GET / product search', () => {
+  it('should sort products by newPrice in descending order', async () => {
+    const response = await request(app)
+      .get(`/product/search/`)
+      .query({ name: 'test', sortBy: 'newPrice', sortOrder: 'DESC' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe('success');
+    expect(response.body.data).toHaveLength(2);
   });
 
-  it('should handle sorting and pagination together', async () => {
-    const result = await searchProductService({ sortBy: 'newPrice', sortOrder: 'ASC', page: 1, limit: 2 });
-    expect(result.data.length).toBe(2);
-    expect(result.data[0].newPrice).toBe("100");
-    expect(result.data[1].newPrice).toBe("200");
+  it('should return 400 if no name is provided', async () => {
+    const response = await request(app)
+      .get(`/product/search/`)
+      .query({ name: '' });
 
-    const resultPage2 = await searchProductService({ sortBy: 'newPrice', sortOrder: 'ASC', page: 2, limit: 2 });
-    expect(resultPage2.data.length).toBe(1);
-    expect(resultPage2.data[0].newPrice).toBe("300");
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Please provide a search term');
+  });
+
+  it('should return a 404 error if no products are found', async () => {
+    const response = await request(app)
+      .get('/product/search')
+      .query({ name: 'nonexistentproduct' });
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe('No products found');
   });
 });

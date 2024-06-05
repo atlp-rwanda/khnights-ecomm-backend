@@ -82,20 +82,31 @@ export const updateAllNotificationsService = async (req: Request, res: Response)
                         isRead: false
                     }
                 },
-                relations: ['allNotifications']
+                relations: {
+                    allNotifications: true
+                }
             });
-
+            
         if (!notification || !notification.allNotifications.length) {
             responseSuccess(res, 200, "User doesn't have any unread notifications.");
             return;
         }
 
-        for (const notificationItem of notification.allNotifications) {
+        const notificationItems = await notificationItemRepo.find({
+            where: {
+                notification: {
+                    id: notification.id
+                }
+            }
+        });
+
+        for (const notificationItem of notificationItems) {
             notificationItem.isRead = true;
             await notificationItemRepo.save(notificationItem);
         }
 
         if (notification) {
+            notification.allNotifications = notificationItems;
             notification.updateUnread();
             await notificationRepo.save(notification);
         }

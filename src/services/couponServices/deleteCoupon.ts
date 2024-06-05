@@ -9,7 +9,6 @@ export const deleteCouponService = async (req: Request, res: Response) => {
     const coupon = await couponRepository.findOne({ where: { code: req.body.code } });
 
     if (!coupon) {
-      console.log('Invalid coupon.');
       return responseError(res, 404, 'Invalid coupon');
     }
 
@@ -17,7 +16,6 @@ export const deleteCouponService = async (req: Request, res: Response) => {
 
     return responseSuccess(res, 200, 'Coupon deleted successfully');
   } catch (error: any) {
-    console.log('Error deleting coupon:\n', error);
     return responseServerError(res, error);
   }
 };

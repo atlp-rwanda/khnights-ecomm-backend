@@ -17,7 +17,6 @@ export const readCouponService = async (req: Request, res: Response) => {
 
     return responseSuccess(res, 200, 'Coupon retrieved successfully', coupon);
   } catch (error: any) {
-    console.log('Error retrieving coupon:\n', error);
     return responseServerError(res, error);
   }
 };
