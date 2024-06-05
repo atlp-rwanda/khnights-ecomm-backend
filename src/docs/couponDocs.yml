@@ -35,7 +35,7 @@
         description: The code of the coupon
     responses:
       '200':
-        description: Return info for the coupon 
+        description: Return info for the coupon
       '400':
         description: Bad Request (syntax error, incorrect input format, etc..)
       '401':

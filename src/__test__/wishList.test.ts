@@ -65,7 +65,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await cleanDatabase()
+  await cleanDatabase();
   server.close();
 });
 const data1 = {

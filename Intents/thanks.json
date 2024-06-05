@@ -1,0 +1,13 @@
+{
+    "intent": "thanks",
+    "utterances": ["Thanks",
+     "Thank you",
+      "That's helpful",
+       "Thank's a lot!", 
+       "thx", 
+       "thnks"],
+    "responses": ["Happy to help!", 
+    "Any time!", 
+    "My pleasure"]
+  }
+  

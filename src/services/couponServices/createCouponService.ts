@@ -10,7 +10,6 @@ export const createCouponService = async (req: Request, res: Response) => {
   try {
     const { error } = validateCoupon(req.body);
     if (error) {
-      console.log('Validation Error creating coupon:\n', error);
       return res.status(400).json({ status: 'error', error: error?.details[0].message });
     }
 

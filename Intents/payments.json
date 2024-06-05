@@ -1,0 +1,15 @@
+{
+    "intent": "payments",
+    "utterances": [
+      "Do you take credit cards?",
+      "Do you accept Mastercard?",
+      "Can I pay with Cash?",
+      "Are you cash only?",
+      "What are your payment methods?",
+      "How do I pay?"
+    ],
+    "responses": [
+      "We accept VISA and Mastercard"
+    ]
+  }
+  

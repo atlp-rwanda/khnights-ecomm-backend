@@ -1,0 +1,14 @@
+{
+    "intent": "confirm",
+    "utterances": [
+      "My payment was processed successfully but I didn't get any order confirmation. What should I do?",
+      "Payment was completed but no confirmation",
+      "Order was not confirmed",
+      "Money deducted but order is not confirmed"
+    ],
+    "responses": [
+      "knight sends you an Email & SMS upon confirmation of your order. If it requires manual confirmation, our team will contact you within 24 hours after order placement. Delay in confirmation SMS may occur due to network error, you may receive it with a delay.",
+      "It takes upto 24 hours for confirmation, please bear with us! Type Need more help for more assistance. "
+    ]
+  }
+  

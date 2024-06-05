@@ -47,7 +47,7 @@ export class CartItem {
 
   @BeforeInsert()
   @BeforeUpdate()
-  updateTotal(): void {
+  updateTotal (): void {
     this.total = this.newPrice * this.quantity;
   }
 }

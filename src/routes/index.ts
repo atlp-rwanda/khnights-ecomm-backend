@@ -3,8 +3,11 @@ import { responseSuccess } from '../utils/response.utils';
 import userRoutes from './UserRoutes';
 import productRoutes from './ProductRoutes';
 import wishListRoutes from './wishListRoute';
-import couponRoute from './couponRoutes';;
+import couponRoute from './couponRoutes';
 import cartRoutes from './CartRoutes';
+import feedbackRoute from './feedbackRoutes';
+import notificationRoute from './NoficationRoutes'
+import  chatBot  from './chatBot';
 
 const router = Router();
 
@@ -14,8 +17,11 @@ router.get('/', (req: Request, res: Response) => {
 
 router.use('/user', userRoutes);
 router.use('/product', productRoutes);
-router.use('/wish-list',  wishListRoutes);
+router.use('/wish-list', wishListRoutes);
 router.use('/cart', cartRoutes);
 router.use('/coupons', couponRoute);
+router.use('/feedback', feedbackRoute);
+router.use('/notification', notificationRoute);
+router.use('/chat', chatBot);
 
 export default router;
