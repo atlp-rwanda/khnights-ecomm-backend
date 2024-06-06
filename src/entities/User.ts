@@ -28,6 +28,9 @@ export interface UserInterface {
   status?: 'active' | 'suspended';
   userType: 'Admin' | 'Buyer' | 'Vendor';
   role?: string;
+  twoFactorEnabled?: boolean;
+  twoFactorCode?: string;
+  twoFactorCodeExpiresAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }

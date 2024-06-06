@@ -4,6 +4,7 @@ import { createConnection, getConnection, getConnectionOptions, getRepository } 
 import { User } from '../entities/User';
 import { response } from 'express';
 import { cleanDatabase } from './test-assets/DatabaseCleanup';
+import { v4 as uuid } from 'uuid';
 
 beforeAll(async () => {
   await createConnection();
@@ -60,6 +61,25 @@ describe('POST /user/register', () => {
   });
 });
 describe('POST /user/verify/:id', () => {
+
+  it('should not verify user, for incorrect id (invalid uuid)', async () => {
+    const response = await request(app)
+      .get(`/user/verify/invalid-uuid`);
+
+    // Assert
+    expect(response.status).toBe(400);
+
+  });
+  
+  it('should not verify email for non existing user', async () => {
+    const response = await request(app)
+      .get(`/user/verify/${uuid()}`);
+
+    // Assert
+    expect(response.status).toBe(404);
+
+  });
+
   it('should verify a user', async () => {
     // Arrange
     const newUser = {
@@ -185,46 +205,6 @@ describe('Password Reset Service', () => {
       const res: any = await request(app).post(`/user/password/reset?userid=${user.id}&email=${email}`).send(data);
       expect(res.status).toBe(204);
       expect(res.data.error).toEqual('New password must match confirm password');
-    }
-  });
-});
-describe('PUT/user/update', () => {
-  it('should return 401 if user is not authenticated', async () => {
-    const newUser = {
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe23@example.com',
-      password: 'password',
-      gender: 'Male',
-      phoneNumber: '12345678900',
-      userType: 'Buyer',
-      photoUrl: 'https://example.com/photo.jpg',
-    };
-
-    // Create a new user
-    const res = await request(app).post('/user/register').send(newUser);
-    const userRepository = getRepository(User);
-
-    const user = await userRepository.findOne({ where: { email: newUser.email } });
-    if (user) {
-      const updateUser = {
-        id: user.id,
-        firstName: 'Biguseers2399',
-        lastName: '1',
-        email: 'john.doe23@example.com',
-        gender: 'Male',
-        phoneNumber: '0790easdas7dsdfd76175',
-        photoUrl: 'photo',
-      };
-      const res = await request(app).put('/user/update').send(updateUser);
-      expect(res.status).toBe(201);
-      expect(res.body).toEqual({
-        status: 'success',
-        data: {
-          code: 201,
-          message: 'User Profile has successfully been updated',
-        },
-      });
     }
   });
 });

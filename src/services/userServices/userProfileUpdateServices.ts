@@ -4,43 +4,33 @@ import { User, UserInterface } from '../../entities/User';
 import { getRepository } from 'typeorm';
 import { userProfileUpdate } from '../../controllers/authController';
 
-declare module 'express' {
-  interface Request {
-    user?: Partial<UserInterface>;
-  }
-}
 
 export const userProfileUpdateServices = async (req: Request, res: Response) => {
   try {
-    if (!req.body) {
-      return responseError(res, 401, 'body required');
+    
+    if (Object.keys(req.body).length === 0) {
+      return responseError(res, 400, 'body required');
     }
 
-    const { firstName, lastName, gender, phoneNumber, photoUrl, email, id } = req.body;
+    const { firstName, lastName, gender, phoneNumber, photoUrl} = req.body;
 
     // Validate user input
     if (
-      !firstName.trim() &&
-      !lastName.trim() &&
-      !gender.trim() &&
-      !phoneNumber.trim() &&
-      !photoUrl.trim() &&
-      !email.trim() &&
-      !id.trim()
+      !firstName || !lastName || !gender ||
+      !phoneNumber || !photoUrl
     ) {
       return responseError(res, 400, 'Fill all the field');
     }
 
     const userRepository = getRepository(User);
     const existingUser = await userRepository.findOne({
-      where: { email: req.body.email },
+      where: {
+        id: req.user?.id
+      },
     });
 
     if (!existingUser) {
       return responseError(res, 401, 'User not found');
-    }
-    if (existingUser.id !== id) {
-      return responseError(res, 403, 'You are not authorized to edit this profile.');
     }
 
     existingUser.firstName = firstName;
@@ -50,7 +40,7 @@ export const userProfileUpdateServices = async (req: Request, res: Response) => 
     existingUser.photoUrl = photoUrl;
 
     await userRepository.save(existingUser);
-    return responseSuccess(res, 201, 'User Profile has successfully been updated');
+    return responseSuccess(res, 200, 'User Profile has successfully been updated');
   } catch (error) {
     responseError(res, 400, (error as Error).message);
   }

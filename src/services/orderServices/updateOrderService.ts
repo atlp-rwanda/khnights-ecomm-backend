@@ -32,9 +32,6 @@ export const updateOrderService = async (req: Request, res: Response) => {
       const transactionRepository: Repository<Transaction> = transactionalEntityManager.getRepository(Transaction);
 
       const buyerId = req.user?.id;
-      if (!buyerId) {
-        throw new Error('Unauthorized');
-      }
 
       // Fetch order and related entities
       const order: Order | null = await orderRepository.findOne({
@@ -132,7 +129,6 @@ export const updateOrderService = async (req: Request, res: Response) => {
       return sendSuccessResponse(res, 200, 'Order updated successfully', orderResponse);
     });
   } catch (error) {
-    console.error('Error updating order:', (error as Error).message);
     return sendErrorResponse(res, 500, (error as Error).message);
   }
 };

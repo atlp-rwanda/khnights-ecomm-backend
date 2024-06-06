@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { RequestHandler, Router } from 'express';
 import { responseError } from '../utils/response.utils';
 import { UserInterface } from '../entities/User';
 import jwt from 'jsonwebtoken';
@@ -20,6 +20,7 @@ import { hasRole } from '../middlewares/roleCheck';
 import { isTokenValide } from '../middlewares/isValid';
 import passport from 'passport';
 import '../utils/auth';
+import { authMiddleware } from '../middlewares/verifyToken';
 const router = Router();
 
 router.post('/register', userRegistration);
@@ -34,7 +35,7 @@ router.post('/activate', isTokenValide, hasRole('ADMIN'), activateUser);
 router.post('/deactivate', isTokenValide, hasRole('ADMIN'), disactivateUser);
 router.post('/password/reset', userPasswordReset);
 router.post('/password/reset/link', sendPasswordResetLink);
-router.put('/update', userProfileUpdate);
+router.put('/update', authMiddleware as RequestHandler, userProfileUpdate);
 
 router.get('/google-auth', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get(

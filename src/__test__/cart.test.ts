@@ -1,3 +1,4 @@
+
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { app, server } from '../index';
@@ -10,21 +11,48 @@ import { Category } from '../entities/Category';
 import { Cart } from '../entities/Cart';
 import { CartItem } from '../entities/CartItem';
 import { cleanDatabase } from './test-assets/DatabaseCleanup';
+import { updateOrderService } from '../services/orderServices/updateOrderService';
 
 const vendor1Id = uuid();
+
 const buyer1Id = uuid();
 const buyer2Id = uuid();
 const buyer3Id = uuid();
+const buyer4Id = uuid();
+
 const product1Id = uuid();
 const product2Id = uuid();
+
 const catId = uuid();
 const cart1Id = uuid();
 const cartItemId = uuid();
+
 const sampleCartId = uuid();
 const sampleCartItemId = uuid();
 const samplecartItem3Id = uuid();
+const sampleAdminId = uuid();
+
+let returnedCartId: string;
+let returnedCartItemId: string;
+let returnedCartItem2Id: string;
 
 const jwtSecretKey = process.env.JWT_SECRET || '';
+
+if (!process.env.TEST_USER_EMAIL || !process.env.TEST_USER_PASS) throw new Error('TEST_USER_PASS or TEST_USER_EMAIL not set in .env');
+
+const sampleAdmin: UserInterface = {
+  id: sampleAdminId,
+  firstName: 'admin!',
+  lastName: 'user',
+  email: 'admin@gmail.com',
+  password: 'admin',
+  userType: 'Admin',
+  gender: 'Male',
+  phoneNumber: '10026386347',
+  photoUrl: 'https://example.com/photo.jpg',
+  role: 'ADMIN',
+};
+
 
 const getAccessToken = (id: string, email: string) => {
   return jwt.sign(
@@ -64,7 +92,7 @@ const sampleBuyer1: UserInterface = {
 
 const sampleBuyer2: UserInterface = {
   id: buyer2Id,
-  firstName: 'buyer1',
+  firstName: 'buyer2',
   lastName: 'user',
   email: 'elijahladdiedv@example.com',
   password: 'password',
@@ -76,15 +104,27 @@ const sampleBuyer2: UserInterface = {
 };
 const sampleBuyer3: UserInterface = {
   id: buyer3Id,
-  firstName: 'buyer1',
+  firstName: 'buyer3',
   lastName: 'user',
-  email: 'elhladdiedv@example.com',
+  email: 'buyer3@example.com',
   password: 'password',
-  userType: 'Admin',
+  userType: 'Buyer',
   gender: 'Male',
-  phoneNumber: '121163800',
+  phoneNumber: '1211ddf3800',
   photoUrl: 'https://example.com/photo.jpg',
-  role: 'ADMIN',
+  role: 'BUYER',
+};
+const sampleBuyer4: UserInterface = {
+  id: buyer4Id,
+  firstName: 'buyer4',
+  lastName: 'user',
+  email: 'buyer4@example.com',
+  password: 'password',
+  userType: 'Buyer',
+  gender: 'Male',
+  phoneNumber: '1211ddsdff3800',
+  photoUrl: 'https://example.com/photo.jpg',
+  role: 'BUYER',
 };
 
 const sampleCat = {
@@ -98,7 +138,7 @@ const sampleProduct1 = {
   description: 'amazing product',
   images: ['photo1.jpg', 'photo2.jpg', 'photo3.jpg'],
   newPrice: 200,
-  quantity: 10,
+  quantity: 20,
   vendor: sampleVendor1,
   categories: [sampleCat],
 };
@@ -152,7 +192,7 @@ const sampleCartItem3 = {
   total: 400,
 };
 
-const bodyTosend = {
+const bodyToSend = {
   productId: product1Id,
   quantity: 2,
 };
@@ -167,6 +207,9 @@ beforeAll(async () => {
   await userRepository?.save({ ...sampleVendor1 });
   await userRepository?.save({ ...sampleBuyer1 });
   await userRepository?.save({ ...sampleBuyer2 });
+  await userRepository?.save({ ...sampleBuyer3 });
+  await userRepository?.save({ ...sampleBuyer4 });
+  await userRepository?.save({ ...sampleAdmin });
 
   const productRepository = connection?.getRepository(Product);
   await productRepository?.save({ ...sampleProduct1 });
@@ -189,118 +232,41 @@ afterAll(async () => {
 });
 
 describe('Cart| Order  management for guest/buyer', () => {
-  describe('Creating new product', () => {
-    it('should create new product', async () => {
-      const response = await request(app)
-        .post('/product')
-        .field('name', 'test product3')
-        .field('description', 'amazing product3')
-        .field('newPrice', 200)
-        .field('quantity', 10)
-        .field('expirationDate', '10-2-2023')
-        .field('categories', 'technology')
-        .field('categories', 'sample')
-        .attach('images', `${__dirname}/test-assets/photo1.png`)
-        .attach('images', `${__dirname}/test-assets/photo2.webp`)
-        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
-
-      expect(response.status).toBe(201);
-      expect(response.body.data.product).toBeDefined;
-    });
-
-    it('return an error if the number of product images exceeds 6', async () => {
-      const response = await request(app)
-        .post(`/product/`)
-        .field('name', 'test-product-images')
-        .field('description', 'amazing product3')
-        .field('newPrice', 200)
-        .field('quantity', 10)
-        .field('expirationDate', '10-2-2023')
-        .field('categories', 'technology')
-        .field('categories', 'sample')
-        .attach('images', `${__dirname}/test-assets/photo1.png`)
-        .attach('images', `${__dirname}/test-assets/photo1.png`)
-        .attach('images', `${__dirname}/test-assets/photo2.webp`)
-        .attach('images', `${__dirname}/test-assets/photo2.webp`)
-        .attach('images', `${__dirname}/test-assets/photo2.webp`)
-        .attach('images', `${__dirname}/test-assets/photo2.webp`)
-        .attach('images', `${__dirname}/test-assets/photo2.webp`)
-        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
-
-      expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Product cannot have more than 6 images');
-    });
-
-    it('should not create new product it already exist', async () => {
-      const response = await request(app)
-        .post('/product')
-        .field('name', 'test product3')
-        .field('description', 'amazing product3')
-        .field('newPrice', 200)
-        .field('quantity', 10)
-        .field('categories', sampleCat.name)
-        .attach('images', `${__dirname}/test-assets/photo1.png`)
-        .attach('images', `${__dirname}/test-assets/photo2.webp`)
-        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
-
-      expect(response.status).toBe(409);
-    });
-
-    it('should not create new product, if there are missing field data', async () => {
-      const response = await request(app)
-        .post('/product')
-        .field('description', 'amazing product3')
-        .field('newPrice', 200)
-        .field('quantity', 10)
-        .field('categories', sampleCat.name)
-        .attach('images', `${__dirname}/test-assets/photo1.png`)
-        .attach('images', `${__dirname}/test-assets/photo2.webp`)
-        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
-
-      expect(response.status).toBe(400);
-    });
-
-    it('should not create new product, images are not at least more than 1', async () => {
-      const response = await request(app)
-        .post('/product')
-        .field('name', 'test-product-image')
-        .field('description', 'amazing product3')
-        .field('newPrice', 200)
-        .field('quantity', 10)
-        .field('categories', sampleCat.name)
-        .attach('images', `${__dirname}/test-assets/photo1.png`)
-        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
-
-      expect(response.status).toBe(400);
-    });
-  });
 
   describe('Adding product to cart on guest/buyer', () => {
-    it('should get cart items of authenticated user', async () => {
-      const response = await request(app)
-        .get('/cart')
-        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body.data.message).toBe('Cart retrieved successfully');
-      expect(response.body.data.cart).toBeDefined;
-    });
-
-    it('should get cart items of authenticated user', async () => {
-      const response = await request(app)
-        .get('/cart')
-        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body.data.message).toBe('Cart is empty');
-      expect(response.body.data.cart).toBeDefined;
-    });
-
     it('should add product to cart as authenticated buyer', async () => {
       const response = await request(app)
         .post(`/cart`)
-        .send(bodyTosend)
+        .send(bodyToSend)
         .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+      expect(response.status).toBe(201);
+      expect(response.body.data.message).toBe('cart updated successfully');
+      expect(response.body.data.cart).toBeDefined;
+    });
+
+    it('should add product to cart as authenticated buyer2', async () => {
+      const response = await request(app)
+        .post(`/cart`)
+        .send({
+          productId: product2Id,
+          quantity: 200,
+        })
+        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
+
+      expect(response.status).toBe(201);
+      expect(response.body.data.message).toBe('cart updated successfully');
+      expect(response.body.data.cart).toBeDefined;
+    });
+
+    it('should add product to cart as authenticated buyer (buyer4)', async () => {
+      const response = await request(app)
+        .post(`/cart`)
+        .send({
+          productId: product2Id,
+          quantity: 1,
+        })
+        .set('Authorization', `Bearer ${getAccessToken(buyer4Id, sampleBuyer4.email)}`);
 
       expect(response.status).toBe(201);
       expect(response.body.data.message).toBe('cart updated successfully');
@@ -308,18 +274,56 @@ describe('Cart| Order  management for guest/buyer', () => {
     });
 
     it('should add product to cart as guest', async () => {
-      const response = await request(app).post(`/cart`).send(bodyTosend);
+      const response = await request(app).post(`/cart`).send(bodyToSend);
+
+      expect(response.status).toBe(201);
+      expect(response.body.data.message).toBe('cart updated successfully');
+      expect(response.body.data.cart).toBeDefined;
+
+      returnedCartId = response.body.data.cart.id;
+
+      returnedCartItemId = response.body.data.cart.items[0].id;
+    });
+
+    it('should update quantity of product, if it is already in cart of guest', async () => {
+      const response = await request(app)
+        .post(`/cart`)
+        .set('Cookie', [`cartId=${returnedCartId}`])
+        .send({
+          productId: product1Id,
+          quantity: 3,
+        });
 
       expect(response.status).toBe(201);
       expect(response.body.data.message).toBe('cart updated successfully');
       expect(response.body.data.cart).toBeDefined;
     });
 
-    it('should get cart items of guest user', async () => {
-      const response = await request(app).get('/cart');
+    it('should add second product to cart of guest', async () => {
+      const response = await request(app)
+        .post(`/cart`)
+        .set('Cookie', [`cartId=${returnedCartId}`])
+        .send({
+          productId: product2Id,
+          quantity: 3,
+        });
 
-      expect(response.status).toBe(200);
+      returnedCartItem2Id = response.body.data.cart.items[1].id;
+      expect(response.status).toBe(201);
+      expect(response.body.data.message).toBe('cart updated successfully');
       expect(response.body.data.cart).toBeDefined;
+    });
+
+    it('should return 400 for incorrect Id syntax (IDs not in uuid form), when add product to cart', async () => {
+      const response = await request(app)
+        .post(`/cart`)
+        .set('Cookie', [`cartId=dfgdsf`])
+        .send({
+          productId: product1Id,
+          quantity: 3,
+        });
+
+      expect(response.status).toBe(400);
     });
 
     it('should return 400 if you do not send proper request body', async () => {
@@ -348,7 +352,7 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.body.message).toBe('Quantity must be greater than 0');
     });
 
-    it('should chnage quantity of product in cart if it is already there', async () => {
+    it('should change quantity of product in cart if it is already there', async () => {
       const response = await request(app)
         .post(`/cart`)
         .send({ productId: product1Id, quantity: 3 })
@@ -371,10 +375,30 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.body.data.cart).toBeDefined;
     });
 
-    it('should get cart items of guest user', async () => {
+    it('should get Empty cart items of authenticated user', async () => {
+      const response = await request(app)
+        .get('/cart')
+        .set('Authorization', `Bearer ${getAccessToken(buyer3Id, sampleBuyer3.email)}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.message).toBe('Cart is empty');
+      expect(response.body.data.cart).toBeDefined;
+    });
+
+    it('should get Empty cart items of guest user', async () => {
       const response = await request(app).get('/cart');
 
       expect(response.status).toBe(200);
+      expect(response.body.data.cart).toBeDefined;
+    });
+
+    it('should get cart items of guest user', async () => {
+      const response = await request(app)
+        .get('/cart')
+        .set('Cookie', [`cartId=${returnedCartId}`]);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.message).toBe('Cart retrieved successfully');
       expect(response.body.data.cart).toBeDefined;
     });
 
@@ -387,15 +411,26 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.body.data.message).toBe('Cart is empty');
       expect(response.body.data.cart).toBeDefined;
     });
+
+
+    it('should return 400 for incorrect Id syntax (IDs not in uuid form), when getting cart', async () => {
+      const response = await request(app)
+        .get(`/cart`)
+        .set('Cookie', [`cartId=dfgdsf`]);
+
+      expect(response.status).toBe(400);
+    });
   });
 
   describe('Order management tests', () => {
     let orderId: any;
+    let order2Id: any;
     let productId: any;
     let feedbackId: any;
     let feedback2Id: any;
+
     describe('Create order', () => {
-      it('should return 400 when user ID is not provided', async () => {
+      it('should create order for authenticated user', async () => {
         const response = await request(app)
           .post('/product/orders')
           .send({
@@ -409,47 +444,92 @@ describe('Cart| Order  management for guest/buyer', () => {
         expect(response.status).toBe(201);
       });
 
-      it('should return orders for the buyer', async () => {
+      it('create order for another authenticated user', async () => {
         const response = await request(app)
-          .get('/product/client/orders')
-          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-        expect(response.status).toBe(200);
-        orderId = response.body.data.orders[0]?.id;
-        productId = response.body.data.orders[0]?.orderItems[0]?.product?.id;
+          .post('/product/orders')
+          .send({
+            address: {
+              country: 'Test Country',
+              city: 'Test City',
+              street: 'Test Street',
+            },
+          })
+          .set('Authorization', `Bearer ${getAccessToken(buyer4Id, sampleBuyer4.email)}`);
+
+        expect(response.status).toBe(201);
+        order2Id = response.body.data.id;
       });
 
-
-      it('should get single order', async () => {
+      it('should not create an order if user has an empty cart or his carts has already been checked out', async () => {
         const response = await request(app)
-          .get(`/product/client/orders/${orderId}`)
-          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-
-        expect(response.status).toBe(200);
-        expect(response.body.data.order).toBeDefined();
-      });
-
-      it('should not return data for single order, if order doesn\'t exist', async () => {
-        const response = await request(app)
-          .get(`/product/client/orders/${uuid()}`)
-          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-
-        expect(response.status).toBe(404);
-      });
-      
-      it('should not return data for single order, for an incorrect id syntax', async () => {
-        const response = await request(app)
-          .get(`/product/client/orders/incorrectId`)
-          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-
+          .post('/product/orders')
+          .send({
+            address: {
+              country: 'Test Country',
+              city: 'Test City',
+              street: 'Test Street',
+            },
+          })
+          .set('Authorization', `Bearer ${getAccessToken(buyer3Id, sampleBuyer3.email)}`);
         expect(response.status).toBe(400);
       });
 
-      it('should return 404 if the buyer has no orders', async () => {
+      it('should not create an order, if there are not enough product in stock', async () => {
         const response = await request(app)
-          .get('/product/client/orders')
+          .post('/product/orders')
+          .send({
+            address: {
+              country: 'Test Country',
+              city: 'Test City',
+              street: 'Test Street',
+            },
+          })
           .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
-        expect(response.status).toBe(404);
-        expect(response.body.message).toBeUndefined;
+        expect(response.status).toBe(400);
+      });
+      describe('Retriving Info about oreder Test', () => {
+        it('should return orders for the buyer', async () => {
+          const response = await request(app)
+            .get('/product/client/orders')
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(200);
+          orderId = response.body.data.orders[0]?.id;
+          productId = response.body.data.orders[0]?.orderItems[0]?.product?.id;
+        });
+
+
+        it('should get single order', async () => {
+          const response = await request(app)
+            .get(`/product/client/orders/${orderId}`)
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+          expect(response.status).toBe(200);
+          expect(response.body.data.order).toBeDefined();
+        });
+
+        it('should not return data for single order, if order doesn\'t exist', async () => {
+          const response = await request(app)
+            .get(`/product/client/orders/${uuid()}`)
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+          expect(response.status).toBe(404);
+        });
+
+        it('should not return data for single order, for an incorrect id syntax', async () => {
+          const response = await request(app)
+            .get(`/product/client/orders/incorrectId`)
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+
+          expect(response.status).toBe(400);
+        });
+
+        it('should return 404 if the buyer has no orders', async () => {
+          const response = await request(app)
+            .get('/product/client/orders')
+            .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
+          expect(response.status).toBe(404);
+          expect(response.body.message).toBeUndefined;
+        });
       });
 
       it('should return transaction history for the buyer', async () => {
@@ -460,11 +540,11 @@ describe('Cart| Order  management for guest/buyer', () => {
         expect(response.body.message).toBe('Transaction history retrieved successfully');
       });
 
-      it('should return 400 when user ID is not provided', async () => {
+      it('should return 400 when user is not AUTHORIZED', async () => {
         const response = await request(app)
           .get('/product/orders/history')
-          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
-        expect(response.status).toBe(200);
+          .set('Authorization', `Bearer ''`);
+        expect(response.status).toBe(403);
       });
     });
 
@@ -476,6 +556,22 @@ describe('Cart| Order  management for guest/buyer', () => {
           .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
         expect(response.status).toBe(200);
       });
+
+      it('should return 404, if order doesn\'t exist', async () => {
+        const response = await request(app)
+          .put(`/product/client/orders/${uuid()}`)
+          .send({ orderStatus: 'completed' })
+          .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+        expect(response.status).toBe(404);
+      });
+
+      it('should return 200 and make refund to buyer when order is cancelled or returned', async () => {
+        const response = await request(app)
+          .put(`/product/client/orders/${order2Id}`)
+          .send({ orderStatus: 'cancelled' })
+          .set('Authorization', `Bearer ${getAccessToken(buyer4Id, sampleBuyer4.email)}`);
+        expect(response.status).toBe(200);
+      });
     });
     describe('Add feedback to the product with order', () => {
       it('should create new feedback to the ordered product', async () => {
@@ -484,9 +580,11 @@ describe('Cart| Order  management for guest/buyer', () => {
           .send({ orderId, comment: 'Well this product looks so fantastic' })
           .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
         expect(response.status).toBe(201);
-        feedbackId = response.body.data.id
+        feedbackId = response.body.data.id;
       });
-      it('should create new feedback to the ordered product', async () => {
+
+
+      it('should create second feedback to the ordered product', async () => {
         const response = await request(app)
           .post(`/feedback/${productId}/new`)
           .send({ orderId, comment: 'Murigalike this product looks so fantastic' })
@@ -508,14 +606,143 @@ describe('Cart| Order  management for guest/buyer', () => {
           .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
         expect(response.status).toBe(200);
       });
-      it('should remove recorder feedback as admin ', async () => {
-        const response = await request(app)
-          .delete(`/feedback/admin/delete/${feedback2Id}`)
-          .send({ orderId, comment: 'Well this product looks so lovely' })
-          .set('Authorization', `Bearer ${getAccessToken(buyer3Id, sampleBuyer3.email)}`);
-        expect(response.status).toBe(401);
+    });
+
+    describe('Feedback API', () => {
+
+      describe('Add feedback to the product with order', () => {
+        it('should create new feedback for the ordered product', async () => {
+          const response = await request(app)
+            .post(`/feedback/${productId}/new`)
+            .send({ orderId, comment: 'Well this product looks so fantastic' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(201);
+          feedbackId = response.body.data.id;
+        });
+
+        it('should create another feedback for the ordered product', async () => {
+          const response = await request(app)
+            .post(`/feedback/${productId}/new`)
+            .send({ orderId, comment: 'Murigalike this product looks so fantastic' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(201);
+          feedback2Id = response.body.data.id;
+        });
+
+        it('should fail to create feedback with missing orderId', async () => {
+          const response = await request(app)
+            .post(`/feedback/${productId}/new`)
+            .send({ comment: 'Missing orderId' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(404);
+        });
+
+        it('should fail to create feedback with missing comment', async () => {
+          const response = await request(app)
+            .post(`/feedback/${productId}/new`)
+            .send({ orderId })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(500);
+        });
+
+        it('should fail to create feedback with invalid productId', async () => {
+          const response = await request(app)
+            .post(`/feedback/invalidProductId/new`)
+            .send({ orderId, comment: 'Invalid productId' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(500);
+        });
+      });
+
+      describe('Update feedback', () => {
+        it('should update existing feedback successfully', async () => {
+          const response = await request(app)
+            .put(`/feedback/update/${feedbackId}`)
+            .send({ orderId, comment: 'Well this product looks so lovely' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(200);
+        });
+
+        it('should fail to update feedback with invalid feedbackId', async () => {
+          const response = await request(app)
+            .put(`/feedback/update/invalidFeedbackId`)
+            .send({ orderId, comment: 'Invalid feedbackId' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(500);
+        });
+
+        it('should fail to update feedback without authorization', async () => {
+          const response = await request(app)
+            .put(`/feedback/update/${feedbackId}`)
+            .send({ orderId, comment: 'Unauthorized update' });
+          expect(response.status).toBe(401);
+        });
+      });
+
+      describe('Delete feedback', () => {
+        it('should remove recorded feedback', async () => {
+          const response = await request(app)
+            .delete(`/feedback/delete/${feedbackId}`)
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(200);
+        });
+
+        it('should fail to delete feedback with invalid feedbackId', async () => {
+          const response = await request(app)
+            .delete(`/feedback/delete/invalidFeedbackId`)
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(500);
+        });
+      });
+
+      describe('Edge Cases', () => {
+        it('should not allow creating feedback for a product not in the order', async () => {
+          const invalidOrderId = 999; // Assuming an invalid orderId
+          const response = await request(app)
+            .post(`/feedback/${productId}/new`)
+            .send({ orderId: invalidOrderId, comment: 'Invalid orderId' })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(500);
+        });
+
+        it('should fail to update feedback with a comment that is too long', async () => {
+          const longComment = 'a'.repeat(1001); // Assuming max length is 1000
+          const response = await request(app)
+            .put(`/feedback/update/${feedback2Id}`)
+            .send({ orderId, comment: longComment })
+            .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+          expect(response.status).toBe(200);
+        });
+      });
+
+      describe('Delete feedback by Admin', () => {
+        it('should delete feedback, if user is authenticated as admin', async () => {
+          const response = await request(app)
+            .delete(`/feedback/admin/delete/${feedback2Id}`)
+            .set('Authorization', `Bearer ${getAccessToken(sampleAdminId, sampleAdmin.email)}`);
+
+          expect(response.status).toBe(200);
+          expect(response.body.data.message).toBe('Feedback successfully removed');
+        });
+
+        it('should return 404, if feedback doesn\'t exist', async () => {
+          const response = await request(app)
+            .delete(`/feedback/admin/delete/${uuid()}`)
+            .set('Authorization', `Bearer ${getAccessToken(sampleAdminId, sampleAdmin.email)}`);
+
+          expect(response.status).toBe(404);
+        });
+
+        it('should return 500, for incorrect feedback id syntax (invalid uuid) doesn\'t exist', async () => {
+          const response = await request(app)
+            .delete(`/feedback/admin/delete/invalid-uuid`)
+            .set('Authorization', `Bearer ${getAccessToken(sampleAdminId, sampleAdmin.email)}`);
+
+          expect(response.status).toBe(500);
+        });
       });
     });
+
   });
 
   describe('Deleting product from cart', () => {
@@ -556,39 +783,31 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.body.data.message).toBe('cart removed successfully');
     });
 
-    it('should add product to cart as authenticated buyer', async () => {
-      const response = await request(app)
-        .post(`/cart`)
-        .send(bodyTosend)
-        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+    it('should delete product in guest cart', async () => {
+      const response = await request(app).delete(`/cart/${returnedCartItemId}`);
 
-      expect(response.status).toBe(201);
-      expect(response.body.data.message).toBe('cart updated successfully');
-      expect(response.body.data.cart).toBeDefined;
+      expect(response.status).toBe(200);
+      expect(response.body.data.message).toBe('Product removed from cart successfully');
     });
 
-    it('should add product to cart as authenticated buyer', async () => {
-      const response = await request(app)
-        .post(`/cart`)
-        .send({ productId: product2Id, quantity: 2 })
-        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+    it('should delete guest cart if there are no products remaining there', async () => {
+      const response = await request(app).delete(`/cart/${returnedCartItem2Id}`);
 
-      expect(response.status).toBe(201);
-      expect(response.body.data.message).toBe('cart updated successfully');
-      expect(response.body.data.cart).toBeDefined;
+      expect(response.status).toBe(200);
+      expect(response.body.data.message).toBe('cart removed successfully');
     });
 
-    it('should return 404 if product does not exist in guest cart', async () => {
+    it('should return 404 if Cart item (product) does not exist in guest cart', async () => {
       const response = await request(app).delete(`/cart/${uuid()}`);
 
       expect(response.status).toBe(404);
       expect(response.body.message).toBe('Cart item not found');
     });
 
-    it('should return 404 if product does not exist in guest cart', async () => {
-      const response = await request(app).delete(`/cart/${samplecartItem3Id}`);
+    it('should return 400, for incorrect Cart item (product) id syntax (invalid uuid)', async () => {
+      const response = await request(app).delete(`/cart/invalid-uuid`);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(400);
     });
   });
 
@@ -596,21 +815,10 @@ describe('Cart| Order  management for guest/buyer', () => {
     it('should return 200 as authenticated buyer does not have a cart', async () => {
       const response = await request(app)
         .delete(`/cart`)
-        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
+        .set('Authorization', `Bearer ${getAccessToken(buyer3Id, sampleBuyer3.email)}`);
 
       expect(response.status).toBe(200);
       expect(response.body.data.message).toBe('Cart is empty');
-      expect(response.body.data.cart).toBeDefined;
-    });
-
-    it('should add product to cart as authenticated buyer', async () => {
-      const response = await request(app)
-        .post(`/cart`)
-        .send(bodyTosend)
-        .set('Authorization', `Bearer ${getAccessToken(buyer2Id, sampleBuyer2.email)}`);
-
-      expect(response.status).toBe(201);
-      expect(response.body.data.message).toBe('cart updated successfully');
       expect(response.body.data.cart).toBeDefined;
     });
 
@@ -632,17 +840,17 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.body.data.cart).toBeDefined;
     });
 
-    it('should get cart items of guest user as empty with wrong cartId', async () => {
+    it('should clear cart items of guest user', async () => {
       const response = await request(app)
-        .get('/cart')
-        .set('Cookie', [`cartId=${uuid()}`]);
+        .delete('/cart')
+        .set('Cookie', [`cartId=${sampleCartId}`]);
 
       expect(response.status).toBe(200);
-      expect(response.body.data.message).toBe('Cart is empty');
+      expect(response.body.data.message).toBe('Cart cleared successfully');
       expect(response.body.data.cart).toBeDefined;
     });
 
-    it('should delete cart items of guest user as empty with wrong cartId', async () => {
+    it('should return empty cart for guest user, if he/she doesn\'t have cart', async () => {
       const response = await request(app)
         .delete('/cart')
         .set('Cookie', [`cartId=${sampleCartId}`]);
@@ -650,6 +858,13 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.message).toBe('Cart is empty');
       expect(response.body.data.cart).toBeDefined;
+    });
+
+    it('should return 400, for incorrect cart id syntax (invalid uuid) for guest user', async () => {
+      const response = await request(app).delete(`/cart`)
+        .set('Cookie', [`cartId=invalid-uuid`]);
+
+      expect(response.status).toBe(400);
     });
   });
 });

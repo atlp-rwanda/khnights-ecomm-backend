@@ -36,6 +36,9 @@ export const listAllProductsService = async (req: Request, res: Response) => {
     if (products.length < 1) {
       return responseSuccess(res, 200, 'No products found');
     }
+    if (products.length < 1) {
+      return responseSuccess(res, 200, 'No products found');
+    }
 
     return responseSuccess(res, 200, 'Products retrieved', { products });
   } catch (error) {

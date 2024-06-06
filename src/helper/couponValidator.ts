@@ -36,6 +36,9 @@ export const validateCouponUpdate = (
     code: Joi.string().min(5).messages({
       'string.min': 'code must be at least 5 characters long.',
     }),
+    product: Joi.string().messages({
+      'any.required': 'product is required.',
+    }),
     discountRate: Joi.number().messages({
       'number.base': 'discountRate must be a number.',
     }),

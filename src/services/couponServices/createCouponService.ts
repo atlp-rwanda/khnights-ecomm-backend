@@ -10,6 +10,7 @@ export const createCouponService = async (req: Request, res: Response) => {
   try {
     const { error } = validateCoupon(req.body);
     if (error) {
+      console.log('Validation Error creating coupon:\n', error);
       return res.status(400).json({ status: 'error', error: error?.details[0].message });
     }
 
@@ -19,14 +20,12 @@ export const createCouponService = async (req: Request, res: Response) => {
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { id: vendorId } });
     if (!user) {
-      console.log('Error creating coupon: User not found', user);
       return responseError(res, 404, 'User not found');
     }
 
     const productRepository = getRepository(Product);
     const product = await productRepository.findOne({ where: { id: productId } });
     if (!product) {
-      console.log('Error creating coupon: Product not found', product);
       return responseError(res, 403, 'Product not found');
     }
 
@@ -48,7 +47,6 @@ export const createCouponService = async (req: Request, res: Response) => {
     await couponRepository.save(newCoupon);
     responseSuccess(res, 201, 'Coupon created successfully');
   } catch (error: any) {
-    console.log('Error creating coupon:\n', error);
     return responseServerError(res, error);
   }
 };

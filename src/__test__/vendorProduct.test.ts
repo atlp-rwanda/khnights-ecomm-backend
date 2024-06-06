@@ -133,7 +133,24 @@ describe('Vendor product management tests', () => {
 
       expect(response.status).toBe(201);
       expect(response.body.data.product).toBeDefined;
-    }, 60000);
+    });
+    
+    it('should create new product. Test when provided one category and currently doesn\'t exist in DB  ', async () => {
+      const response = await request(app)
+        .post('/product')
+        .field('name', 'test product4')
+        .field('description', 'amazing product4')
+        .field('newPrice', 200)
+        .field('quantity', 50)
+        .field('expirationDate', '10-2-2023')
+        .field('categories', 'new-category')
+        .attach('images', `${__dirname}/test-assets/photo1.png`)
+        .attach('images', `${__dirname}/test-assets/photo2.webp`)
+        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+
+      expect(response.status).toBe(201);
+      expect(response.body.data.product).toBeDefined;
+    });
 
     it('return an error if the number of product images exceeds 6', async () => {
       const response = await request(app)
@@ -203,7 +220,7 @@ describe('Vendor product management tests', () => {
   });
 
   describe('Updating existing product', () => {
-    it('return error, if there are missing field data', async () => {
+    it('return response error, if there are missing field data', async () => {
       const response = await request(app)
         .put(`/product/${sampleProduct2.id}`)
         .field('newPrice', 200)
@@ -218,7 +235,7 @@ describe('Vendor product management tests', () => {
       expect(response.status).toBe(400);
     });
 
-    it('return error, if product do not exist', async () => {
+    it('return response error, if product do not exist', async () => {
       const response = await request(app)
         .put(`/product/${uuid()}`)
         .field('name', 'test product3')
@@ -235,8 +252,23 @@ describe('Vendor product management tests', () => {
       expect(response.status).toBe(404);
       expect(response.body.error).toBe('Product not found');
     });
+    
+    it('return response error, for incorrect product id syntax (invalid uuid)', async () => {
+      const response = await request(app)
+        .put(`/product/invalid uuid`)
+        .field('name', 'test product3')
+        .field('description', 'amazing product3')
+        .field('newPrice', 200)
+        .field('quantity', 10)
+        .field('expirationDate', '10-2-2023')
+        .field('categories', 'technology')
+        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
 
-    it('return an error if the number of product images exceeds 6', async () => {
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('invalid input syntax for type uuid: "invalid uuid"');
+    });
+
+    it('return response error if the number of product images exceeds 6', async () => {
       const response = await request(app)
         .put(`/product/${sampleProduct2.id}`)
         .field('name', 'test product3')
@@ -253,6 +285,21 @@ describe('Vendor product management tests', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('Product cannot have more than 6 images');
+    });
+
+    it('should update the product. Test when provided one category and currently doesn\'t exist in DB  ', async () => {
+      const response = await request(app)
+        .put(`/product/${sampleProduct2.id}`)
+        .field('name', 'test product3 updated')
+        .field('description', 'amazing product3')
+        .field('newPrice', 200)
+        .field('quantity', 50)
+        .field('expirationDate', '10-2-2023')
+        .field('categories', 'new-category-update')
+        .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.message).toBe('Product updated successfully');
     });
 
     it('should update the product', async () => {
@@ -425,14 +472,30 @@ describe('Vendor product management tests', () => {
       expect(response.status).toBe(200);
       expect(response.body.data).toBeDefined;
     });
+    
+    it('should retrieve products, according to categories and vendor', async () => {
+      const response = await request(app)
+        .get('/product/recommended')
+        .query({
+          categories: sampleCat.id,
+          vendor: sampleVendor1.id
+        })
+        .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
+      expect(response.status).toBe(200);
+      expect(response.body.data.products).toBeDefined;
+    });
 
     it('should not return any product for a vendor with zero product in stock', async () => {
       const response = await request(app)
-        .get(`/product/recommended`)
+        .get('/product/recommended')
+        .query({
+          categories: sampleCat.id,
+          vendor: sampleVendor2.id
+        })
         .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
 
-      expect(response.status).toBe(200);
-      expect(response.body.products).toBeUndefined;
+        expect(response.status).toBe(200);
+      expect(response.body.data.message).toBe('No products found for the specified vendor');
     });
 
     it('should not return any product for incorrect syntax of input', async () => {

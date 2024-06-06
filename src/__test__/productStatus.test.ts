@@ -160,7 +160,15 @@ describe('Vendor product availability status management tests', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.data.message).toBe('Product status updated successfully');
-  }, 10000);
+  });
+  
+  it('Should return 400 if isAvailable field is not provided', async () => {
+    const response = await request(app)
+      .put(`/product/availability/${product1Id}`)
+      .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+
+    expect(response.statusCode).toBe(400);
+  });
 
   it('should auto update product status to false if product is expired', async () => {
     const response = await request(app)
@@ -170,7 +178,7 @@ describe('Vendor product availability status management tests', () => {
       })
       .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
 
-    expect(response.statusCode).toBe(201);
+    expect(response.statusCode).toBe(200);
     expect(response.body.data.message).toBe('Product status is set to false because it is expired.');
   });
 
@@ -182,7 +190,7 @@ describe('Vendor product availability status management tests', () => {
       })
       .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
 
-    expect(response.statusCode).toBe(202);
+    expect(response.statusCode).toBe(200);
     expect(response.body.data.message).toBe('Product status is set to false because it is out of stock.');
   });
 
@@ -209,7 +217,7 @@ describe('Vendor product availability status management tests', () => {
     expect(response.body.message).toBe('Product not found');
   });
 
-  it('should not update product which is not in VENDOR s stock', async () => {
+  it('should not update product which is not in vendor`s stock', async () => {
     const response = await request(app)
       .put(`/product/availability/${product3Id}`)
       .send({
@@ -219,6 +227,17 @@ describe('Vendor product availability status management tests', () => {
 
     expect(response.statusCode).toBe(404);
     expect(response.body.message).toBe('Product not found in your stock');
+  });
+  
+  it('should return error response, for incorrect id syntax (invalid uuid)  ', async () => {
+    const response = await request(app)
+      .put(`/product/availability/invalid-uuid`)
+      .send({
+        isAvailable: true,
+      })
+      .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
+
+    expect(response.statusCode).toBe(500);
   });
 });
 

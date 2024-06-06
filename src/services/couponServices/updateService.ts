@@ -17,8 +17,8 @@ export const updateCouponService = async (req: Request, res: Response) => {
     const coupon = await couponRepository.findOne({ where: { code } });
     if (coupon) {
       if (req.body.code !== undefined) {
-        const existtCoupon = await couponRepository.findOne({ where: { code: req.body.code } });
-        if (existtCoupon) return responseError(res, 400, 'Coupon code already exists');
+        const existCoupon = await couponRepository.findOne({ where: { code: req.body.code } });
+        if (existCoupon) return responseError(res, 400, 'Coupon code already exists');
         if (req.body.code === coupon.code) return responseError(res, 400, 'Coupon code already up to date');
         coupon.code = req.body.code;
       }
@@ -35,11 +35,12 @@ export const updateCouponService = async (req: Request, res: Response) => {
         coupon.discountType = req.body.discountType;
       }
       if (req.body.product !== undefined) {
-        const { id } = req.body.product;
+        const id = req.body.product;
+        
         const productRepository = getRepository(Product);
         const product = await productRepository.findOne({ where: { id } });
+        
         if (!product) {
-          console.log('Error updating coupon: Product not found', product);
           return responseError(res, 404, 'Product not found');
         }
 
@@ -49,11 +50,9 @@ export const updateCouponService = async (req: Request, res: Response) => {
       await couponRepository.save(coupon);
       return responseSuccess(res, 200, 'Coupon updated successfully', coupon);
     } else {
-      console.log('Error updating coupon: Coupon not found', coupon);
       return responseError(res, 404, 'Coupon not found');
     }
   } catch (error: any) {
-    console.log('Error while updating coupon:\n', error);
     return responseServerError(res, error);
   }
 };

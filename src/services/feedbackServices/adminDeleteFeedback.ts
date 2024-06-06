@@ -18,7 +18,7 @@ export const adminDeleteFeedbackService = async (req: Request, res: Response) =>
 
     await feedbackRepository.remove(feedback);
 
-    return responseSuccess(res, 200, 'Feedback successfully  removed');
+    return responseSuccess(res, 200, 'Feedback successfully removed');
   } catch (error) {
     return responseError(res, 500, 'Server error');
   }

@@ -27,6 +27,8 @@ import {
   updateBuyerVendorOrder,
 } from '../controllers';
 const router = Router();
+
+router.get('/search', searchProduct);
 router.get('/all', listAllProducts);
 router.get('/recommended', authMiddleware as RequestHandler, hasRole('BUYER'), getRecommendedProducts);
 router.get('/collection', authMiddleware as RequestHandler, hasRole('VENDOR'), readProducts);
@@ -55,5 +57,6 @@ router.get('/admin/orders', authMiddleware as RequestHandler, hasRole('ADMIN'), 
 router.get('/admin/orders/:id', authMiddleware as RequestHandler, hasRole('ADMIN'), getSingleBuyerVendorOrder);
 router.put('/admin/orders/:id', authMiddleware as RequestHandler, hasRole('ADMIN'), updateBuyerVendorOrder);
 router.post('/payment/:id', authMiddleware as RequestHandler, hasRole('BUYER'), Payment);
+
 
 export default router;
