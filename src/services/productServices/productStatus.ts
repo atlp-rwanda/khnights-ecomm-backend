@@ -10,7 +10,6 @@ export const productStatusServices = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     if (isAvailable === undefined) {
-      console.log('Error: Please fill all the required fields');
       return responseError(res, 400, 'Please fill all t he required fields');
     }
 

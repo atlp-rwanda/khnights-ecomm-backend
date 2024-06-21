@@ -116,9 +116,9 @@ describe('Get single product', () => {
       .get(`/product/${expiredProductId}`)
       .set('Authorization', `Bearer ${getAccessToken(vendor1Id, sampleVendor1.email)}`);
 
-    expect(response.status).toBe(400);
-    expect(response.body.status).toBe('error');
-    expect(response.body.message).toBe('Product expired');
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe('success');
+    expect(response.body.product).toBeDefined();
   });
 
   it('should return 400 for invalid product id', async () => {

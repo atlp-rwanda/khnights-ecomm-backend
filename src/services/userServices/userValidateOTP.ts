@@ -26,8 +26,10 @@ export const userValidateOTP = async (req: Request, res: Response) => {
     const token = jwt.sign(
       {
         id: user?.id,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
         email: user?.email,
-        userType: user?.userType,
+        role: user?.role,
       },
       process.env.JWT_SECRET as string,
       { expiresIn: '24h' }

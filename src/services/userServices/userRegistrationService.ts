@@ -50,7 +50,7 @@ export const userRegistrationService = async (req: Request, res: Response) => {
         lastName: lastName,
         firstName: firstName,
       };
-      const link = `http://localhost:${process.env.PORT}/user/verify/${user.id}`;
+      const link = `${process.env.CLIENT_URL}/verify-email/${user.id}`;
 
       sendMail(process.env.AUTH_EMAIL, process.env.AUTH_PASSWORD, message, link);
     } else {

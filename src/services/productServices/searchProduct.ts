@@ -14,13 +14,14 @@ export const searchProductService = async (req: Request, res: Response) => {
   const { name, sortBy, sortOrder, page = 1, limit = 10 }: SearchProductParams = req.query as any;
   try {
     if (!name) {
-      console.log("no name");
       return res.status(400).json({ status: 'error', error: 'Please provide a search term' });
     }
 
     const productRepository = getRepository(Product);
     let query = productRepository.createQueryBuilder('product');
 
+    query = query.leftJoinAndSelect('product.vendor', 'vendor');
+    
     query = query.where('LOWER(product.name) LIKE :name', { name: `%${name.toLowerCase()}%` });
 
     if (sortBy && sortOrder) {

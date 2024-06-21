@@ -25,10 +25,10 @@ export interface UserInterface {
   phoneNumber: string;
   photoUrl?: string;
   verified?: boolean;
+  twoFactorEnabled?: boolean;
   status?: 'active' | 'suspended';
   userType: 'Admin' | 'Buyer' | 'Vendor';
   role?: string;
-  twoFactorEnabled?: boolean;
   twoFactorCode?: string;
   twoFactorCodeExpiresAt?: Date;
   createdAt?: Date;
@@ -119,7 +119,7 @@ export class User {
   feedbacks!: Feedback[];
 
   @BeforeInsert()
-  setRole (): void {
+  setRole(): void {
     this.role = this.userType === 'Vendor' ? roles.vendor : roles.buyer;
   }
 }

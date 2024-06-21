@@ -18,13 +18,14 @@ import {
   createOrder,
   getOrders, getOrder,
   updateOrder,
-  getOrdersHistory,Payment,
+  getOrdersHistory, Payment,
   getSingleVendorOrder,
   getVendorOrders,
   updateVendorOrder,
   getBuyerVendorOrders,
   getSingleBuyerVendorOrder,
   updateBuyerVendorOrder,
+  getAllCategory
 } from '../controllers';
 const router = Router();
 
@@ -33,6 +34,7 @@ router.get('/all', listAllProducts);
 router.get('/recommended', authMiddleware as RequestHandler, hasRole('BUYER'), getRecommendedProducts);
 router.get('/collection', authMiddleware as RequestHandler, hasRole('VENDOR'), readProducts);
 router.get('/', authMiddleware as RequestHandler, hasRole('BUYER'), readProducts);
+router.get('/categories', getAllCategory);
 router.get('/:id', singleProduct);
 router.get('/collection/:id', authMiddleware as RequestHandler, hasRole('VENDOR'), readProduct);
 router.post('/', authMiddleware as RequestHandler, hasRole('VENDOR'), upload.array('images', 10), createProduct);

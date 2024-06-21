@@ -80,7 +80,7 @@ export class Product {
   @IsBoolean()
   isAvailable!: boolean;
 
-  @ManyToMany(() => Category)
+  @ManyToMany(() => Category, category => category.products)
   @JoinTable()
   categories!: Category[];
 

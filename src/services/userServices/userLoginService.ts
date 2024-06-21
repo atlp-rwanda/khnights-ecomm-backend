@@ -42,8 +42,10 @@ export const userLoginService = async (req: Request, res: Response) => {
     const token = jwt.sign(
       {
         id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email,
-        userType: user.userType,
+        role: user.role,
       },
       process.env.JWT_SECRET as string,
       { expiresIn: '24h' }
@@ -71,6 +73,7 @@ export const userLoginService = async (req: Request, res: Response) => {
   return res.status(200).json({
     status: 'success',
     data: {
+      email: user.email,
       message: 'Please provide the OTP sent to your email or phone',
     },
   });
