@@ -13,7 +13,6 @@ export const userResendOtpService = async (req: Request, res: Response) => {
   const { email } = req.body;
 
   if (!email) {
-    console.log('No email address provided');
     return res.status(400).json({ status: 'error', message: 'Please provide an email' });
   }
 
@@ -21,7 +20,6 @@ export const userResendOtpService = async (req: Request, res: Response) => {
   const user = await userRepository.findOneBy({ email });
 
   if (!user) {
-    console.log('User not found');
     return res.status(404).json({ status: 'error', message: 'Incorrect email' });
   }
 

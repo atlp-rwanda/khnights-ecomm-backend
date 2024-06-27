@@ -5,12 +5,13 @@ import { User } from '../entities/User';
 import { getRepository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import '../utils/auth';
+import { v4 as uuid } from 'uuid';
 passport.use(
   new Strategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      callbackURL: 'http://localhost:6890/user/auth/google/callback/',
+      callbackURL: `http://localhost:${process.env.PORT || 8000}/user/auth/google/callback/`,
       scope: ['email', 'profile'],
     },
     async (accessToken: any, refreshToken: any, profile: any, cb: any) => {
@@ -27,7 +28,7 @@ passport.use(
             return await cb(null, existingUser);
           }
           const saltRounds = 10;
-          const hashedPassword = await bcrypt.hash('password', saltRounds);
+          const hashedPassword = await bcrypt.hash(uuid(), saltRounds);
           const newUser = new User();
           newUser.firstName = givenName;
           newUser.lastName = family_name ?? familyName ?? 'undefined';

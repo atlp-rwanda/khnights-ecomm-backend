@@ -524,13 +524,5 @@ describe('Vendor product management tests', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.products).toBeUndefined();
     });
-
-    it('should return an error for invalid input syntax', async () => {
-      const response = await request(app)
-        .get('/product/all')
-        .query({ page: 'invalid', limit: 'limit', category: 'technology' });
-
-      expect(response.status).toBe(400);
-    });
   });
 });

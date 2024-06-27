@@ -2,8 +2,6 @@ import { Request, Response } from 'express';
 import { responseError, responseSuccess } from '../../utils/response.utils';
 import { User, UserInterface } from '../../entities/User';
 import { getRepository } from 'typeorm';
-import { userProfileUpdate } from '../../controllers/authController';
-
 
 export const userProfileUpdateServices = async (req: Request, res: Response) => {
   try {

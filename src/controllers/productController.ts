@@ -12,6 +12,7 @@ import {
   searchProductService,
   listAllProductsService, 
   confirmPayment,
+  getAllCategories
 } from '../services';
 
 export const readProduct = async (req: Request, res: Response) => {
@@ -57,4 +58,7 @@ export const searchProduct = async (req: Request, res: Response) => {
 };
 export const Payment = async (req: Request, res: Response) => {
   await confirmPayment(req, res);
+};
+export const getAllCategory = async (req: Request, res: Response) => {
+  await getAllCategories(req, res);
 };

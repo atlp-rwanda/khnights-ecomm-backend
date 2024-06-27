@@ -18,10 +18,6 @@ export const viewSingleProduct = async (req: Request, res: Response) => {
       if (!product) {
         return res.status(404).send({ status: 'error', message: 'Product not found' });
       }
-
-      if (product.expirationDate && new Date(product.expirationDate) < new Date()) {
-        return res.status(400).json({ status: 'error', message: 'Product expired' });
-      }
       res.status(200).json({ status: 'success', product: product });
     }
   } catch (error) {

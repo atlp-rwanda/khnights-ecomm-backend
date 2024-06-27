@@ -20,6 +20,10 @@ import { hasRole } from '../middlewares/roleCheck';
 import { isTokenValide } from '../middlewares/isValid';
 import passport from 'passport';
 import '../utils/auth';
+import { start2FAProcess } from '../services/userServices/userStartTwoFactorAuthProcess';
+import { otpTemplate } from '../helper/emailTemplates';
+import { sendOTPEmail } from '../services/userServices/userSendOTPEmail';
+import { sendOTPSMS } from '../services/userServices/userSendOTPMessage';
 import { authMiddleware } from '../middlewares/verifyToken';
 const router = Router();
 
@@ -41,29 +45,52 @@ router.get('/google-auth', passport.authenticate('google', { scope: ['profile', 
 router.get(
   '/auth/google/callback',
   passport.authenticate('google', {
-    successRedirect: '/user/login/success',
-    failureRedirect: '/user/login/failed',
+    successRedirect: `${process.env.CLIENT_URL}/login/google-auth`,
+    failureRedirect: `${process.env.CLIENT_URL}/login/google-auth`,
   })
 );
 router.get('/login/success', async (req, res) => {
   const user = req.user as UserInterface;
+
   if (!user) {
     responseError(res, 404, 'user not found');
+    return;
   }
-  const payload = {
-    id: user?.id,
-    email: user?.email,
-    role: user?.role,
-  };
-  const token = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '24h' });
-  res.status(200).json({
+
+  if (user.status === 'suspended') {
+    return res.status(400).json({ status: 'error', message: 'Your account has been suspended' });
+  }
+
+  if (!user.twoFactorEnabled) {
+    const payload = {
+      id: user?.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user?.email,
+      role: user?.role,
+    };
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '24h' });
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        token: token,
+        message: 'Login success',
+      },
+    });
+  }
+  const otpCode = await start2FAProcess(user.email);
+  const OTPEmailcontent = otpTemplate(user.firstName, otpCode.toString());
+  await sendOTPEmail('Login OTP Code', user.email, OTPEmailcontent);
+  await sendOTPSMS(user.phoneNumber, otpCode.toString());
+  return res.status(200).json({
     status: 'success',
     data: {
-      token: token,
-      message: 'Login success',
+      email: user.email,
+      message: 'Please provide the OTP sent to your email or phone',
     },
   });
 });
+
 router.get('/login/failed', async (req, res) => {
   res.status(401).json({
     status: false,
