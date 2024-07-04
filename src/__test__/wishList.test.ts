@@ -146,10 +146,10 @@ describe('Wish list management tests', () => {
   });
 
   describe('Get products in wishList', () => {
-    it('Returns 404 when buyer has no product in wish list', async () => {
+    it('Returns No products in wish list when buyer has no product in wish list', async () => {
       const token = jwt.sign(data2, jwtSecretKey);
       const response = await request(app).get('/wish-list').set('Authorization', `Bearer ${token}`);
-      expect(response.status).toBe(404);
+      expect(response.status).toBe(200);
       expect(response.body.message).toBe('No products in wish list');
     });
 
