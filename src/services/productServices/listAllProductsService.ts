@@ -13,7 +13,7 @@ export const listAllProductsService = async (req: Request, res: Response) => {
       order: {
         createdAt: 'DESC',
       },
-      relations: ['categories', 'vendor', 'feedbacks'],
+      relations: ['categories', 'vendor', 'feedbacks','feedbacks.user', 'feedbacks.order'],
       select: {
         vendor: {
           id: true,
@@ -23,6 +23,22 @@ export const listAllProductsService = async (req: Request, res: Response) => {
           phoneNumber: true,
           photoUrl: true,
         },
+        feedbacks: {
+          id: true,
+          comment: true,
+          createdAt: true,
+          updatedAt: true,
+          user: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            photoUrl: true,
+          },
+          order: {
+            id: true,
+            orderItems: true,
+          }
+        }
       },
     });
 

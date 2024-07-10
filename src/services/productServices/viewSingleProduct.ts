@@ -13,7 +13,34 @@ export const viewSingleProduct = async (req: Request, res: Response) => {
     }
     if (productId) {
       const products = getRepository(Product);
-      const product = await products.findOne({ where: { id: productId }, relations: ['categories', 'vendor', 'feedbacks'], });
+      const product = await products.findOne({
+        where: { id: productId }, relations: ['categories', 'vendor', 'feedbacks', 'feedbacks.user', 'feedbacks.order'], select: {
+          vendor: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            phoneNumber: true,
+            photoUrl: true,
+          },
+          feedbacks: {
+            id: true,
+            comment: true,
+            createdAt: true,
+            updatedAt: true,
+            user: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              photoUrl: true,
+            },
+            order: {
+              id: true,
+              orderItems: true,
+            }
+          }
+        },
+      });
 
       if (!product) {
         return res.status(404).send({ status: 'error', message: 'Product not found' });

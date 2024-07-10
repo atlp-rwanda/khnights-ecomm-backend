@@ -20,7 +20,7 @@ export const readProductsService = async (req: Request, res: Response) => {
       },
       skip,
       take: limit,
-      relations: ['categories', 'vendor', 'feedbacks'],
+      relations: ['categories', 'vendor', 'feedbacks','feedbacks.user', 'feedbacks.order'],
       select: {
         vendor: {
           id: true,
@@ -30,6 +30,22 @@ export const readProductsService = async (req: Request, res: Response) => {
           phoneNumber: true,
           photoUrl: true,
         },
+        feedbacks: {
+          id: true,
+          comment: true,
+          createdAt: true,
+          updatedAt: true,
+          user: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            photoUrl: true,
+          },
+          order: {
+            id: true,
+            orderItems: true,
+          }
+        }
       },
     });
 
