@@ -64,7 +64,7 @@ describe('POST /user/deactivate', () => {
 
     const response = await request(app)
       .post(`/user/deactivate`)
-      .set('Cookie', `token=${token}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ email: `${testUser.email}` });
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('User deactivated successfully');
@@ -72,7 +72,7 @@ describe('POST /user/deactivate', () => {
 
   it('should return 404 when email is not submitted', async () => {
     const token = jwt.sign(data, jwtSecretKey);
-    const response = await request(app).post(`/user/deactivate`).set('Cookie', `token=${token}`);
+    const response = await request(app).post(`/user/deactivate`).set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(404);
     expect(response.body.error).toBe('Email is needed');
@@ -81,7 +81,7 @@ describe('POST /user/deactivate', () => {
     const token = jwt.sign(data, jwtSecretKey);
     const response = await request(app)
       .post(`/user/deactivate`)
-      .set('Cookie', `token=${token}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ email: `${testUser.email}` });
 
     expect(response.status).toBe(200);
@@ -92,7 +92,7 @@ describe('POST /user/deactivate', () => {
     const token = jwt.sign(data, jwtSecretKey);
     const response = await request(app)
       .post(`/user/deactivate`)
-      .set('Cookie', `token=${token}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ email: 'nonexistent@example.com' });
 
     expect(response.status).toBe(404);
@@ -106,7 +106,7 @@ describe('POST /user/activate', () => {
 
     const response = await request(app)
       .post(`/user/activate`)
-      .set('Cookie', `token=${token}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ email: `${testUser.email}` });
 
     expect(response.status).toBe(200);
@@ -115,7 +115,7 @@ describe('POST /user/activate', () => {
 
   it('should return 404 when email is not submitted', async () => {
     const token = jwt.sign(data, jwtSecretKey);
-    const response = await request(app).post(`/user/activate`).set('Cookie', `token=${token}`);
+    const response = await request(app).post(`/user/activate`).set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(404);
     expect(response.body.error).toBe('Email is needed');
@@ -125,7 +125,7 @@ describe('POST /user/activate', () => {
     const token = jwt.sign(data, jwtSecretKey);
     const response = await request(app)
       .post(`/user/activate`)
-      .set('Cookie', `token=${token}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ email: `${testUser.email}` });
 
     expect(response.status).toBe(200);
@@ -142,7 +142,7 @@ describe('POST /user/activate', () => {
     const token = jwt.sign(data, jwtSecretKey);
     const response = await request(app)
       .post('/user/activate')
-      .set('Cookie', `token=${token}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ email: 'nonexistent@example.com' });
 
     expect(response.status).toBe(404);

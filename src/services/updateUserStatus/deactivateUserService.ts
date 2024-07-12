@@ -23,7 +23,7 @@ export const deactivateUserService = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (user.status === 'suspended') {
+    if (user.status.toLowerCase() === 'suspended') {
       return res.json({ message: 'User is already suspended' });
     }
 
@@ -32,7 +32,7 @@ export const deactivateUserService = async (req: Request, res: Response) => {
 
     await sendEmail('User_Account_diactivated', { name: user.firstName, email: user.email });
 
-    return res.json({ message: 'User deactivated successfully', user });
+    return res.status(200).json({ message: 'User deactivated successfully', user });
   } catch (error) {
     return res.status(500).json({ error: 'Internal server error' });
   }
