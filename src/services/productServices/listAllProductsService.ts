@@ -22,6 +22,7 @@ export const listAllProductsService = async (req: Request, res: Response) => {
           email: true,
           phoneNumber: true,
           photoUrl: true,
+          status: true
         },
         feedbacks: {
           id: true,

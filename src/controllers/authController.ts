@@ -14,6 +14,8 @@ import { sendPasswordResetLinkService } from '../services/userServices/sendReset
 import { activateUserService } from '../services/updateUserStatus/activateUserService';
 import { deactivateUserService } from '../services/updateUserStatus/deactivateUserService';
 import { userProfileUpdateServices } from '../services/userServices/userProfileUpdateServices';
+import getAllUsers from '../services/userServices/getAllUsers';
+import getUserById from '../services/userServices/getUserById';
 
 export const userRegistration = async (req: Request, res: Response) => {
   await userRegistrationService(req, res);
@@ -53,11 +55,11 @@ export const sendPasswordResetLink = async (req: Request, res: Response) => {
   await sendPasswordResetLinkService(req, res);
 };
 
-export async function activateUser (req: Request, res: Response) {
+export async function activateUser(req: Request, res: Response) {
   await activateUserService(req, res);
 }
 
-export async function disactivateUser (req: Request, res: Response) {
+export async function disactivateUser(req: Request, res: Response) {
   await deactivateUserService(req, res);
 }
 
@@ -66,4 +68,12 @@ export const logout = async (req: Request, res: Response) => {
 };
 export const userProfileUpdate = async (req: Request, res: Response) => {
   await userProfileUpdateServices(req, res);
+};
+
+export const getAllUsersController = async (req: Request, res: Response) => {
+  await getAllUsers(req, res);
+};
+
+export const getUserByIdController = async (req: Request, res: Response) => {
+  await getUserById(req, res);
 };
