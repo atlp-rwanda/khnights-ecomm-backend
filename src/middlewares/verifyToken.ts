@@ -12,7 +12,6 @@ interface AuthRequest extends Request {
 
 export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
-
   if (authHeader === undefined) {
     return res.status(401).json({ error: 'Access denied. No token provided.' });
   }
