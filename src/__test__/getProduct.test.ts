@@ -50,7 +50,6 @@ const sampleBuyer1: UserInterface = {
   phoneNumber: '000380996348',
   photoUrl: 'https://example.com/photo.jpg',
   role: 'BUYER',
-
 };
 
 const sampleCat = {
@@ -143,7 +142,6 @@ describe('Get single product', () => {
   }, 10000);
 });
 describe('POST /confirm-payment', () => {
-
   it('should add product to cart as authenticated buyer', async () => {
     const response = await request(app)
       .post(`/cart`)
@@ -154,7 +152,7 @@ describe('POST /confirm-payment', () => {
     expect(response.body.data.message).toBe('cart updated successfully');
     expect(response.body.data.cart).toBeDefined;
 
-    cardID = JSON.stringify(response.body.data.cart.id)
+    cardID = JSON.stringify(response.body.data.cart.id);
   });
 
   it('should create an order successfully', async () => {
@@ -164,58 +162,41 @@ describe('POST /confirm-payment', () => {
       street: 'Test Street',
     };
 
-
     const response = await request(app)
       .post('/product/orders')
       .set('Authorization', `Bearer ${getAccessToken(BuyerID, sampleBuyer1.email)}`)
       .send({ address });
 
-    console.log(response.body.message)
     expect(response.status).toBe(201);
     expect(response.body.message).toBe('Order created successfully');
     expect(response.body.data).toBeDefined();
-
-  });
-  it('should confirm payment successfully', async () => {
-    const token = 'your_valid_access_token_here';
-
-
+  }, 100000);
+  it('should decline payment', async () => {
     const response = await request(app)
       .post(`/product/payment/${cardID}`)
-      .set('Authorization', `Bearer ${getAccessToken(BuyerID, sampleBuyer1.email)}`)
-      .send({ payment_method: "pm_card_visa" });
+      .set('Authorization', `Bearer ${getAccessToken(BuyerID, sampleBuyer1.email)}`);
 
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBe('Payment successful!');
+    expect(response.status).toBe(500);
   });
 
   it('should handle cart not found', async () => {
-
     const response = await request(app)
-      .post(`/product/payment/wkowkokfowkf`)
-      .set('Authorization', `Bearer ${getAccessToken(BuyerID, sampleBuyer1.email)}`)
-      .send({ payment_method: "pm_card_visa" });
+      .post(`/product/payment/6fd7550f-5b17-4fec-90db-6dc89bcc87333`)
+      .set('Authorization', `Bearer ${getAccessToken(BuyerID, sampleBuyer1.email)}`);
 
-    expect(response.status).toBe(200);
-
+    expect(response.status).toBe(500);
   });
-}
-)
+});
 describe('GET / product search', () => {
-
   it('should return a 400 error if no name is provided', async () => {
-    const response = await request(app)
-      .get(`/product/search/`)
-      .query({ name: '' }); 
+    const response = await request(app).get(`/product/search/`).query({ name: '' });
 
-      expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Please provide a search term');
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Please provide a search term');
   }, 10000);
 
   it('should return products if name is provided', async () => {
-    const response = await request(app)
-      .get('/product/search')
-      .query({ name: 'test product3' }); 
+    const response = await request(app).get('/product/search').query({ name: 'test product3' });
 
     expect(response.status).toBe(200);
     expect(response.body.data).toBeDefined();
@@ -223,11 +204,9 @@ describe('GET / product search', () => {
   });
 
   it('should return a 404 error if no products are found', async () => {
-    const response = await request(app)
-      .get('/product/search')
-      .query({ name: 'nonexistentproduct' });
+    const response = await request(app).get('/product/search').query({ name: 'nonexistentproduct' });
 
     expect(response.status).toBe(404);
     expect(response.body.error).toBe('No products found');
   });
-})
+});

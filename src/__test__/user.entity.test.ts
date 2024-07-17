@@ -105,6 +105,7 @@ const sampleOrder = {
   quantity: 2,
   orderDate: new Date(),
   buyer: sampleBuyer,
+  cartId:uuid(),
   orderStatus: 'received',
   address: 'Rwanda, Kigali, KK20st',
 };
@@ -247,6 +248,7 @@ describe('User Entity', () => {
       buyer: savedUser,
       orderStatus: 'order placed',
       address: 'Rwanda, Kigali, KK20st',
+      cartId: uuid(),
     });
 
     const savedOrder = await orderRepository.save(order);

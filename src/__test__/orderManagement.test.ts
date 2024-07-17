@@ -133,6 +133,7 @@ const sampleOrder = {
   buyer: sampleBuyer,
   orderStatus: 'received',
   address: 'Rwanda, Kigali, KK20st',
+  cartId: uuid()
 };
 const sampleOrder2 = {
   id: order2Id,
@@ -142,6 +143,7 @@ const sampleOrder2 = {
   buyer: sampleBuyer,
   orderStatus: 'order placed',
   address: 'Rwanda, Kigali, KK20st',
+  cartId: uuid()
 };
 
 const sampleOrderItem = {

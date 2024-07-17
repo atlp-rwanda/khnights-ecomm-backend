@@ -6,12 +6,14 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
 import { IsNotEmpty, IsNumber, IsDate, IsIn } from 'class-validator';
 import { User } from './User';
 import { OrderItem } from './OrderItem';
 import { Transaction } from './transaction';
 import { Feedback } from './Feedback';
+import { Cart } from './Cart';
 
 @Entity()
 export class Order {
@@ -22,7 +24,11 @@ export class Order {
   @ManyToOne(() => User, user => user.orders)
   @IsNotEmpty()
   buyer!: User;
-
+  
+  @Column('uuid')
+  @IsNotEmpty()
+  cartId!: string;
+  
   @OneToMany(() => OrderItem, orderItem => orderItem.order, { cascade: true })
   @IsNotEmpty()
   orderItems!: OrderItem[];

@@ -67,6 +67,7 @@ export const createOrderService = async (req: Request, res: Response) => {
     newOrder.quantity = cart.items.reduce((acc, item) => acc + item.quantity, 0);
     newOrder.orderDate = new Date();
     newOrder.address = `${address.country}, ${address.city}, ${address.street}`;
+    newOrder.cartId = cart.id;
 
     await getManager().transaction(async transactionalEntityManager => {
       for (const item of cart.items) {
@@ -107,6 +108,7 @@ export const createOrderService = async (req: Request, res: Response) => {
       quantity: newOrder.quantity,
       orderDate: newOrder.orderDate,
       address: newOrder.address,
+      cartId: newOrder.cartId
     };
 
     const message = {
