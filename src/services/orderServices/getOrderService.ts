@@ -89,6 +89,7 @@ export const getOrderService = async (req: Request, res: Response) => {
       quantity: order.quantity,
       address: order.address,
       orderDate: order.orderDate,
+      cartId: order.cartId,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
       buyer: {
