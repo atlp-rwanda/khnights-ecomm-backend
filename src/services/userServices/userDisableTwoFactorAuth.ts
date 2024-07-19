@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { User } from '../../entities/User';
+import { User, UserInterface } from '../../entities/User';
 import { getRepository } from 'typeorm';
 import { sendNotification } from '../../utils/sendNotification';
+import { responseError, responseSuccess } from '../../utils/response.utils';
 
 export const userDisableTwoFactorAuth = async (req: Request, res: Response) => {
   try {
@@ -22,14 +23,23 @@ export const userDisableTwoFactorAuth = async (req: Request, res: Response) => {
     await userRepository.save(user);
 
     await sendNotification({
-      content: "You disabled Two factor authentication on you account",
+      content: 'You disabled Two factor authentication on you account',
       type: 'user',
-      user: user
-    })
-    return res.status(200).json({ status: 'success', message: 'Two factor authentication disabled successfully' });
+      user: user,
+    });
+
+    const newUser = await userRepository.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    // eslint-disable-next-line no-unused-vars
+    const { password, twoFactorCode, twoFactorCodeExpiresAt, ...safeUser } = newUser as UserInterface;
+    return responseSuccess(res, 200, 'Two factor authentication disabled successfully', {
+      profile: safeUser,
+    });
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ status: 'error', message: error.message });
-    }
+    responseError(res, 400, (error as Error).message);
   }
 };

@@ -22,6 +22,7 @@ export * from './productServices/productStatus';
 export * from './productServices/viewSingleProduct';
 export * from './productServices/searchProduct';
 export * from './productServices/payment';
+export * from './productServices/Transctions';
 export * from './productServices/getCategories';
 
 // Buyer wishlist services
@@ -49,5 +50,5 @@ export * from './notificationServices/getNotifications';
 export * from './notificationServices/deleteNotification';
 export * from './notificationServices/updateNotification';
 
-// chatbot 
+// chatbot
 export * from './chatbotServices/chatBot';

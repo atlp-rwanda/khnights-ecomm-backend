@@ -60,18 +60,3 @@ export const confirmPayment = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Something went wrong' });
   }
 };
-
-// export const confirmPayment = async (req: Request, res: Response) => {
-//   try {
-//     const paymentIntent = await stripeInstance.paymentIntents.create({
-//       currency: 'eur',
-//       amount: 2000,
-//       automatic_payment_methods: {
-//         enabled: true,
-//       },
-//     });
-//     res.send({ clientSecret: paymentIntent.client_secret });
-//   } catch (error) {
-//     res.status(500).json({ error: 'Something went wrong' });
-//   }
-// };

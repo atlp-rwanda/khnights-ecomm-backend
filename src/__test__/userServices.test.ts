@@ -7,7 +7,7 @@ import { cleanDatabase } from './test-assets/DatabaseCleanup';
 import { v4 as uuid } from 'uuid';
 import { dbConnection } from '../startups/dbConnection';
 
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const userId = uuid();
@@ -132,66 +132,78 @@ describe('User service Test', () => {
     });
 
     it('should Login a user, with valid credentials', async () => {
-      const res = await request(app)
-        .post('/user/login')
-        .send({
-          email: 'user@example.com',
-          password: 'password',
-        });
+      const res = await request(app).post('/user/login').send({
+        email: 'user@example.com',
+        password: 'password',
+      });
       // Assert
       expect(res.status).toBe(200);
       expect(res.body.data.token).toBeDefined();
     });
 
     it('should send OTP, if 2FA is enabled', async () => {
-      const res = await request(app)
-        .post('/user/login')
-        .send({
-          email: 'user2@example.com',
-          password: 'password',
-        });
+      const res = await request(app).post('/user/login').send({
+        email: 'user2@example.com',
+        password: 'password',
+      });
       // Assert
       expect(res.status).toBe(200);
       expect(res.body.data.message).toBe('Please provide the OTP sent to your email or phone');
     });
 
     it('should not Login a user, with invalid credentials', async () => {
-      const res = await request(app)
-        .post('/user/login')
-        .send({
-          email: 'user@example.com',
-          password: 'passwo',
-        });
+      const res = await request(app).post('/user/login').send({
+        email: 'user@example.com',
+        password: 'passwo',
+      });
       // Assert
       expect(res.status).toBe(401);
     });
 
     it('should not login User if user email is not verified', async () => {
-      const res = await request(app)
-        .post('/user/login')
-        .send({
-          email: 'john.doe1@example.com',
-          password: 'password',
-        });
+      const res = await request(app).post('/user/login').send({
+        email: 'john.doe1@example.com',
+        password: 'password',
+      });
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe("Please verify your account");
+      expect(res.body.message).toBe('Please verify your account');
     });
 
     it('should not login User if user is currently suspended', async () => {
-      const res = await request(app)
-        .post('/user/login')
-        .send({
-          email: sampleUser1.email,
-          password: sampleUser1.password,
-        });
+      const res = await request(app).post('/user/login').send({
+        email: sampleUser1.email,
+        password: sampleUser1.password,
+      });
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe("Your account has been suspended");
+      expect(res.body.message).toBe('Your account has been suspended');
     });
   });
 
   describe('User Profile update', () => {
+    it('should get user information', async () => {
+      const res = await request(app)
+        .get('/user/profile')
+        .set('Authorization', `Bearer ${getAccessToken(userId, sampleUser.email)}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe('success');
+      expect(res.body.data.code).toBe(200);
+      expect(res.body.data.message).toBe('profile fetched successfully');
+    });
+
+    it('should get user information', async () => {
+      const res = await request(app)
+        .put('/user/profile')
+        .send({ images: [] })
+        .set('Authorization', `Bearer ${getAccessToken(userId, sampleUser.email)}`);
+
+      expect(res.status).toBe(400);
+      expect(res.body.status).toBe('error');
+      expect(res.body.message).toBe("Cannot read properties of undefined (reading 'length')");
+    });
+
     it('should update user profile', async () => {
       const res = await request(app)
         .put('/user/update')
@@ -200,7 +212,6 @@ describe('User service Test', () => {
           lastName: 'Doe',
           gender: 'Male',
           phoneNumber: '0789412421',
-          photoUrl: 'photo.jpg',
         })
         .set('Authorization', `Bearer ${getAccessToken(userId, sampleUser.email)}`);
 
@@ -220,7 +231,7 @@ describe('User service Test', () => {
         .put('/user/update')
         .send({
           firstName: 'firstName updated',
-          lastName: 'lastName updated'
+          lastName: 'lastName updated',
         })
         .set('Authorization', `Bearer ${getAccessToken(userId, sampleUser.email)}`);
 
@@ -230,45 +241,40 @@ describe('User service Test', () => {
 
   describe('User Reset Password', () => {
     it('should return response error, if no email and userID provided', async () => {
-      const respond = await request(app)
-        .post('/user/password/reset');
+      const respond = await request(app).post('/user/password/reset');
 
       expect(respond.status).toBe(400);
     });
 
     it('should not reset password, for no existing Users', async () => {
-      const respond = await request(app)
-        .post('/user/password/reset')
-        .query({
-          email: 'example@gmail.com',
-          userid: uuid()
-        });
+      const respond = await request(app).post('/user/password/reset').query({
+        email: 'example@gmail.com',
+        userid: uuid(),
+      });
 
       expect(respond.status).toBe(404);
     });
 
     it('should not reset password, if no new password sent', async () => {
-      const respond = await request(app)
-        .post('/user/password/reset')
-        .query({
-          email: sampleUser.email,
-          userid: sampleUser.id
-        });
+      const respond = await request(app).post('/user/password/reset').query({
+        email: sampleUser.email,
+        userid: sampleUser.id,
+      });
 
       expect(respond.status).toBe(400);
       expect(respond.body.message).toBe('Please provide all required fields');
     });
 
-    it('should not reset password, if new password doesn\'t match password in confirmPassword field', async () => {
+    it("should not reset password, if new password doesn't match password in confirmPassword field", async () => {
       const respond = await request(app)
         .post('/user/password/reset')
         .query({
           email: sampleUser.email,
-          userid: sampleUser.id
+          userid: sampleUser.id,
         })
         .send({
           newPassword: 'new-password',
-          confirmPassword: 'password'
+          confirmPassword: 'password',
         });
 
       expect(respond.status).toBe(400);
@@ -276,12 +282,10 @@ describe('User service Test', () => {
     });
 
     it('should not reset password, for incorrect user id syntax (invalid uuid)', async () => {
-      const respond = await request(app)
-        .post('/user/password/reset')
-        .query({
-          email: sampleUser.email,
-          userid: 'invalid-=uuid'
-        });
+      const respond = await request(app).post('/user/password/reset').query({
+        email: sampleUser.email,
+        userid: 'invalid-=uuid',
+      });
 
       expect(respond.status).toBe(500);
     });
@@ -290,11 +294,11 @@ describe('User service Test', () => {
         .post('/user/password/reset')
         .query({
           email: sampleUser.email,
-          userid: sampleUser.id
+          userid: sampleUser.id,
         })
         .send({
           newPassword: 'new-password',
-          confirmPassword: 'new-password'
+          confirmPassword: 'new-password',
         });
 
       expect(respond.status).toBe(200);
@@ -304,22 +308,19 @@ describe('User service Test', () => {
 
   describe('User password reset link', () => {
     it('should send link to reset password', async () => {
-      const response = await request(app)
-        .post('/user/password/reset/link')
-        .query({ email: sampleUser.email });
+      const response = await request(app).post('/user/password/reset/link').query({ email: sampleUser.email });
 
       expect(response.status).toBe(200);
     });
 
     it('should not send link to reset password, if no email provided', async () => {
-      const response = await request(app)
-        .post('/user/password/reset/link');
+      const response = await request(app).post('/user/password/reset/link');
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Missing required field');
     });
 
-    it('should not send link to reset password, if email doesn\'t exist in DB', async () => {
+    it("should not send link to reset password, if email doesn't exist in DB", async () => {
       const response = await request(app)
         .post('/user/password/reset/link')
         .query({ email: 'nonexistingemail@gmail.com' });
@@ -330,7 +331,6 @@ describe('User service Test', () => {
   });
 
   describe('Start@FAProcess', () => {
-
     it('should return 400 if not sent email in body on enabling 2fa', async () => {
       const data = {};
 
@@ -359,7 +359,10 @@ describe('User service Test', () => {
       const res = await request(app).post('/user/enable-2fa').send(data);
 
       expect(res.status).toBe(200);
-      expect(res.body).toEqual({ status: 'success', message: 'Two factor authentication enabled successfully' });
+      expect(res.body.status).toBe('success');
+      expect(res.body.data.code).toBe(200);
+      expect(res.body.data.message).toBe('Two factor authentication enabled successfully');
+      expect(res.body.data.profile.twoFactorEnabled).toBe(true);
     });
 
     it('should return 400 if not sent email in body on disabling 2fa', async () => {
@@ -390,7 +393,10 @@ describe('User service Test', () => {
       const res = await request(app).post('/user/disable-2fa').send(data);
 
       expect(res.status).toBe(200);
-      expect(res.body).toEqual({ status: 'success', message: 'Two factor authentication disabled successfully' });
+      expect(res.body.status).toBe('success');
+      expect(res.body.data.code).toBe(200);
+      expect(res.body.data.message).toBe('Two factor authentication disabled successfully');
+      expect(res.body.data.profile.twoFactorEnabled).toBe(false);
     });
 
     it('should return 400 if not sent email and otp in body on verifying OTP', async () => {
@@ -454,12 +460,10 @@ describe('User service Test', () => {
     });
 
     it('should login user, if OTP provided is valid', async () => {
-      const res = await request(app)
-        .post('/user/verify-otp')
-        .send({
-          email: sampleUser3.email,
-          otp: '123456',
-        });
+      const res = await request(app).post('/user/verify-otp').send({
+        email: sampleUser3.email,
+        otp: '123456',
+      });
 
       expect(res.status).toBe(200);
       expect(res.body.data.token).toBeDefined();

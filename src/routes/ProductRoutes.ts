@@ -1,6 +1,6 @@
 import { RequestHandler, Router } from 'express';
 
-import { productStatus, searchProduct, } from '../controllers/index';
+import { productStatus, searchProduct } from '../controllers/index';
 import { hasRole } from '../middlewares/roleCheck';
 import upload from '../middlewares/multer';
 import { authMiddleware } from '../middlewares/verifyToken';
@@ -16,19 +16,23 @@ import {
   listAllProducts,
   singleProduct,
   createOrder,
-  getOrders, getOrder,
+  getOrders,
+  getOrder,
   updateOrder,
-  getOrdersHistory, Payment,
+  getOrdersHistory,
+  Payment,
   getSingleVendorOrder,
   getVendorOrders,
   updateVendorOrder,
   getBuyerVendorOrders,
   getSingleBuyerVendorOrder,
   updateBuyerVendorOrder,
-  getAllCategory
+  getAllCategory,
+  getAllTransaction,
 } from '../controllers';
 const router = Router();
 
+router.get('/transaction', authMiddleware as RequestHandler, hasRole('ADMIN'), getAllTransaction);
 router.get('/search', searchProduct);
 router.get('/all', listAllProducts);
 router.get('/recommended', authMiddleware as RequestHandler, hasRole('BUYER'), getRecommendedProducts);
@@ -55,10 +59,12 @@ router.get('/vendor/orders/:id', authMiddleware as RequestHandler, hasRole('VEND
 router.put('/vendor/orders/:id', authMiddleware as RequestHandler, hasRole('VENDOR'), updateVendorOrder);
 
 // Admin order management
+
 router.get('/admin/orders', authMiddleware as RequestHandler, hasRole('ADMIN'), getBuyerVendorOrders);
 router.get('/admin/orders/:id', authMiddleware as RequestHandler, hasRole('ADMIN'), getSingleBuyerVendorOrder);
 router.put('/admin/orders/:id', authMiddleware as RequestHandler, hasRole('ADMIN'), updateBuyerVendorOrder);
 router.post('/payment/:id', authMiddleware as RequestHandler, hasRole('BUYER'), Payment);
 
+//all transaction
 
 export default router;
