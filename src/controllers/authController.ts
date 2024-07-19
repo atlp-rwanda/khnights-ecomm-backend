@@ -16,6 +16,8 @@ import { deactivateUserService } from '../services/updateUserStatus/deactivateUs
 import { userProfileUpdateServices } from '../services/userServices/userProfileUpdateServices';
 import getAllUsers from '../services/userServices/getAllUsers';
 import getUserById from '../services/userServices/getUserById';
+import getUserProfile from '../services/userServices/getUserProfile';
+import userUpdateProfilePicture from '../services/userServices/userUpdateProfileImage';
 
 export const userRegistration = async (req: Request, res: Response) => {
   await userRegistrationService(req, res);
@@ -76,4 +78,12 @@ export const getAllUsersController = async (req: Request, res: Response) => {
 
 export const getUserByIdController = async (req: Request, res: Response) => {
   await getUserById(req, res);
+};
+
+export const getUserProfileController = async (req: Request, res: Response) => {
+  await getUserProfile(req, res);
+};
+
+export const userUpdateProfilePictureController = async (req: Request, res: Response) => {
+  await userUpdateProfilePicture(req, res);
 };

@@ -15,10 +15,13 @@ import {
   logout,
   getAllUsersController,
   getUserByIdController,
+  getUserProfileController,
+  userUpdateProfilePictureController,
 } from '../controllers';
 
 import { activateUser, disactivateUser, userProfileUpdate } from '../controllers/index';
 import { hasRole } from '../middlewares/roleCheck';
+import upload from '../middlewares/multer';
 import passport from 'passport';
 import '../utils/auth';
 import { start2FAProcess } from '../services/userServices/userStartTwoFactorAuthProcess';
@@ -43,6 +46,8 @@ router.post('/deactivate', authMiddleware as RequestHandler, hasRole('ADMIN'), d
 router.post('/password/reset', userPasswordReset);
 router.post('/password/reset/link', sendPasswordResetLink);
 router.put('/update', authMiddleware as RequestHandler, userProfileUpdate);
+router.get('/profile', authMiddleware as RequestHandler, getUserProfileController);
+router.put('/profile', authMiddleware as RequestHandler, upload.array('images', 1), userUpdateProfilePictureController);
 
 router.get('/google-auth', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get(
