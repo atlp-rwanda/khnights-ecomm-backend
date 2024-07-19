@@ -102,7 +102,7 @@ export const getSingleVendorOrderService = async (req: Request, res: Response) =
         id: vendorOrder.order.buyer.id,
         firstName: vendorOrder.order.buyer.firstName,
         lastName: vendorOrder.order.buyer.lastName,
-        email: vendorOrder.order.buyer.lastName,
+        email: vendorOrder.order.buyer.email,
         gender: vendorOrder.order.buyer.gender,
         phoneNumber: vendorOrder.order.buyer.phoneNumber,
         photoUrl: vendorOrder.order.buyer.photoUrl,
