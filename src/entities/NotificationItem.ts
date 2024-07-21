@@ -29,7 +29,7 @@ export class NotificationItem{
     'cart',
     'order',
     'user',
-    'wish list',
+    'wishlist',
     'coupon',
   ])
   type!: string 

@@ -5,6 +5,7 @@ import { VendorOrderItem } from '../../entities/VendorOrderItem';
 import { VendorOrders } from '../../entities/vendorOrders';
 import { Order } from '../../entities/Order';
 import { getIO } from '../../utils/socket';
+import { sendNotification } from '../../utils/sendNotification';
 
 export const updateBuyerVendorOrderService = async (req: Request, res: Response) => {
   try {
@@ -52,9 +53,23 @@ export const updateBuyerVendorOrderService = async (req: Request, res: Response)
     order.orderStatus = 'completed';
     await orderRepository.save(order);
 
-    const updatedVendorOrder = vendorOrders.map(async order => {
-      order.orderStatus = 'completed';
-      await vendorOrderRepository.save(order);
+    await sendNotification({
+      content: 'Your order was marked completed',
+      type: 'order',
+      user: order.buyer,
+      link: `/orders/${order.id}`,
+    });
+
+    const updatedVendorOrder = vendorOrders.map(async vendorOrder => {
+      vendorOrder.orderStatus = 'completed';
+      await vendorOrderRepository.save(vendorOrder);
+
+      await sendNotification({
+        content: `Order from buyer "${order.buyer.firstName} ${order.buyer.lastName}" has been marked completed`,
+        type: 'order',
+        user: vendorOrder.vendor,
+        link: `/vendor/dashboard/orders/${order.id}`,
+      });
     });
 
     const sanitizedOrderResponse = {

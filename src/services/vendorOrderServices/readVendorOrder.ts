@@ -45,7 +45,7 @@ export const getVendorOrdersService = async (req: Request, res: Response) => {
         id: order.order.buyer.id,
         firstName: order.order.buyer.firstName,
         lastName: order.order.buyer.lastName,
-        email: order.order.buyer.lastName,
+        email: order.order.buyer.email,
         gender: order.order.buyer.gender,
         phoneNumber: order.order.buyer.phoneNumber,
         photoUrl: order.order.buyer.photoUrl,
