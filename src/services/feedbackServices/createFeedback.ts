@@ -42,7 +42,7 @@ export const createFeedbackService = async (req: Request, res: Response) => {
       content: `Buyer: "${order.buyer.firstName} ${order.buyer.lastName}" sent feedback on product: ${product.name}`,
       type: "product",
       user: product.vendor,
-      link: `/product/collection/${product.id}`
+      link: `/vendor/dashboard/products/${product.id}`
     })
 
     return responseSuccess(res, 201, 'Feedback created successfully', feedback);

@@ -78,7 +78,7 @@ export const updateOrderService = async (req: Request, res: Response) => {
             content: `The Buyer named "${order.buyer.firstName} ${order.buyer.lastName}", has confirmed that they have successfully received their order.`,
             type: 'order',
             user: admin,
-            link: `/product/admin/orders/${order.id}`
+            link: `/admin/dashboard/products/${order.id}`
           });
         });
       }
@@ -99,7 +99,7 @@ export const updateOrderService = async (req: Request, res: Response) => {
           content: `The Buyer named "${order.buyer.firstName} ${order.buyer.lastName}", has marked their order as "${orderStatus}". Please ensure that you update the order status on your side as well.`,
           type: 'order',
           user: vendorOrder.vendor,
-          link: `/product/vendor/orders/${vendorOrder.id}`
+          link: `/vendor/dashboard/orders/${vendorOrder.id}`
         });
       });
 

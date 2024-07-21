@@ -181,7 +181,7 @@ const saveVendorRelatedOrder = async (order: Order, CartItem: CartItem[]) => {
           content: `Buyer "${vendorOrders.order.buyer.firstName} ${vendorOrders.order.buyer.lastName}" has added one of your products to their order. Please confirm that you'll be able to deliver it.`,
           type: 'order',
           user: vendorOrders.vendor,
-          link: `/product/vendor/orders/${vendorOrders.id}`
+          link: `/vendor/dashboard/orders/${vendorOrders.id}`
         });
       }
     }

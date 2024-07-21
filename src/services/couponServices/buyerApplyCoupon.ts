@@ -85,8 +85,7 @@ export const buyerApplyCouponService = async (req: Request, res: Response) => {
     await sendNotification({
       content: `Buyer: "${cart?.user.firstName} ${cart?.user.lastName}" used coupon and got discount on product: "${couponCartItem.product.name}"`,
       type:'coupon',
-      user: coupon.vendor,
-      link: `/coupons/vendor/${coupon.vendor.id}/checkout/${couponCode}`
+      user: coupon.vendor
     });
 
     return res
