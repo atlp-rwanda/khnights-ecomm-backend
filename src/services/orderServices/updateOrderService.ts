@@ -65,20 +65,20 @@ export const updateOrderService = async (req: Request, res: Response) => {
 
       // Save updated order status
       await orderRepository.save(order);
-      
+
       if (orderStatus === 'received') {
         const admins = await getRepository(User).find({
           where: {
-            role: 'ADMIN'
-          }
+            role: 'ADMIN',
+          },
         });
-        
-        admins.forEach( async (admin) => {
+
+        admins.forEach(async admin => {
           await sendNotification({
             content: `The Buyer named "${order.buyer.firstName} ${order.buyer.lastName}", has confirmed that they have successfully received their order.`,
             type: 'order',
             user: admin,
-            link: `/admin/dashboard/products/${order.id}`
+            link: `/admin/dashboard/orders/${order.id}`,
           });
         });
       }
@@ -86,20 +86,20 @@ export const updateOrderService = async (req: Request, res: Response) => {
       const vendorOrders = await getRepository(VendorOrders).find({
         where: {
           order: {
-            id: order.id
-          }
+            id: order.id,
+          },
         },
         relations: {
-          vendor: true
-        }
+          vendor: true,
+        },
       });
 
-      vendorOrders.forEach(async (vendorOrder) => {
+      vendorOrders.forEach(async vendorOrder => {
         await sendNotification({
           content: `The Buyer named "${order.buyer.firstName} ${order.buyer.lastName}", has marked their order as "${orderStatus}". Please ensure that you update the order status on your side as well.`,
           type: 'order',
           user: vendorOrder.vendor,
-          link: `/vendor/dashboard/orders/${vendorOrder.id}`
+          link: `/vendor/dashboard/orders/${vendorOrder.id}`,
         });
       });
 
@@ -133,7 +133,7 @@ export const updateOrderService = async (req: Request, res: Response) => {
   }
 };
 
-async function processRefund (order: Order, entityManager: EntityManager) {
+async function processRefund(order: Order, entityManager: EntityManager) {
   const buyer = order.buyer;
 
   // Refund buyer
@@ -161,6 +161,6 @@ async function processRefund (order: Order, entityManager: EntityManager) {
   order.quantity = 0;
 }
 
-function isOrderFinalStatus (status: string): boolean {
+function isOrderFinalStatus(status: string): boolean {
   return ['cancelled', 'delivered', 'returned', 'completed'].includes(status);
 }
