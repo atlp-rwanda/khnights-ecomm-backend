@@ -10,9 +10,10 @@ import {
   productStatusServices,
   viewSingleProduct,
   searchProductService,
-  listAllProductsService, 
+  listAllProductsService,
   confirmPayment,
-  getAllCategories
+  getAllCategories,
+  transaction,
 } from '../services';
 
 export const readProduct = async (req: Request, res: Response) => {
@@ -53,12 +54,14 @@ export const singleProduct = async (req: Request, res: Response) => {
   await viewSingleProduct(req, res);
 };
 export const searchProduct = async (req: Request, res: Response) => {
-  await searchProductService (req, res);
-
+  await searchProductService(req, res);
 };
 export const Payment = async (req: Request, res: Response) => {
   await confirmPayment(req, res);
 };
 export const getAllCategory = async (req: Request, res: Response) => {
   await getAllCategories(req, res);
+};
+export const getAllTransaction = async (req: Request, res: Response) => {
+  await transaction(req, res);
 };

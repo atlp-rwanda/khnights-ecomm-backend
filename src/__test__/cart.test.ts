@@ -1,4 +1,3 @@
-
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { app, server } from '../index';
@@ -38,7 +37,8 @@ let returnedCartItem2Id: string;
 
 const jwtSecretKey = process.env.JWT_SECRET || '';
 
-if (!process.env.TEST_USER_EMAIL || !process.env.TEST_USER_PASS) throw new Error('TEST_USER_PASS or TEST_USER_EMAIL not set in .env');
+if (!process.env.TEST_USER_EMAIL || !process.env.TEST_USER_PASS)
+  throw new Error('TEST_USER_PASS or TEST_USER_EMAIL not set in .env');
 
 const sampleAdmin: UserInterface = {
   id: sampleAdminId,
@@ -52,7 +52,6 @@ const sampleAdmin: UserInterface = {
   photoUrl: 'https://example.com/photo.jpg',
   role: 'ADMIN',
 };
-
 
 const getAccessToken = (id: string, email: string) => {
   return jwt.sign(
@@ -232,7 +231,6 @@ afterAll(async () => {
 });
 
 describe('Cart| Order  management for guest/buyer', () => {
-
   describe('Adding product to cart on guest/buyer', () => {
     it('should add product to cart as authenticated buyer', async () => {
       const response = await request(app)
@@ -315,13 +313,10 @@ describe('Cart| Order  management for guest/buyer', () => {
     });
 
     it('should return 400 for incorrect Id syntax (IDs not in uuid form), when add product to cart', async () => {
-      const response = await request(app)
-        .post(`/cart`)
-        .set('Cookie', [`cartId=dfgdsf`])
-        .send({
-          productId: product1Id,
-          quantity: 3,
-        });
+      const response = await request(app).post(`/cart`).set('Cookie', [`cartId=dfgdsf`]).send({
+        productId: product1Id,
+        quantity: 3,
+      });
 
       expect(response.status).toBe(400);
     });
@@ -412,11 +407,8 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.body.data.cart).toBeDefined;
     });
 
-
     it('should return 400 for incorrect Id syntax (IDs not in uuid form), when getting cart', async () => {
-      const response = await request(app)
-        .get(`/cart`)
-        .set('Cookie', [`cartId=dfgdsf`]);
+      const response = await request(app).get(`/cart`).set('Cookie', [`cartId=dfgdsf`]);
 
       expect(response.status).toBe(400);
     });
@@ -497,7 +489,6 @@ describe('Cart| Order  management for guest/buyer', () => {
           productId = response.body.data.orders[0]?.orderItems[0]?.product?.id;
         });
 
-
         it('should get single order', async () => {
           const response = await request(app)
             .get(`/product/client/orders/${orderId}`)
@@ -507,7 +498,7 @@ describe('Cart| Order  management for guest/buyer', () => {
           expect(response.body.data.order).toBeDefined();
         });
 
-        it('should not return data for single order, if order doesn\'t exist', async () => {
+        it("should not return data for single order, if order doesn't exist", async () => {
           const response = await request(app)
             .get(`/product/client/orders/${uuid()}`)
             .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
@@ -541,9 +532,7 @@ describe('Cart| Order  management for guest/buyer', () => {
       });
 
       it('should return 400 when user is not AUTHORIZED', async () => {
-        const response = await request(app)
-          .get('/product/orders/history')
-          .set('Authorization', `Bearer ''`);
+        const response = await request(app).get('/product/orders/history').set('Authorization', `Bearer ''`);
         expect(response.status).toBe(403);
       });
     });
@@ -557,7 +546,7 @@ describe('Cart| Order  management for guest/buyer', () => {
         expect(response.status).toBe(200);
       });
 
-      it('should return 404, if order doesn\'t exist', async () => {
+      it("should return 404, if order doesn't exist", async () => {
         const response = await request(app)
           .put(`/product/client/orders/${uuid()}`)
           .send({ orderStatus: 'completed' })
@@ -583,18 +572,17 @@ describe('Cart| Order  management for guest/buyer', () => {
         feedbackId = response.body.data.id;
       });
 
-
       it('should create second feedback to the ordered product', async () => {
         const response = await request(app)
           .post(`/feedback/${productId}/new`)
           .send({ orderId, comment: 'Murigalike this product looks so fantastic' })
           .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
         expect(response.status).toBe(201);
-        feedback2Id = response.body.data.id
+        feedback2Id = response.body.data.id;
       });
       it('should  updated existing feedback successfully', async () => {
         const response = await request(app)
-          .put(`/feedback/update/${feedbackId}`,)
+          .put(`/feedback/update/${feedbackId}`)
           .send({ orderId, comment: 'Well this product looks so lovely' })
           .set('Authorization', `Bearer ${getAccessToken(buyer1Id, sampleBuyer1.email)}`);
         expect(response.status).toBe(200);
@@ -609,7 +597,6 @@ describe('Cart| Order  management for guest/buyer', () => {
     });
 
     describe('Feedback API', () => {
-
       describe('Add feedback to the product with order', () => {
         it('should create new feedback for the ordered product', async () => {
           const response = await request(app)
@@ -725,7 +712,7 @@ describe('Cart| Order  management for guest/buyer', () => {
           expect(response.body.data.message).toBe('Feedback successfully removed');
         });
 
-        it('should return 404, if feedback doesn\'t exist', async () => {
+        it("should return 404, if feedback doesn't exist", async () => {
           const response = await request(app)
             .delete(`/feedback/admin/delete/${uuid()}`)
             .set('Authorization', `Bearer ${getAccessToken(sampleAdminId, sampleAdmin.email)}`);
@@ -733,7 +720,7 @@ describe('Cart| Order  management for guest/buyer', () => {
           expect(response.status).toBe(404);
         });
 
-        it('should return 500, for incorrect feedback id syntax (invalid uuid) doesn\'t exist', async () => {
+        it("should return 500, for incorrect feedback id syntax (invalid uuid) doesn't exist", async () => {
           const response = await request(app)
             .delete(`/feedback/admin/delete/invalid-uuid`)
             .set('Authorization', `Bearer ${getAccessToken(sampleAdminId, sampleAdmin.email)}`);
@@ -742,7 +729,6 @@ describe('Cart| Order  management for guest/buyer', () => {
         });
       });
     });
-
   });
 
   describe('Deleting product from cart', () => {
@@ -850,7 +836,7 @@ describe('Cart| Order  management for guest/buyer', () => {
       expect(response.body.data.cart).toBeDefined;
     });
 
-    it('should return empty cart for guest user, if he/she doesn\'t have cart', async () => {
+    it("should return empty cart for guest user, if he/she doesn't have cart", async () => {
       const response = await request(app)
         .delete('/cart')
         .set('Cookie', [`cartId=${sampleCartId}`]);
@@ -861,8 +847,7 @@ describe('Cart| Order  management for guest/buyer', () => {
     });
 
     it('should return 400, for incorrect cart id syntax (invalid uuid) for guest user', async () => {
-      const response = await request(app).delete(`/cart`)
-        .set('Cookie', [`cartId=invalid-uuid`]);
+      const response = await request(app).delete(`/cart`).set('Cookie', [`cartId=invalid-uuid`]);
 
       expect(response.status).toBe(400);
     });
