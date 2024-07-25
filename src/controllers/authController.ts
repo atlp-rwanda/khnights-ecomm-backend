@@ -18,6 +18,7 @@ import getAllUsers from '../services/userServices/getAllUsers';
 import getUserById from '../services/userServices/getUserById';
 import getUserProfile from '../services/userServices/getUserProfile';
 import userUpdateProfilePicture from '../services/userServices/userUpdateProfileImage';
+import googleAuth from '../services/userServices/googleAuthservice';
 
 export const userRegistration = async (req: Request, res: Response) => {
   await userRegistrationService(req, res);
@@ -86,4 +87,7 @@ export const getUserProfileController = async (req: Request, res: Response) => {
 
 export const userUpdateProfilePictureController = async (req: Request, res: Response) => {
   await userUpdateProfilePicture(req, res);
+};
+export const googleOAuthController = async (req: Request, res: Response) => {
+  await googleAuth(req, res);
 };
