@@ -9,6 +9,7 @@ export * from './userServices/userLoginService';
 export * from './userServices/userResendOTP';
 export * from './userServices/logoutServices';
 export * from './userServices/userProfileUpdateServices';
+export * from './userServices/googleAuthservice';
 
 // Vendor product services
 export * from './productServices/createProduct';
