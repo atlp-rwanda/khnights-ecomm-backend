@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app, server } from '../index';
-import { createConnection, getRepository } from 'typeorm';
+import { getRepository } from 'typeorm';
 import { User, UserInterface } from '../entities/User';
 
 import { cleanDatabase } from './test-assets/DatabaseCleanup';
@@ -9,11 +9,17 @@ import { dbConnection } from '../startups/dbConnection';
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import googleAuth from '../services/userServices/googleAuthservice';
+import { Request, Response } from 'express';
+
+let req: Partial<Request>;
+let res: Partial<Response>;
 
 const userId = uuid();
 const user1Id = uuid();
 const user2Id = uuid();
 const user3Id = uuid();
+const user4Id = uuid();
 
 const getAccessToken = (id: string, email: string) => {
   return jwt.sign(
@@ -86,17 +92,41 @@ const sampleUser3: UserInterface = {
   role: 'VENDOR',
 };
 
+const sampleUser4: UserInterface = {
+  id: user4Id,
+  firstName: 'user4',
+  lastName: 'user',
+  email: 'admin@example.com',
+  password: '',
+  userType: 'Admin',
+  verified: true,
+  twoFactorEnabled: true,
+  twoFactorCode: '123456',
+  twoFactorCodeExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
+  gender: 'Male',
+  phoneNumber: '126380996347',
+  photoUrl: 'https://example.com/photo.jpg',
+  role: 'ADMIN',
+};
+
+
 beforeAll(async () => {
   const connection = await dbConnection();
   sampleUser.password = await bcrypt.hash('password', 10);
   sampleUser2.password = await bcrypt.hash('password', 10);
   sampleUser3.password = await bcrypt.hash('password', 10);
+  sampleUser4.password = await bcrypt.hash('password', 10);
 
   const userRepository = connection?.getRepository(User);
   await userRepository?.save({ ...sampleUser });
   await userRepository?.save({ ...sampleUser1 });
   await userRepository?.save({ ...sampleUser2 });
   await userRepository?.save({ ...sampleUser3 });
+  await userRepository?.save({ ...sampleUser4 });
+
+  res = {
+    redirect: jest.fn(),
+  };
 });
 
 afterAll(async () => {
@@ -129,6 +159,34 @@ describe('User service Test', () => {
           message: 'User registered successfully',
         },
       });
+    });
+
+    it('admin should get all registered user', async () => {
+      // Arrange
+
+      // Act
+      const res = await request(app).get('/user/allUsers').set(
+        {
+          'authorization': `Bearer ${getAccessToken(sampleUser4.id!, sampleUser4.email)}`
+        }
+      )
+      // Assert
+      expect(res.status).toBe(200);
+      expect(res.body.users).toBeDefined();
+    });
+
+    it('admin should be able to get data for a single user', async () => {
+      // Arrange
+
+      // Act
+      const res = await request(app).get(`/user/single/${sampleUser.id}`).set(
+        {
+          'authorization': `Bearer ${getAccessToken(sampleUser4.id!, sampleUser4.email)}`
+        }
+      )
+      // Assert
+      expect(res.status).toBe(200);
+      expect(res.body.user).toBeDefined();
     });
 
     it('should Login a user, with valid credentials', async () => {
@@ -532,5 +590,72 @@ describe('User service Test', () => {
       expect(res.status).toBe(404);
       expect(res.body).toEqual({ status: 'error', message: 'Incorrect email or password' });
     }, 10000);
+  });
+
+  describe('google OAuth controller', () => {
+    it('should redirect with error status, when something went wrong on server', async () => {
+      await googleAuth(req as Request, res as Response);
+      expect(res.redirect).toHaveBeenCalledWith(`${process.env.CLIENT_URL}/login/google-auth?status=error`);
+    });
+    it('should redirect with success status', async () => {
+      req = {
+        user: {
+          id: '123',
+          firstName: 'sample',
+          lastName: 'User',
+          email: 'samleuser@example.com',
+          role: 'user',
+          status: 'active',
+          twoFactorEnabled: false,
+          phoneNumber: '1234567890',
+        },
+      };
+
+      await googleAuth(req as Request, res as Response);
+      expect(res.redirect).toHaveBeenCalled();
+    });
+
+    it('should redirect with userSuspended status', async () => {
+      req = {
+        user: {
+          id: '123',
+          firstName: 'sample',
+          lastName: 'User',
+          email: 'samleuser@example.com',
+          role: 'user',
+          status: 'suspended',
+          twoFactorEnabled: false,
+          phoneNumber: '1234567890',
+        },
+      };
+
+      await googleAuth(req as Request, res as Response);
+      expect(res.redirect).toHaveBeenCalledWith(`${process.env.CLIENT_URL}/login/google-auth?status=userSuspended`);
+    });
+
+    it('should redirect with otp status', async () => {
+      req = {
+        user: {
+          id: '123',
+          firstName: 'sample',
+          lastName: 'User',
+          email: 'samleuser@example.com',
+          role: 'user',
+          status: 'active',
+          twoFactorEnabled: true,
+          phoneNumber: '1234567890',
+        },
+      };
+
+      await googleAuth(req as Request, res as Response);
+      expect(res.redirect).toHaveBeenCalledWith(`${process.env.CLIENT_URL}/login/google-auth?status=otp&email=samleuser@example.com`);
+    });
+
+    it('should redirect with userNotFound status', async () => {
+      req.user = undefined;
+      await googleAuth(req as Request, res as Response);
+      expect(res.redirect).toHaveBeenCalledWith(`${process.env.CLIENT_URL}/login/google-auth?status=userNotFound`);
+    });
+    
   });
 });
